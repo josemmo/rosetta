@@ -1,4 +1,4 @@
-/*
+/*!
  * Rosetta - A free (libre) Integrated Library System for the 21st century.
  * Copyright (C) 2019 José M. Moreno <josemmo@pm.me>
  *
@@ -16,21 +16,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const Encore = require('@symfony/webpack-encore')
-
-Encore
-    // Source files
-    .setOutputPath('public/build/')
-    .setPublicPath('/build')
-
-    // Entry point
-    .addEntry('app', './assets/js/app.js')
-
-    // Build configuration
-    .cleanupOutputBeforeBuild()
-    .enableBuildNotifications()
-    .enableSourceMaps(!Encore.isProduction())
-    .enableVersioning(Encore.isProduction())
-    .enableSassLoader()
-
-module.exports = Encore.getWebpackConfig()
+body {
+    background-color: lightgray;
+}
