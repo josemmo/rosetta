@@ -1,5 +1,7 @@
 ###> PhpStorm ###
-/.idea/
+/.idea/workspace.xml
+/.idea/usage.statistics.xml
+/.idea/tasks.xml
 ###< PhpStorm ###
 
 ###> symfony/framework-bundle ###
