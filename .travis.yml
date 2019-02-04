@@ -1,37 +1,46 @@
 language: php
 sudo: false
 
+notifications:
+    email: false
+
 matrix:
-  fast_finish: true
-  include:
-    - php: 7.1.3
-    - php: 7.2
-    - php: 7.3
-    - php: nightly # Just in case, let's ensure app will run on future PHP versions
-  allow_failures:
-    - php: nightly
+    fast_finish: true
+    include:
+        - php: 7.1.3
+        - php: 7.2
+        - php: 7.3
+        - php: nightly # Just in case, let's ensure app will run on future PHP versions
+    allow_failures:
+        - php: 7.1.3
+        - php: nightly
+
+cache:
+    directories:
+        - vendor
+        - node_modules
 
 addons:
-  mariadb: '10.3' # Install MariaDB Server
+    mariadb: '10.3' # Install MariaDB Server
 
 services:
-  - mariadb # Start MariaDB service
+    - mariadb # Start MariaDB service
 
 before_install:
-  - nvm install stable   # Install NodeJS
-  - npm update -g npm    # Update NPM to latest version
-  - composer self-update # Make sure Composer itself is updated before continuing
+    - nvm install stable   # Install NodeJS
+    - npm update -g npm    # Update NPM to latest version
+    - composer self-update # Make sure Composer itself is updated before continuing
 
 install:
-  - composer install --no-interaction # Install Composer dependencies
-  - npm update                        # Install NodeJS dependencies
-  - npm run build                     # Build static assets
+    - composer install --no-interaction # Install Composer dependencies
+    - npm install                       # Install NodeJS dependencies
+    - npm run build                     # Build static assets
 
 script:
-  - composer validate --strict            # Validate composer.json and composer.lock
-  - ./bin/console lint:yaml config        # Validate YAML config files syntax
-  - ./bin/console lint:twig templates     # Validate Twig templates syntax
-  - ./bin/console security:check          # Try to find vulnerabilities in dependencies
-  - ./bin/console lint:xliff translations # Validate XLIFF translations
-  - ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction # Validate Doctrine mappings
-  - ./bin/phpunit                         # Run tests
+    - composer validate --strict            # Validate composer.json and composer.lock
+    - ./bin/console lint:yaml config        # Validate YAML config files syntax
+    - ./bin/console lint:twig templates     # Validate Twig templates syntax
+    - ./bin/console security:check          # Try to find vulnerabilities in dependencies
+    - ./bin/console lint:xliff translations # Validate XLIFF translations
+    - ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction # Validate Doctrine mappings
+    - ./bin/phpunit                         # Run tests
