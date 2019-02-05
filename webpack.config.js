@@ -31,6 +31,7 @@ Encore
     .enableBuildNotifications()
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning(Encore.isProduction())
+    .disableSingleRuntimeChunk()
     .enableSassLoader()
 
 module.exports = Encore.getWebpackConfig()
