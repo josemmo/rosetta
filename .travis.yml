@@ -37,10 +37,10 @@ install:
     - npm run build                     # Build static assets
 
 script:
-    - composer validate --strict            # Validate composer.json and composer.lock
-    - ./bin/console lint:yaml config        # Validate YAML config files syntax
-    - ./bin/console lint:twig templates     # Validate Twig templates syntax
-    - ./bin/console security:check          # Try to find vulnerabilities in dependencies
-    - ./bin/console lint:xliff translations # Validate XLIFF translations
-    - ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction # Validate Doctrine mappings
-    - ./bin/phpunit                         # Run tests
+    - composer validate --no-check-all --strict # Validate composer.json and composer.lock
+    - php ./bin/console lint:yaml config        # Validate YAML config files syntax
+    - php ./bin/console lint:twig templates     # Validate Twig templates syntax
+    - php ./bin/console security:check          # Try to find vulnerabilities in dependencies
+    - php ./bin/console lint:xliff translations # Validate XLIFF translations
+    - php ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction # Validate Doctrine mappings
+    - php ./bin/phpunit                         # Run tests
