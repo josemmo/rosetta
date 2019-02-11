@@ -20,7 +20,7 @@
 
 namespace App\Command;
 
-use Rosetta\Engine\Engine;
+use App\RosettaBundle\Service\SearchEngine;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,7 +30,7 @@ class SearchCommand extends Command {
     protected static $defaultName = "rosetta:search";
     private $engine;
 
-    public function __construct(Engine $engine) {
+    public function __construct(SearchEngine $engine) {
         $this->engine = $engine;
         parent::__construct();
     }
@@ -45,6 +45,7 @@ class SearchCommand extends Command {
         $query = $input->getArgument('query');
         $res = $this->engine->search($query);
 
-        $output->writeln($res);
+        $output->writeln("Found " . count($res) . " results:");
+        $output->write(print_r($res, true));
     }
 }

@@ -18,13 +18,22 @@
  */
 
 
-namespace Rosetta\Engine;
+namespace App\RosettaBundle\Service;
 
-/**
- * Allows communication with the Rosetta Search Engine.
- */
-class Engine {
+class SearchEngine {
+    private $config;
+
     public function search($query) {
-        return "Not implemented: $query"; // TODO
+        return []; // TODO: not implemented
     }
+
+
+    /**
+     * Set configuration
+     * @param array $config Configuration properties
+     */
+    public function setConfig($config) {
+        $this->config = $config;
+    }
+
 }

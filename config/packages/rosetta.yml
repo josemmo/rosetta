@@ -1,0 +1,15 @@
+rosetta:
+    # Primary search sources to be used to get available materials from a given library.
+    # Multiple sources are allowed.
+    sources:
+        - name: 'UNED'
+          description: 'Universidad Nacional de Educación a Distancia'
+          provider:
+              type: '@App\RosettaBundle\Providers\Z3950'
+              url: 'biblio15.uned.es:2200/unicorn'
+
+        - name: 'UB'
+          description: 'Universitat de Barcelona'
+          provider:
+              type: '@App\RosettaBundle\Providers\Z3950'
+              url: 'ub.cbuc.cat:210/INNOPAC'

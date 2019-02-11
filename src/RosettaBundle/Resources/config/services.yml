@@ -1,0 +1,5 @@
+# This configuration file defines services from the bundle
+# that will be exported to the main application.
+services:
+    App\RosettaBundle\Service\:
+        resource: '../../Service'
