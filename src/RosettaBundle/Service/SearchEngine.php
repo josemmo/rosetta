@@ -20,8 +20,15 @@
 
 namespace App\RosettaBundle\Service;
 
+use Psr\Log\LoggerInterface;
 class SearchEngine {
+    private $logger;
     private $config;
+
+    public function __construct(LoggerInterface $logger) {
+        $this->logger = $logger;
+    }
+
 
     /**
      * Set configuration

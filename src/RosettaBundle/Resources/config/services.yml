@@ -3,3 +3,4 @@
 services:
     App\RosettaBundle\Service\:
         resource: '../../Service'
+        autowire: true
