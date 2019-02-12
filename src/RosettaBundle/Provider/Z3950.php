@@ -21,6 +21,7 @@
 namespace App\RosettaBundle\Provider;
 
 use App\RosettaBundle\Entity\AbstractEntity;
+use App\RosettaBundle\Utils\SearchQuery;
 
 class Z3950 extends AbstractProvider {
     private static $executed = false;
@@ -28,7 +29,7 @@ class Z3950 extends AbstractProvider {
     private $config;
     private $conn;
 
-    public function configure($config, $query) {
+    public function configure(array $config, SearchQuery $query) {
         self::$executed = false; // Reset flag for all Z39.50 instances
         $this->config = $config;
 
@@ -40,7 +41,7 @@ class Z3950 extends AbstractProvider {
         $conn = yaz_connect($config['url'], $yazConfig);
         yaz_syntax($conn, 'usmarc');
         yaz_range($conn, 1, $config['max_results']);
-        yaz_search($conn, 'rpn', '@attr 1=4 "' . addslashes($query) . '"');
+        yaz_search($conn, 'rpn', $query->toRpn());
         $this->conn = $conn;
     }
 

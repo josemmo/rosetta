@@ -21,6 +21,7 @@
 namespace App\Command;
 
 use App\RosettaBundle\Service\SearchEngine;
+use App\RosettaBundle\Utils\SearchQuery;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,7 +44,7 @@ class SearchCommand extends Command {
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         $query = $input->getArgument('query');
-        $res = $this->engine->search($query);
+        $res = $this->engine->search(new SearchQuery($query));
 
         $output->writeln("Found " . count($res) . " results:");
         $output->write(print_r($res, true));

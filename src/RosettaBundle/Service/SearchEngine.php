@@ -21,6 +21,7 @@
 namespace App\RosettaBundle\Service;
 
 use App\RosettaBundle\Entity\AbstractEntity;
+use App\RosettaBundle\Utils\SearchQuery;
 use Psr\Log\LoggerInterface;
 
 class SearchEngine {
@@ -43,10 +44,10 @@ class SearchEngine {
 
     /**
      * Run new search
-     * @param  string           $query Search query
+     * @param  SearchQuery      $query Search query
      * @return AbstractEntity[]        Search results
      */
-    public function search($query) {
+    public function search(SearchQuery $query) {
         $results = $this->getResultsFromSources($query);
         // TODO: clean results
         // TODO: merge results
@@ -56,10 +57,10 @@ class SearchEngine {
 
     /**
      * Get results from sources
-     * @param  string           $query Search query
+     * @param  SearchQuery      $query Search query
      * @return AbstractEntity[]        Search results
      */
-    private function getResultsFromSources($query) {
+    private function getResultsFromSources(SearchQuery $query) {
         // Instantiate and configure providers
         $providers = [];
         foreach ($this->config['sources'] as $source) {
