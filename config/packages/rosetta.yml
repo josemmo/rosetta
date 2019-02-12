@@ -5,11 +5,11 @@ rosetta:
         - name: 'UNED'
           description: 'Universidad Nacional de Educación a Distancia'
           provider:
-              type: '@App\RosettaBundle\Providers\Z3950'
+              type: App\RosettaBundle\Provider\Z3950
               url: 'biblio15.uned.es:2200/unicorn'
 
         - name: 'UB'
           description: 'Universitat de Barcelona'
           provider:
-              type: '@App\RosettaBundle\Providers\Z3950'
+              type: App\RosettaBundle\Provider\Z3950
               url: 'ub.cbuc.cat:210/INNOPAC'
