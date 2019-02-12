@@ -33,6 +33,9 @@ class Z3950 extends AbstractProvider {
         $this->config = $config;
 
         $yazConfig = [];
+        if (!is_null($config['user'])) $yazConfig['user'] = $config['user'];
+        if (!is_null($config['group'])) $yazConfig['group'] = $config['group'];
+        if (!is_null($config['password'])) $yazConfig['password'] = $config['password'];
 
         $conn = yaz_connect($config['url'], $yazConfig);
         yaz_syntax($conn, 'usmarc');
