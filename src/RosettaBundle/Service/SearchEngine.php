@@ -23,17 +23,56 @@ namespace App\RosettaBundle\Service;
 class SearchEngine {
     private $config;
 
-    public function search($query) {
-        return []; // TODO: not implemented
-    }
-
-
     /**
      * Set configuration
      * @param array $config Configuration properties
      */
     public function setConfig($config) {
         $this->config = $config;
+    }
+
+
+    /**
+     * Run new search
+     * @param string $query Search query
+     * @return AbstractEntity[] Search results
+     */
+    public function search($query) {
+        $results = $this->getResultsFromSources($query);
+        // TODO: clean results
+        // TODO: merge results
+        return $results;
+    }
+
+
+    /**
+     * Get results from sources
+     * @param  string $query Search query
+     * @return AbstractEntity[] Search results
+     */
+    private function getResultsFromSources($query) {
+        // Instantiate and configure providers
+        $providers = [];
+        foreach ($this->config['sources'] as $source) {
+            $provider = new $source['provider']['type']();
+            $provider->configure($source['provider'], $query);
+            $providers[] = $provider;
+        }
+
+        // Execute search
+        foreach ($providers as $provider) $provider->search();
+
+        // Fetch search results
+        $results = [];
+        foreach ($providers as $provider) {
+            $providerResults = $provider->getResults();
+            $results = array_merge($results, $providerResults);
+        }
+
+        // Free memory
+        foreach ($providers as $provider) unset($provider);
+
+        return $results;
     }
 
 }
