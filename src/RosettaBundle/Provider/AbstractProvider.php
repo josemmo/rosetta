@@ -21,9 +21,15 @@
 namespace App\RosettaBundle\Provider;
 
 use App\RosettaBundle\Entity\AbstractEntity;
+use Psr\Log\LoggerInterface;
 
 abstract class AbstractProvider {
-    protected $results = [];
+    protected $logger;
+
+    public function __construct(LoggerInterface $logger) {
+        $this->logger = $logger;
+    }
+
 
     /**
      * Configure provider
@@ -47,8 +53,6 @@ abstract class AbstractProvider {
      * Get search results
      * @return AbstractEntity[] Search results
      */
-    public function getResults(): array {
-        return $this->results;
-    }
+    public abstract function getResults(): array;
 
 }

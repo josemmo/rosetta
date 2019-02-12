@@ -20,7 +20,9 @@
 
 namespace App\RosettaBundle\Service;
 
+use App\RosettaBundle\Entity\AbstractEntity;
 use Psr\Log\LoggerInterface;
+
 class SearchEngine {
     private $logger;
     private $config;
@@ -41,8 +43,8 @@ class SearchEngine {
 
     /**
      * Run new search
-     * @param string $query Search query
-     * @return AbstractEntity[] Search results
+     * @param  string           $query Search query
+     * @return AbstractEntity[]        Search results
      */
     public function search($query) {
         $results = $this->getResultsFromSources($query);
@@ -54,14 +56,14 @@ class SearchEngine {
 
     /**
      * Get results from sources
-     * @param  string $query Search query
-     * @return AbstractEntity[] Search results
+     * @param  string           $query Search query
+     * @return AbstractEntity[]        Search results
      */
     private function getResultsFromSources($query) {
         // Instantiate and configure providers
         $providers = [];
         foreach ($this->config['sources'] as $source) {
-            $provider = new $source['provider']['type']();
+            $provider = new $source['provider']['type']($this->logger);
             $provider->configure($source['provider'], $query);
             $providers[] = $provider;
         }
