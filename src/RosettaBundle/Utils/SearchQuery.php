@@ -36,14 +36,21 @@ class SearchQuery {
 
     /**
      * SearchQuery constructor
-     * @param  string|array $query Raw query string or query tokens
+     * @param  string|array $query  Raw query string or query tokens
+     * @param  boolean      $strict Whether to throw an exception or fix query if malformed
      * @throws \Exception
      */
-    public function __construct($query) {
+    public function __construct($query, $strict=false) {
         if (is_null(self::$isbnTools)) self::$isbnTools = new IsbnTools();
 
+        // Get tokens array
         $tokens = is_array($query) ? $query : $this->tokenizeQuery($query);
-        if (count($tokens) !== 3) throw new \Exception("Tokens array must contain 3 items");
+        if (!is_array($tokens) || count($tokens) != 3) {
+            if ($strict) throw new \Exception("Malformed query string");
+            $tokens = $this->getRegularSearchTokens($query);
+        }
+
+        // Save tokens to this instance
         $this->left = $tokens[0];
         $this->operand = $tokens[1];
         $this->right = $tokens[2];
@@ -59,16 +66,17 @@ class SearchQuery {
     private function tokenizeQuery(string $query) {
         $query = trim($query);
 
-        // Parse filters
-        $normalizedQuery = str_replace("'", '"', $query);
-        if (
-            (strpos($query, '"') !== false || strpos($query, "'") !== false) &&
-            preg_match('/"[^"]*"(*SKIP)(*F)|\s+/', $normalizedQuery) // Contains spaces outside quotes
-        ) {
-            return $this->firstTokenization($query);
-        }
-        if (preg_match('/"[^"]*"(*SKIP)(*F)|:+/', $normalizedQuery)) { // Contains colon (:) outside quotes
-            return $this->secondTokenization($query);
+        // Parse filters for advanced search
+        if (preg_match('/[:\'"]/', $query)) {
+            $normalizedQuery = str_replace("'", '"', $query);
+            if (
+                preg_match('/"[^"]*"(*SKIP)(*F)|\s+/', $normalizedQuery) // Contains spaces outside quotes
+            ) {
+                return $this->firstTokenization($query);
+            }
+            if (preg_match('/"[^"]*"(*SKIP)(*F)|:+/', $normalizedQuery)) { // Contains colon (:) outside quotes
+                return $this->secondTokenization($query);
+            }
         }
 
         // Is query an ISBN?
@@ -77,11 +85,7 @@ class SearchQuery {
         }
 
         // Fallback to default search
-        return [
-            new self(['title', self::OP_CONTAINS, $query]),
-            self::OP_OR,
-            new self(['author', self::OP_CONTAINS, $query])
-        ];
+        return $this->getRegularSearchTokens($query);
     }
 
 
@@ -195,6 +199,21 @@ class SearchQuery {
         }
 
         return [$field, $operand, $value];
+    }
+
+
+    /**
+     * Get tokens for regular (literal) search
+     * @param  string     $query Search query
+     * @return array             Tokens
+     * @throws \Exception
+     */
+    private function getRegularSearchTokens($query) {
+        return [
+            new self(['title', self::OP_CONTAINS, $query]),
+            self::OP_OR,
+            new self(['author', self::OP_CONTAINS, $query])
+        ];
     }
 
 
