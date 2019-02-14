@@ -21,40 +21,161 @@
 namespace App\RosettaBundle\Utils;
 
 class SearchQuery {
-    private $title = null;
-    private $author = null;
-    private $isbn = null;
+    const OP_AND = "AND";
+    const OP_OR = "OR";
+    const OP_EQUALS = "EQUALS";
+    const OP_CONTAINS = "CONTAINS";
+
+    private $left = null;
+    private $operand = null;
+    private $right = null;
 
     /**
-     * SearchQuery constructor.
-     * @param string|array $query Raw query string or fields array
+     * SearchQuery constructor
+     * @param  string|array $query Raw query string or query tokens
+     * @throws \Exception
      */
     public function __construct($query) {
-        if (is_string($query)) {
-            $this->parseQueryString($query);
-        } else {
-            $fields = array_keys($this->toArray());
-            foreach ($fields as $field) $this->{$field} = $query[$field];
+        $tokens = is_array($query) ? $query : $this->tokenizeQuery($query);
+        if (count($tokens) !== 3) throw new \Exception("Tokens array must contain 3 items");
+
+        $this->left = $tokens[0];
+        $this->operand = $tokens[1];
+        $this->right = $tokens[2];
+    }
+
+
+    /**
+     * Divide query string into tokens
+     * @param  string     $query Search query
+     * @return array             Tokens
+     * @throws \Exception
+     */
+    private function tokenizeQuery(string $query) {
+        $normalizedQuery = str_replace("'", '"', $query);
+        if (
+            (strpos($query, '"') !== false || strpos($query, "'") !== false) &&
+            preg_match('/"[^"]*"(*SKIP)(*F)|\s+/', $normalizedQuery) // Contains spaces outside quotes
+        ) {
+            return $this->firstTokenization($query);
         }
+        if (preg_match('/"[^"]*"(*SKIP)(*F)|:+/', $normalizedQuery)) { // Contains colon (:) outside quotes
+            return $this->secondTokenization($query);
+        }
+        return ['title', 'EQUALS', $query];
     }
 
 
     /**
-     * Parse query string
-     * @param string $query Query string
+     * Tokenizes queries with spaces, quotes and parentheses
+     * @param  string     $query Search query
+     * @return array             Tokens
+     * @throws \Exception
      */
-    private function parseQueryString($query) {
-        // TODO: not fully implemented
-        $this->title = $query;
+    private function firstTokenization(string $query) {
+        $rawTokens = [];
+        $buffer = "";
+        $quotes = null;
+        $parentheses = 0;
+
+        for ($i=0; $i<mb_strlen($query); $i++) {
+            $char = mb_substr($query, $i, 1);
+
+            // Update parentheses balance
+            if (is_null($quotes)) {
+                if ($char === "(") {
+                    $parentheses++;
+                } elseif ($char === ")") {
+                    $parentheses--;
+                }
+                if ($parentheses !== 0) {
+                    $buffer .= $char;
+                    continue;
+                }
+            }
+
+            // Keep track of quoted sentences
+            if ($char === '"' || $char === "'") {
+                if (is_null($quotes)) {
+                    $quotes = $char;
+                } elseif ($quotes === $char) {
+                    $quotes = null;
+                }
+            }
+
+            // Dump buffer
+            if ($char === " " && is_null($quotes)) {
+                $rawTokens[] = $buffer;
+                $buffer = "";
+                continue;
+            }
+
+            // Update buffer
+            $buffer .= $char;
+        }
+
+        // Dump last characters in buffer
+        $rawTokens[] = $buffer;
+
+        // Post-process tokens
+        $tokens = [];
+        foreach ($rawTokens as $token) {
+            $token = trim($token);
+            if (empty($token)) continue;
+
+            while (strlen($token) > 1 && $token[0] == "(" && $token[-1] == ")") {
+                $token = substr($token, 1, -1);
+            }
+            $tokens[] = $token;
+        }
+
+        return $this->groupTokens($tokens);
     }
 
 
     /**
-     * Query to array
-     * @return array Query fields
+     * Group token array to form a 3-tuple
+     * NOTE: does not account for implied parentheses
+     * @param  array      $tokens Tokens
+     * @return array              Grouped tokens
+     * @throws \Exception
      */
-    public function toArray(): array {
-        return get_object_vars($this);
+    private function groupTokens(array $tokens) {
+        $tuple = $tokens[0];
+        for ($i=0; $i<=count($tokens)-3; $i+=2) {
+            $left = new self($tuple);
+            $operand = $tokens[$i+1];
+            $right = new self($tokens[$i+2]);
+            $tuple = [$left, $operand, $right];
+        }
+        return $tuple;
+    }
+
+
+    /**
+     * Tokenizes queries with colons
+     * @param  string $query Search query
+     * @return array         Tokens
+     */
+    private function secondTokenization(string $query) {
+        list($field, $value) = explode(':', $query, 2);
+
+        // Remove outer quotes from value
+        if (
+            ($value[0] === '"' && $value[-1] === '"') ||
+            ($value[0] === "'" && $value[-1] === "'")
+        ) {
+            $value = substr($value, 1, -1);
+        }
+
+        // Find operand type
+        $operand = self::OP_EQUALS;
+        if ($value[0] === "%" && $value[-1] === "%") {
+            $value = substr($value, 1, -1);
+            $operand = self::OP_CONTAINS;
+        }
+
+        return [$field, $operand, $value];
     }
 
 
@@ -65,6 +186,17 @@ class SearchQuery {
     public function toRpn(): string {
         // TODO: not fully implemented
         return '@attr 1=4 "' . addslashes($this->title) . '"';
+    }
+
+
+    /**
+     * Query to string
+     * @return string Query
+     */
+    public function __toString() {
+        $left = is_string($this->left) ? json_encode($this->left, JSON_UNESCAPED_UNICODE) : $this->left;
+        $right = is_string($this->right) ? json_encode($this->right, JSON_UNESCAPED_UNICODE) : $this->right;
+        return "($left {$this->operand} $right)";
     }
 
 }
