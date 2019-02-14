@@ -20,11 +20,15 @@
 
 namespace App\RosettaBundle\Utils;
 
+use Nicebooks\Isbn\IsbnTools;
+
 class SearchQuery {
     const OP_AND = "AND";
     const OP_OR = "OR";
     const OP_EQUALS = "EQUALS";
     const OP_CONTAINS = "CONTAINS";
+
+    private static $isbnTools = null;
 
     private $left = null;
     private $operand = null;
@@ -36,9 +40,10 @@ class SearchQuery {
      * @throws \Exception
      */
     public function __construct($query) {
+        if (is_null(self::$isbnTools)) self::$isbnTools = new IsbnTools();
+
         $tokens = is_array($query) ? $query : $this->tokenizeQuery($query);
         if (count($tokens) !== 3) throw new \Exception("Tokens array must contain 3 items");
-
         $this->left = $tokens[0];
         $this->operand = $tokens[1];
         $this->right = $tokens[2];
@@ -52,6 +57,9 @@ class SearchQuery {
      * @throws \Exception
      */
     private function tokenizeQuery(string $query) {
+        $query = trim($query);
+
+        // Parse filters
         $normalizedQuery = str_replace("'", '"', $query);
         if (
             (strpos($query, '"') !== false || strpos($query, "'") !== false) &&
@@ -62,7 +70,18 @@ class SearchQuery {
         if (preg_match('/"[^"]*"(*SKIP)(*F)|:+/', $normalizedQuery)) { // Contains colon (:) outside quotes
             return $this->secondTokenization($query);
         }
-        return ['title', 'EQUALS', $query];
+
+        // Is query an ISBN?
+        if (self::$isbnTools->isValidIsbn($query)) {
+            return ['isbn', self::OP_EQUALS, $query];
+        }
+
+        // Fallback to default search
+        return [
+            new self(['title', self::OP_CONTAINS, $query]),
+            self::OP_OR,
+            new self(['author', self::OP_CONTAINS, $query])
+        ];
     }
 
 

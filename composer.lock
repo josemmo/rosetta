@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4654bcc0f014533fc95adab992cec1bc",
+    "content-hash": "e7fbe488ff4cf423015e4a15bb6b8d3d",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1371,6 +1371,49 @@
                 "psr-3"
             ],
             "time": "2018-11-05T09:00:11+00:00"
+        },
+        {
+            "name": "nicebooks/isbn",
+            "version": "0.2.17",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nicebooks-com/isbn.git",
+                "reference": "ffe5b9345311e70e5053a4d00833a9ead96e0b5a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nicebooks-com/isbn/zipball/ffe5b9345311e70e5053a4d00833a9ead96e0b5a",
+                "reference": "ffe5b9345311e70e5053a4d00833a9ead96e0b5a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "ext-dom": "*",
+                "php-coveralls/php-coveralls": "2.*",
+                "phpunit/phpunit": "7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Nicebooks\\Isbn\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "ISBN tools",
+            "keywords": [
+                "ISBN",
+                "ISBN-10",
+                "ISBN-13",
+                "Nicebooks",
+                "book",
+                "books"
+            ],
+            "time": "2019-02-06T10:51:21+00:00"
         },
         {
             "name": "ocramius/package-versions",

@@ -89,6 +89,9 @@
     "monolog/monolog": {
         "version": "1.24.0"
     },
+    "nicebooks/isbn": {
+        "version": "0.2.17"
+    },
     "ocramius/proxy-manager": {
         "version": "2.1.1"
     },
