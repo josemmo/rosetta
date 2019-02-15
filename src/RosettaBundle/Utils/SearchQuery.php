@@ -26,7 +26,18 @@ class SearchQuery {
     const OP_AND = "AND";
     const OP_OR = "OR";
     const OP_EQUALS = "EQUALS";
-    const OP_CONTAINS = "CONTAINS";
+    const RPN_CODES = [
+        "title" => 4,
+        "isbn" => 7,
+        "issn" => 8,
+        "date" => 30,
+        "subject" => 62,
+        "abstract" => 62,
+        "author" => 1003,
+        "*" => 1016,
+        "publisher" => 1018,
+        "editor" => 1020
+    ];
 
     private static $isbnTools = null;
 
@@ -191,14 +202,7 @@ class SearchQuery {
             $value = substr($value, 1, -1);
         }
 
-        // Find operand type
-        $operand = self::OP_EQUALS;
-        if ($value[0] === "%" && $value[-1] === "%") {
-            $value = substr($value, 1, -1);
-            $operand = self::OP_CONTAINS;
-        }
-
-        return [$field, $operand, $value];
+        return [$field, self::OP_EQUALS, $value];
     }
 
 
@@ -209,21 +213,34 @@ class SearchQuery {
      * @throws \Exception
      */
     private function getRegularSearchTokens($query) {
-        return [
-            new self(['title', self::OP_CONTAINS, $query]),
-            self::OP_OR,
-            new self(['author', self::OP_CONTAINS, $query])
-        ];
+        return ['*', self::OP_EQUALS, "%$query%"];
     }
 
 
     /**
      * Query to RPN syntax
      * @return string RPN query
+     * @throws \Nicebooks\Isbn\Exception\InvalidIsbnException
      */
     public function toRpn(): string {
-        // TODO: not fully implemented
-        return '@attr 1=4 "' . addslashes($this->title) . '"';
+        $rpn = [];
+
+        if ($this->operand == self::OP_AND || $this->operand == self::OP_OR) {
+            $rpn[] = ($this->operand == self::OP_AND) ? "@and" : "@or";
+            $rpn[] = $this->left->toRpn();
+            $rpn[] = $this->right->toRpn();
+        } else {
+            $rpn[] = "@attr";
+            $rpn[] = "1=" . self::RPN_CODES[$this->left];
+            if ($this->left == "isbn") {
+                $rpn[] = '"' . self::$isbnTools->format($this->right) . '"';
+            } else {
+                $rpn[] = '"' . addslashes($this->right) . '"';
+            }
+        }
+
+        $rpn = implode(' ', $rpn);
+        return $rpn;
     }
 
 
