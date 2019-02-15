@@ -27,6 +27,7 @@
     "require-dev": {
         "sensiolabs/security-checker": "^5.0",
         "symfony/debug-pack": "*",
+        "symfony/phpunit-bridge": "4.2.*",
         "symfony/profiler-pack": "*",
         "symfony/test-pack": "*",
         "symfony/web-server-bundle": "4.2.*"
