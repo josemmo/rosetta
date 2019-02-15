@@ -1,5 +1,5 @@
+dist: xenial
 language: php
-sudo: false
 
 notifications:
     email: false
@@ -27,9 +27,12 @@ services:
     - mariadb # Start MariaDB service
 
 before_install:
-    - nvm install stable   # Install NodeJS
-    - npm update -g npm    # Update NPM to latest version
-    - composer self-update # Make sure Composer itself is updated before continuing
+    - sudo apt install -y yaz libyaz-dev # Install YAZ apt package
+    - pecl channel-update pecl.php.net   # Update PECL
+    - printf "\n" | pecl install yaz     # Download and build YAZ PHP extension
+    - nvm install stable                 # Install NodeJS
+    - npm update -g npm                  # Update NPM to latest version
+    - composer self-update               # Make sure Composer itself is updated before continuing
 
 install:
     - composer install --no-interaction # Install Composer dependencies
