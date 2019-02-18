@@ -23,38 +23,20 @@ namespace App\RosettaBundle\Entity;
 class Relation {
     // TODO: create type constants
 
+    private $type;
     private $from;
     private $to;
-    private $type;
 
     /**
      * Relation constructor
      * @param AbstractEntity $from Origin entity
-     * @param AbstractEntity $to   Destination entity
      * @param int            $type Type of relation
+     * @param AbstractEntity $to   Destination entity
      */
-    public function __construct(AbstractEntity $from, AbstractEntity $to, int $type) {
+    public function __construct($from, int $type, $to) {
         $this->from = $from;
-        $this->to = $to;
         $this->type = $type;
-    }
-
-
-    /**
-     * Get origin entity
-     * @return AbstractEntity
-     */
-    public function getFrom(): AbstractEntity {
-        return $this->from;
-    }
-
-
-    /**
-     * Get destination entity
-     * @return AbstractEntity
-     */
-    public function getTo(): AbstractEntity {
-        return $this->to;
+        $this->to = $to;
     }
 
 
@@ -64,6 +46,36 @@ class Relation {
      */
     public function getType(): int {
         return $this->type;
+    }
+
+
+    /**
+     * Get origin entity
+     * @return AbstractEntity
+     */
+    public function getFrom() {
+        return $this->from;
+    }
+
+
+    /**
+     * Get destination entity
+     * @return AbstractEntity
+     */
+    public function getTo() {
+        return $this->to;
+    }
+
+
+    /**
+     * Get other than subject
+     * Given an AbstractEntity, and assuming that subject appears
+     * in this relation, returns the other AbstractEntity. Fallbacks to destination entity.
+     * @param  $subject AbstractEntity Subject to exclude
+     * @return          AbstractEntity Other entity of the relation
+     */
+    public function getOther($subject) {
+        return ($subject === $this->getTo()) ? $this->getFrom() : $this->getTo();
     }
 
 }

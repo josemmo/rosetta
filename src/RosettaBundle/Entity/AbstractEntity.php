@@ -45,4 +45,31 @@ abstract class AbstractEntity {
         return $this;
     }
 
+
+    /**
+     * Get related entities for given type
+     * @param  int              $type Relation type
+     * @return AbstractEntity[]       Abstract Entities
+     */
+    public function getRelated(int $type): array {
+        $res = [];
+        foreach ($this->relations as $relation) {
+            if ($relation->getType() == $type) $res[] = $relation->getOther($this);
+        }
+        return $res;
+    }
+
+
+    /**
+     * Get first related entity for given type
+     * @param  int                 $type Relation type
+     * @return AbstractEntity|null       Abstract Entity
+     */
+    public function getFirstRelated(int $type) {
+        foreach ($this->relations as $relation) {
+            if ($relation->getType() == $type) return $relation->getOther($this);
+        }
+        return null;
+    }
+
 }
