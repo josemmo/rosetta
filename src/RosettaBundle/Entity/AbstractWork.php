@@ -21,28 +21,27 @@
 namespace App\RosettaBundle\Entity;
 
 /**
- * An AbstractEntity is anything that can be found using the Search Engine.
+ * An AbstractWork is a type of AbstractEntity that can be consulted or borrowed.
  */
-abstract class AbstractEntity {
-    private $relations = [];
+abstract class AbstractWork extends AbstractEntity {
+    private $holdings = [];
 
     /**
-     * Get entity relations
-     * @return Relation[] Entity relations
+     * Get work holdings
+     * @return Holding[] Holdings
      */
-    public function getRelations(): array {
-        return $this->relations;
+    public function getHoldings(): array {
+        return $this->holdings;
     }
 
 
     /**
-     * Add relation
-     * @param  Relation       $relation Relation
-     * @return AbstractEntity           This instance
+     * Add holding
+     * @param  Holding      $holding Holding instance
+     * @return AbstractWork          This instance
      */
-    public function addRelation(Relation $relation): self {
-        $this->relations[] = $relation;
-        return $this;
+    public function addHolding(Holding $holding): self {
+        $this->holdings[] = $holding;
     }
 
 }

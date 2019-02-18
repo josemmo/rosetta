@@ -21,28 +21,8 @@
 namespace App\RosettaBundle\Entity;
 
 /**
- * An AbstractEntity is anything that can be found using the Search Engine.
+ * An AbstractLocation represents a placeholder for a location.
  */
-abstract class AbstractEntity {
-    private $relations = [];
-
-    /**
-     * Get entity relations
-     * @return Relation[] Entity relations
-     */
-    public function getRelations(): array {
-        return $this->relations;
-    }
-
-
-    /**
-     * Add relation
-     * @param  Relation       $relation Relation
-     * @return AbstractEntity           This instance
-     */
-    public function addRelation(Relation $relation): self {
-        $this->relations[] = $relation;
-        return $this;
-    }
-
+abstract class AbstractLocation {
+    // TODO: implement location subclasses and methods
 }
