@@ -21,5 +21,25 @@
 namespace App\RosettaBundle\Entity;
 
 abstract class AbstractEntity {
-    // TODO
+    private $relations = [];
+
+    /**
+     * Get entity relations
+     * @return Relation[] Entity relations
+     */
+    public function getRelations(): array {
+        return $this->relations;
+    }
+
+
+    /**
+     * Add relation
+     * @param  Relation       $relation Relation
+     * @return AbstractEntity           This instance
+     */
+    public function addRelation(Relation $relation): self {
+        $this->relations[] = $relation;
+        return $this;
+    }
+
 }
