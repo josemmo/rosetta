@@ -21,7 +21,7 @@
 namespace App\RosettaBundle\Entity;
 
 class Relation {
-    // TODO: create type constants
+    const IS_AUTHOR_OF = 1;
 
     private $type;
     private $from;

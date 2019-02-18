@@ -137,4 +137,25 @@ class Book extends AbstractEntity {
         return $this;
     }
 
+
+    /**
+     * Get authors
+     * @return Person[] Book authors
+     */
+    public function getAuthors(): array {
+        return $this->getRelated(Relation::IS_AUTHOR_OF);
+    }
+
+
+    /**
+     * Add author
+     * @param  Person $author Author
+     * @return Book           This instance
+     */
+    public function addAuthor(Person $author): self {
+        $relation = new Relation($author, Relation::IS_AUTHOR_OF, $this);
+        $this->addRelation($relation);
+        $author->addRelation($relation);
+    }
+
 }
