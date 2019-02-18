@@ -24,6 +24,10 @@ use App\RosettaBundle\Entity\AbstractEntity;
 use App\RosettaBundle\Utils\SearchQuery;
 
 class Z3950 extends AbstractProvider {
+    const PRESETS = [
+        "millenium" => ["syntax" => "opac"]
+    ];
+
     private static $executed = false;
 
     private $config;
@@ -31,15 +35,24 @@ class Z3950 extends AbstractProvider {
 
     public function configure(array $config, SearchQuery $query) {
         self::$executed = false; // Reset flag for all Z39.50 instances
+
+        // Fill presets for configuration
+        if (isset(self::PRESETS[$config['preset']])) {
+            foreach (self::PRESETS[$config['preset']] as $prop=>$value) {
+                if (empty($config[$prop])) $config[$prop] = $value;
+            }
+        }
         $this->config = $config;
 
+        // Prepare YAZ instance
         $yazConfig = [];
         if (!is_null($config['user'])) $yazConfig['user'] = $config['user'];
         if (!is_null($config['group'])) $yazConfig['group'] = $config['group'];
         if (!is_null($config['password'])) $yazConfig['password'] = $config['password'];
 
+        // Create YAZ instance
         $conn = yaz_connect($config['url'], $yazConfig);
-        yaz_syntax($conn, 'usmarc');
+        yaz_syntax($conn, $config['syntax'] ?? "usmarc");
         yaz_range($conn, 1, $config['max_results']);
         yaz_search($conn, 'rpn', $query->toRpn());
         $this->conn = $conn;
@@ -49,7 +62,7 @@ class Z3950 extends AbstractProvider {
     public function search() {
         if (self::$executed) return;
 
-        $waitConfig = ['timeout' => 3];
+        $waitConfig = array('timeout' => $this->config['timeout']);
         yaz_wait($waitConfig);
 
         self::$executed = true;
