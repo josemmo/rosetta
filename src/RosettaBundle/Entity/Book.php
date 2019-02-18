@@ -28,6 +28,17 @@ class Book extends AbstractEntity {
     private $editions = [];
 
     /**
+     * Book constructor
+     * @param string      $title    Title
+     * @param string|null $subtitle Subtitle
+     */
+    public function __construct(string $title, ?string $subtitle=null) {
+        $this->setTitle($title);
+        $this->setSubtitle($subtitle);
+    }
+
+
+    /**
      * Get title
      * @return string Title
      */

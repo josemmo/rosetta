@@ -32,8 +32,8 @@ class Holding {
      * @param AbstractLocation $location   Holding location
      */
     public function __construct(string $callNumber, AbstractLocation $location) {
-        $this->callNumber = $callNumber;
-        $this->location = $location;
+        $this->setCallNumber($callNumber);
+        $this->setLocation($location);
     }
 
 
@@ -47,11 +47,33 @@ class Holding {
 
 
     /**
+     * Set call number
+     * @param  string  $callNumber Call number
+     * @return Holding             This instance
+     */
+    public function setCallNumber(string $callNumber): self {
+        $this->callNumber = $callNumber;
+        return $this;
+    }
+
+
+    /**
      * Get holding location
      * @return AbstractLocation Holding location
      */
     public function getLocation(): AbstractLocation {
         return $this->location;
+    }
+
+
+    /**
+     * Set location
+     * @param  AbstractLocation $location Holding location
+     * @return Holding                    This instance
+     */
+    public function setLocation(AbstractLocation $location): self {
+        $this->location = $location;
+        return $this;
     }
 
 
