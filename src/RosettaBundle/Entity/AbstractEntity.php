@@ -47,6 +47,42 @@ abstract class AbstractEntity {
 
 
     /**
+     * Remove relation
+     * @param  Relation       $target Relation to remove
+     * @return AbstractEntity         This instance
+     */
+    public function removeRelation(Relation $target): self {
+        foreach ($this->relations as $i=>$relation) {
+            if ($target === $relation) {
+                array_splice($this->relations, $i, 1);
+                break;
+            }
+        }
+        return $this;
+    }
+
+
+    /**
+     * Overwrite exiting relation of this type or create a new one if it doesn't exist
+     * @param  Relation       $relation Relation
+     * @return AbstractEntity           This instance
+     */
+    public function overwriteRelation(Relation $relation): self {
+        // Replace existing relation
+        foreach ($this->relations as $i=>$existingRelation) {
+            if ($existingRelation->getType() == $relation->getType()) {
+                $this->relations[$i] = $relation;
+                return $this;
+            }
+        }
+
+        // Create new relation if doesn't exist
+        $this->addRelation($relation);
+        return $this;
+    }
+
+
+    /**
      * Get related entities for given type
      * @param  int              $type Relation type
      * @return AbstractEntity[]       Abstract Entities

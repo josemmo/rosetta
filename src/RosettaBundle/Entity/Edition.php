@@ -183,4 +183,26 @@ class Edition extends AbstractWork {
         return $this;
     }
 
+
+    /**
+     * Get publisher
+     * @return Organization|null Publisher
+     */
+    public function getPublisher(): ?Organization {
+        return $this->getFirstRelated(Relation::IS_PUBLISHER_OF);
+    }
+
+
+    /**
+     * Set publisher
+     * @param  Organization $publisher Publisher
+     * @return Edition                 This instance
+     */
+    public function setPublisher(Organization $publisher): self {
+        $relation = new Relation($publisher, Relation::IS_PUBLISHER_OF, $this);
+        $this->overwriteRelation($relation);
+        $publisher->overwriteRelation($relation);
+        return $this;
+    }
+
 }

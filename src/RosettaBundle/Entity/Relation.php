@@ -22,6 +22,8 @@ namespace App\RosettaBundle\Entity;
 
 class Relation {
     const IS_AUTHOR_OF = 1;
+    const IS_PUBLISHER_OF = 2;
+    const IS_FOUNDER_OF = 3;
 
     private $type;
     private $from;
