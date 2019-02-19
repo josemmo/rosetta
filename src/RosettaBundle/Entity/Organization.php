@@ -99,9 +99,7 @@ class Organization extends AbstractEntity {
      * @return Organization          This instance
      */
     public function addFounder(Person $founder): self {
-        $relation = new Relation($founder, Relation::IS_FOUNDER_OF, $this);
-        $this->addRelation($relation);
-        $founder->addRelation($relation);
+        $this->addRelation(new Relation($founder, Relation::IS_FOUNDER_OF, $this));
         return $this;
     }
 
