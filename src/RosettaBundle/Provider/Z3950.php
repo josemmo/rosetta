@@ -21,6 +21,7 @@
 namespace App\RosettaBundle\Provider;
 
 use App\RosettaBundle\Entity\AbstractEntity;
+use App\RosettaBundle\Entity\Institution;
 use App\RosettaBundle\Utils\SearchQuery;
 
 class Z3950 extends AbstractProvider {
@@ -33,10 +34,11 @@ class Z3950 extends AbstractProvider {
     private $config;
     private $conn;
 
-    public function configure(array $config, SearchQuery $query) {
+    public function configure(Institution $institution, SearchQuery $query) {
         self::$executed = false; // Reset flag for all Z39.50 instances
 
         // Fill presets for configuration
+        $config = $institution->getProvider();
         if (isset(self::PRESETS[$config['preset']])) {
             foreach (self::PRESETS[$config['preset']] as $prop=>$value) {
                 if (empty($config[$prop])) $config[$prop] = $value;

@@ -33,6 +33,7 @@ class Configuration implements ConfigurationInterface {
                 ->arrayNode('sources')
                     ->arrayPrototype()
                         ->children()
+                            ->scalarNode('id')->end()
                             ->scalarNode('name')->end()
                             ->scalarNode('description')->end()
                             ->arrayNode('provider')
