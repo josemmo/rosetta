@@ -20,12 +20,33 @@
 
 namespace App\RosettaBundle\Entity;
 
-/**
- * An AbstractLocation represents a placeholder for a location.
- */
-abstract class AbstractLocation {
-    const PHYSICAL_LOCATION = 1;
-    const DIGITAL_LOCATION = 2;
+class DigitalLocation extends AbstractLocation {
+    private $url;
 
-    public abstract function getType(): int;
+    /**
+     * DigitalLocation constructor
+     * @param string $url URL
+     */
+    public function __construct(string $url) {
+        $this->url = $url;
+    }
+
+
+    /**
+     * Get URL
+     * @return string URL
+     */
+    public function getUrl(): string {
+        return $this->url;
+    }
+
+
+    /**
+     * Get location type
+     * @return int Location type
+     */
+    public function getType(): int {
+        return self::DIGITAL_LOCATION;
+    }
+
 }
