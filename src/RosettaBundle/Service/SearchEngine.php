@@ -21,28 +21,16 @@
 namespace App\RosettaBundle\Service;
 
 use App\RosettaBundle\Entity\AbstractEntity;
-use App\RosettaBundle\Entity\Institution;
 use App\RosettaBundle\Utils\SearchQuery;
 use Psr\Log\LoggerInterface;
 
 class SearchEngine {
     private $logger;
-    private $institutions = [];
+    private $config;
 
-    public function __construct(LoggerInterface $logger) {
+    public function __construct(LoggerInterface $logger, ConfigEngine $config) {
         $this->logger = $logger;
-    }
-
-
-    /**
-     * Set configuration
-     * @param array $config Configuration properties
-     */
-    public function setConfig($config) {
-        // Create institution instances
-        foreach ($config['sources'] as $source) {
-            $this->institutions[$source['id']] = new Institution($source);
-        }
+        $this->config = $config;
     }
 
 
@@ -67,7 +55,7 @@ class SearchEngine {
     private function getResultsFromSources(SearchQuery $query) {
         // Instantiate and configure providers
         $providers = [];
-        foreach ($this->institutions as $institution) {
+        foreach ($this->config->getInstitutions() as $institution) {
             $providerType = $institution->getProvider()['type'];
             $provider = new $providerType($this->logger);
             $provider->configure($institution, $query);

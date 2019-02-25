@@ -20,7 +20,7 @@
 
 namespace App\RosettaBundle\DependencyInjection;
 
-use App\RosettaBundle\Service\SearchEngine;
+use App\RosettaBundle\Service\ConfigEngine;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
@@ -41,7 +41,7 @@ class RosettaExtension extends Extension {
         $config = $this->processConfiguration($configuration, $configs);
 
         // Send config to service
-        $rosettaDefinition = $container->getDefinition(SearchEngine::class);
+        $rosettaDefinition = $container->getDefinition(ConfigEngine::class);
         $rosettaDefinition->addMethodCall('setConfig', [$config]);
     }
 

@@ -30,6 +30,11 @@ class Configuration implements ConfigurationInterface {
 
         $treeBuilder->getRootNode()
             ->children()
+                ->arrayNode('opac')
+                    ->children()
+                        ->scalarNode('app_name')->end()
+                    ->end()
+                ->end()
                 ->arrayNode('sources')
                     ->arrayPrototype()
                         ->children()
