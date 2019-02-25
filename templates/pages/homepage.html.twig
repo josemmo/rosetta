@@ -1,0 +1,63 @@
+{#
+ # Rosetta - A free (libre) Integrated Library System for the 21st century.
+ # Copyright (C) 2019 José M. Moreno <josemmo@pm.me>
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # This program is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program. If not, see <https://www.gnu.org/licenses/>.
+ #}
+
+
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="search-container">
+        <div class="search-wrapper">
+            {# App logo #}
+            <h1>{{ rosetta.opac.app_name }}</h1>
+            <form>
+                <div class="row no-gutters">
+                    <div class="col">
+                        {# Search bar #}
+                        <div class="input-group">
+                            <input type="text" name="q" class="form-control" autofocus>
+                            <div class="input-group-append">
+                                <select class="custom-select">
+                                    <option selected>All catalog</option>
+                                    <option value="uned">UNED</option>
+                                    <option value="ub">UB</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto d-none d-md-block">
+                        {# Search action button #}
+                        <button class="btn btn-primary m-0 ml-2" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+            {# Useful links #}
+            {# TODO: add links #}
+            <div class="useful-links row">
+                <div class="col">
+                    <a href="#">Explore catalog</a>
+                </div>
+                <div class="col">
+                    <a href="#">Latest acquisitions</a>
+                </div>
+                <div class="col">
+                    <a href="#">Trending searches</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

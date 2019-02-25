@@ -1,4 +1,5 @@
-/*!
+<?php
+/**
  * Rosetta - A free (libre) Integrated Library System for the 21st century.
  * Copyright (C) 2019 José M. Moreno <josemmo@pm.me>
  *
@@ -17,10 +18,18 @@
  */
 
 
-// Dependencies
-@import "./_theme";
-@import "./bootstrap";
+namespace App\Controller;
 
-// App components
-@import "./base";
-@import "./homepage";
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
+
+class MainController extends AbstractController {
+
+    /**
+     * @Route("/", name="homepage")
+     */
+    public function homepage() {
+        return $this->render("pages/homepage.html.twig");
+    }
+
+}
