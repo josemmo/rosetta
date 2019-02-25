@@ -34,7 +34,7 @@ class SearchQueryTest extends TestCase {
      */
     public function testTokenization() {
         $defaultQuery = (string) new SearchQuery(self::DEFAULT_QUERY);
-        $this->assertEquals('("*" EQUALS "%test%")', $defaultQuery);
+        $this->assertEquals('(("title" EQUALS "%test%") OR ("author" EQUALS "%test%"))', $defaultQuery);
 
         $simpleQuery = (string) new SearchQuery(self::SIMPLE_QUERY);
         $simpleExpected = '((("title" EQUALS "%la galatea%") AND ("author" EQUALS "%cervantes%")) AND ' .
@@ -55,7 +55,7 @@ class SearchQueryTest extends TestCase {
      */
     public function testRpn() {
         $defaultQuery = (new SearchQuery(self::DEFAULT_QUERY))->toRpn();
-        $this->assertEquals('@attr 1=1016 "%test%"', $defaultQuery);
+        $this->assertEquals('@or @attr 1=4 "%test%" @attr 1=1003 "%test%"', $defaultQuery);
 
         $simpleQuery = (new SearchQuery(self::SIMPLE_QUERY))->toRpn();
         $simpleExpected = '@and @and @attr 1=4 "%la galatea%" ' .
