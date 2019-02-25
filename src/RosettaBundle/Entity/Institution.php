@@ -26,7 +26,7 @@ namespace App\RosettaBundle\Entity;
 class Institution {
     private $id;
     private $name;
-    private $description;
+    private $shortName;
     private $provider;
 
     /**
@@ -36,7 +36,7 @@ class Institution {
     public function __construct(array $props) {
         $this->id = $props['id'];
         $this->name = $props['name'];
-        $this->description = $props['description'];
+        $this->shortName = $props['short_name'];
         $this->provider = $props['provider'];
     }
 
@@ -59,11 +59,11 @@ class Institution {
 
 
     /**
-     * Get description
-     * @return string Description
+     * Get short name
+     * @return string Short name
      */
-    public function getDescription(): string {
-        return $this->description;
+    public function getShortName(): string {
+        return $this->shortName;
     }
 
 

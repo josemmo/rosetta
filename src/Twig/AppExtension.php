@@ -27,14 +27,31 @@ use Twig\Extension\GlobalsInterface;
 class AppExtension extends AbstractExtension implements GlobalsInterface {
     private $config;
 
+    /**
+     * AppExtension constructor
+     * @param ConfigEngine $config Configuration Engine
+     */
     public function __construct(ConfigEngine $config) {
         $this->config = $config;
     }
 
+
+    /**
+     * @inheritdoc
+     */
     public function getGlobals() {
+        $institutions = [];
+        foreach ($this->config->getInstitutions() as $institution) {
+            $institutions[$institution->getId()] = [
+                "name" => $institution->getName(),
+                "short_name" => $institution->getShortName()
+            ];
+        }
+
         return [
             "rosetta" => [
-                "opac" => $this->config->getOpacSettings()
+                "opac" => $this->config->getOpacSettings(),
+                "institutions" => $institutions
             ]
         ];
     }

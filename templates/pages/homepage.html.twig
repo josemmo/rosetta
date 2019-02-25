@@ -31,10 +31,11 @@
                         <div class="input-group">
                             <input type="text" name="q" class="form-control" autofocus>
                             <div class="input-group-append">
-                                <select class="custom-select">
+                                <select name="i" class="custom-select">
                                     <option selected>All catalog</option>
-                                    <option value="uned">UNED</option>
-                                    <option value="ub">UB</option>
+                                    {% for code, item in rosetta.institutions %}
+                                        <option value="{{ code }}">{{ item.short_name }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>

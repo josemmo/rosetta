@@ -8,16 +8,16 @@ rosetta:
     # Multiple sources are allowed.
     sources:
         - id: 'uned'
-          name: 'UNED'
-          description: 'Universidad Nacional de Educación a Distancia'
+          name: 'Universidad Nacional de Educación a Distancia'
+          short_name: 'UNED'
           provider:
               type: App\RosettaBundle\Provider\Z3950
               preset: 'unicorn'
               url: 'biblio15.uned.es:2200/unicorn'
 
         - id: 'ub'
-          name: 'UB'
-          description: 'Universitat de Barcelona'
+          name: 'Universitat de Barcelona'
+          short_name: 'UB'
           provider:
               type: App\RosettaBundle\Provider\Z3950
               preset: 'millenium'

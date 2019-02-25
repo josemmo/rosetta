@@ -40,7 +40,7 @@ class Configuration implements ConfigurationInterface {
                         ->children()
                             ->scalarNode('id')->end()
                             ->scalarNode('name')->end()
-                            ->scalarNode('description')->end()
+                            ->scalarNode('short_name')->end()
                             ->arrayNode('provider')
                                 ->children()
                                     ->scalarNode('type')->end()
