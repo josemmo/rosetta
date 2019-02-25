@@ -185,13 +185,15 @@ class Z3950 extends AbstractProvider {
         }
 
         // Get holdings data
-        foreach ($rawResult->holdings->holding as $holdingData) {
-            $location = new PhysicalLocation(); // TODO
-            $holding = new Holding($holdingData->callNumber, $location);
-            // TODO: set lent until / loanable
+        if (!empty($rawResult->holdings)) {
+            foreach ($rawResult->holdings->holding as $holdingData) {
+                $location = new PhysicalLocation(); // TODO
+                $holding = new Holding($holdingData->callNumber, $location);
+                // TODO: set lent until / loanable
 
-            $target = $editions[''] ?? reset($editions);
-            $target->addHolding($holding);
+                $target = $editions[''] ?? reset($editions);
+                $target->addHolding($holding);
+            }
         }
 
         return $book;
