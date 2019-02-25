@@ -17,4 +17,4 @@
  */
 
 // Load dependencies
-import '../css/app.scss'
+import '../scss/app.scss'
