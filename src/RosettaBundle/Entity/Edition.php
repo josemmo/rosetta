@@ -33,6 +33,19 @@ class Edition extends AbstractWork {
     private $language = null;
 
     /**
+     * Edition constructor
+     * @param string   $isbn
+     * @param int|null $volume
+     * @throws \Nicebooks\Isbn\Exception\InvalidIsbnException
+     * @throws \Nicebooks\Isbn\Exception\IsbnNotConvertibleException
+     */
+    public function __construct(string $isbn, ?int $volume) {
+        $this->setIsbn($isbn);
+        $this->setVolume($volume);
+    }
+
+
+    /**
      * Get OCLC number
      * @return string|null OCLC number
      */

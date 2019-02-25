@@ -21,10 +21,10 @@
 namespace App\RosettaBundle\Entity;
 
 class Book extends AbstractEntity {
-    private $title;
+    private $title = null;
     private $subtitle = null;
     private $description = null;
-    private $note = null;
+    private $notes = [];
     private $editions = [];
 
     /**
@@ -32,7 +32,7 @@ class Book extends AbstractEntity {
      * @param string      $title    Title
      * @param string|null $subtitle Subtitle
      */
-    public function __construct(string $title, ?string $subtitle=null) {
+    public function __construct(?string $title=null, ?string $subtitle=null) {
         $this->setTitle($title);
         $this->setSubtitle($subtitle);
     }
@@ -40,7 +40,7 @@ class Book extends AbstractEntity {
 
     /**
      * Get title
-     * @return string Title
+     * @return string|null Title
      */
     public function getTitle() {
         return $this->title;
@@ -49,10 +49,10 @@ class Book extends AbstractEntity {
 
     /**
      * Set title
-     * @param  string $title Title
-     * @return Book          This instance
+     * @param  string|null $title Title
+     * @return Book               This instance
      */
-    public function setTitle(string $title): self {
+    public function setTitle(?string $title): self {
         $this->title = $title;
         return $this;
     }
@@ -99,21 +99,21 @@ class Book extends AbstractEntity {
 
 
     /**
-     * Get note
-     * @return string|null Note
+     * Get notes
+     * @return string[] Note
      */
-    public function getNote(): ?string {
-        return $this->note;
+    public function getNotes(): array {
+        return $this->notes;
     }
 
 
     /**
      * Set note
-     * @param  string|null $note Note
-     * @return Book              This instance
+     * @param  string $note Note
+     * @return Book         This instance
      */
-    public function setNote(?string $note): self {
-        $this->note = $note;
+    public function addNote(string $note): self {
+        $this->notes[] = $note;
         return $this;
     }
 
