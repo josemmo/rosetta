@@ -34,7 +34,6 @@ class SearchQuery {
         "subject" => 62,
         "abstract" => 62,
         "author" => 1003,
-        "*" => 1016,
         "publisher" => 1018,
         "editor" => 1020
     ];
@@ -213,7 +212,11 @@ class SearchQuery {
      * @throws \Exception
      */
     private function getRegularSearchTokens($query) {
-        return ['*', self::OP_EQUALS, "%$query%"];
+        return [
+            new self(['title', self::OP_EQUALS, "%$query%"]),
+            self::OP_OR,
+            new self(['author', self::OP_EQUALS, "%$query%"])
+        ];
     }
 
 
