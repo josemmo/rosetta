@@ -42,6 +42,7 @@ abstract class AbstractWork extends AbstractEntity {
      */
     public function addHolding(Holding $holding): self {
         $this->holdings[] = $holding;
+        return $this;
     }
 
 }

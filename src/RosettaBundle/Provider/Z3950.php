@@ -170,13 +170,13 @@ class Z3950 extends AbstractProvider {
                     }
                 }
                 if (empty($relation)) {
-                    $this->logger->warning("Unknown author relation", [
+                    $this->logger->warning("Unknown author relation, assuming author", [
                         "marc21" => $df->asXML()
                     ]);
-                } else {
-                    $person = new Person(trim($firstName), trim($lastName));
-                    $book->addRelation(new Relation($person, $relation, $book));
+                    $relation = Relation::IS_AUTHOR_OF;
                 }
+                $person = Person::of($firstName, $lastName);
+                $book->addRelation(new Relation($person, $relation, $book));
             }
         }
 
@@ -191,7 +191,9 @@ class Z3950 extends AbstractProvider {
             $location = new PhysicalLocation(); // TODO
             $holding = new Holding($holdingData->callNumber, $location);
             // TODO: set lent until / loanable
-            // TODO: save instance
+
+            $target = $editions[''] ?? reset($editions);
+            $target->addHolding($holding);
         }
 
         return $book;

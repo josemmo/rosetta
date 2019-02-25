@@ -21,11 +21,31 @@
 namespace App\RosettaBundle\Entity;
 
 class Person extends AbstractEntity {
+    private static $cache = [];
+
     private $firstname;
     private $lastname;
     private $description = null;
     private $birthDate = null;
     private $deathDate = null;
+
+    /**
+     * Static constructor
+     * @param  string $firstname Firstname
+     * @param  string $lastname  Lastname
+     * @return Person            Person instance
+     */
+    public static function of(string $firstname, string $lastname) {
+        $firstname = trim($firstname, ' ,.');
+        $lastname = trim($lastname, ' ,.');
+        $tag = mb_strtolower("$lastname,$firstname");
+
+        if (isset(self::$cache[$tag])) return self::$cache[$tag];
+        $instance = new self($firstname, $lastname);
+        self::$cache[$tag] = $instance;
+        return $instance;
+    }
+
 
     /**
      * Person constructor

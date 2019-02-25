@@ -29,7 +29,7 @@ use App\RosettaBundle\Entity\Relation;
 class Marc21Parser {
 
     /**
-     * Extract volume
+     * Extract volume from ISBN or legal deposit
      * @param  string   $input Input string
      * @return int|null        Volume number
      */
