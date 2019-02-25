@@ -33,7 +33,7 @@ class Marc21Parser {
      * @param  string   $input Input string
      * @return int|null        Volume number
      */
-    public function extractVolume(string $input): ?int {
+    public static function extractVolume(string $input): ?int {
         preg_match('/.+ \(.+\. ([0-9]+)\)/', $input, $matches);
         return empty($matches) ? null : intval($matches[1]);
     }
@@ -44,7 +44,7 @@ class Marc21Parser {
      * @param  string   $relatorCode MARC21 relator code
      * @return int|null              Relation ID
      */
-    public function getRelation(string $relatorCode): ?int {
+    public static function getRelation(string $relatorCode): ?int {
         $relatorCode = preg_replace('/[^a-z]/', '', $relatorCode);
         switch ($relatorCode) {
             case 'ed':

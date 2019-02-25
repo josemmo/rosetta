@@ -37,7 +37,6 @@ class Z3950 extends AbstractProvider {
     ];
 
     private static $executed = false;
-    private static $parser = null;
 
     private $config;
     private $conn;
@@ -47,7 +46,6 @@ class Z3950 extends AbstractProvider {
      */
     public function configure(Institution $institution, SearchQuery $query) {
         self::$executed = false; // Reset flag for all Z39.50 instances
-        if (is_null(self::$parser)) self::$parser = new Marc21Parser();
 
         // Fill presets for configuration
         $config = $institution->getProvider();
@@ -129,11 +127,11 @@ class Z3950 extends AbstractProvider {
         foreach ($biblio->datafield as $df) {
             $tag = (string) $df['tag'];
             if ($tag == "017") { /* Legal deposit */
-                $volume = self::$parser->extractVolume($df->subfield);
+                $volume = Marc21Parser::extractVolume($df->subfield);
                 $legalDeposits[$volume] = explode('(', $df->subfield, 2)[0];
             } elseif ($tag == "020") { /* Editions */
                 $isbn = explode(' ', $df->subfield, 2)[0];
-                $volume = self::$parser->extractVolume($df->subfield);
+                $volume = Marc21Parser::extractVolume($df->subfield);
                 try {
                     $editions[$volume] = new Edition($isbn, $volume);
                 } catch (\Exception $e) {
@@ -165,7 +163,7 @@ class Z3950 extends AbstractProvider {
                             list($lastName, $firstName) = explode(',', $subfield);
                             break;
                         case 'e':
-                            $relation = self::$parser->getRelation($subfield);
+                            $relation = Marc21Parser::getRelation($subfield);
                             break;
                     }
                 }

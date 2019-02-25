@@ -20,6 +20,8 @@
 
 namespace App\RosettaBundle\Entity;
 
+use App\RosettaBundle\Utils\TextUtils;
+
 class Person extends AbstractEntity {
     private static $cache = [];
 
@@ -39,6 +41,7 @@ class Person extends AbstractEntity {
         $firstname = trim($firstname, ' ,.');
         $lastname = trim($lastname, ' ,.');
         $tag = mb_strtolower("$lastname,$firstname");
+        $tag = TextUtils::removeAccents($tag);
 
         if (isset(self::$cache[$tag])) return self::$cache[$tag];
         $instance = new self($firstname, $lastname);
