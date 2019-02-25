@@ -16,10 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+body, html {
+    width: 100%;
+    height: 100%;
+}
 
-// Dependencies
-@import "./_theme";
-@import "./bootstrap";
-
-// App components
-@import "./base";
+body {
+    color: $primary-color;
+    background-color: $background-color;
+}

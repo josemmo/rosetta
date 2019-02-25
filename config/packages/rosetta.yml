@@ -2,7 +2,7 @@ rosetta:
     # OPAC configuration variables.
     # This section is used to customize the appearance of the Web UI.
     opac:
-        app_name: 'Bibliozambrano'
+        app_name: 'Rosetta Demo'
 
     # Primary search sources to be used to get available materials from a given library.
     # Multiple sources are allowed.

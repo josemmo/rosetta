@@ -16,10 +16,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Override custom variables
+$input-btn-focus-color: transparent;
+$btn-focus-width: 1px;
 
-// Dependencies
-@import "./_theme";
-@import "./bootstrap";
-
-// App components
-@import "./base";
+// Import Bootstrap
+@import "~bootstrap/scss/bootstrap";
