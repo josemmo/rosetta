@@ -17,6 +17,8 @@
  */
 
 
-$primary-color: #333;
-$secondary-color: #636363;
+$default-color: #333;
+$accent-color: #d70b23;
 $background-color: #f7f7f7;
+
+$muted-color: lighten($default-color, 30%);
