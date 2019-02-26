@@ -160,7 +160,7 @@ class Z3950 extends AbstractProvider {
                 foreach ($df->subfield as $subfield) {
                     switch ($subfield['code']) {
                         case 'a':
-                            list($lastName, $firstName) = explode(',', $subfield);
+                            list($lastName, $firstName) = explode(',', "$subfield,");
                             break;
                         case 'e':
                             $relation = Marc21Parser::getRelation($subfield);
@@ -179,9 +179,15 @@ class Z3950 extends AbstractProvider {
         }
 
         // Add book editions
-        foreach ($editions as $volume=>$edition) {
-            $edition->setLegalDeposit($legalDeposits[$volume] ?? null);
+        if (empty($editions)) {
+            $edition = new Edition();
             $book->addEdition($edition);
+            $editions[] = $edition;
+        } else {
+            foreach ($editions as $volume=>$edition) {
+                $edition->setLegalDeposit($legalDeposits[$volume] ?? null);
+                $book->addEdition($edition);
+            }
         }
 
         // Get holdings data
@@ -192,6 +198,10 @@ class Z3950 extends AbstractProvider {
                 // TODO: set lent until / loanable
 
                 $target = $editions[''] ?? reset($editions);
+                if ($target === false) {
+                    var_dump($rawResult->asXML());
+                    exit;
+                }
                 $target->addHolding($holding);
             }
         }

@@ -34,12 +34,12 @@ class Edition extends AbstractWork {
 
     /**
      * Edition constructor
-     * @param string   $isbn
-     * @param int|null $volume
+     * @param  string|null $isbn   ISBN 10 or ISBN 13
+     * @param  int|null    $volume Volume number
      * @throws \Nicebooks\Isbn\Exception\InvalidIsbnException
      * @throws \Nicebooks\Isbn\Exception\IsbnNotConvertibleException
      */
-    public function __construct(string $isbn, ?int $volume) {
+    public function __construct(?string $isbn=null, ?int $volume=null) {
         $this->setIsbn($isbn);
         $this->setVolume($volume);
     }
@@ -84,15 +84,20 @@ class Edition extends AbstractWork {
 
     /**
      * Set ISBN
-     * @param  string  $isbn ISBN 10 or ISBN 13
-     * @return Edition       This instance
+     * @param  string|null  $isbn ISBN 10 or ISBN 13
+     * @return Edition            This instance
      * @throws \Nicebooks\Isbn\Exception\InvalidIsbnException
      * @throws \Nicebooks\Isbn\Exception\IsbnNotConvertibleException
      */
-    public function setIsbn(string $isbn): self {
-        $isbnInstance = Isbn::of($isbn);
-        $this->isbn10 = $isbnInstance->to10()->format();
-        $this->isbn13 = $isbnInstance->to13()->format();
+    public function setIsbn(?string $isbn): self {
+        if (is_null($isbn)) {
+            $this->isbn10 = null;
+            $this->isbn13 = null;
+        } else {
+            $isbnInstance = Isbn::of($isbn);
+            $this->isbn10 = $isbnInstance->to10()->format();
+            $this->isbn13 = $isbnInstance->to13()->format();
+        }
         return $this;
     }
 
