@@ -35,3 +35,7 @@ $btn-focus-width: 1px;
         box-shadow: none;
     }
 }
+.input-group-append .custom-select {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}

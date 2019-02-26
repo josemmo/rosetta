@@ -15,32 +15,25 @@
  # You should have received a copy of the GNU General Public License
  # along with this program. If not, see <https://www.gnu.org/licenses/>.
  #}
-
-
-{% extends 'base.html.twig' %}
-
-{% block content %}
-    <div class="search-container">
-        <div class="search-wrapper">
-            {# App logo #}
-            <h1>{{ rosetta.opac.app_name }}</h1>
-
+<form class="search-form" action="{{ path('search') }}" method="GET">
+    <div class="row no-gutters">
+        <div class="col">
             {# Search bar #}
-            {% include 'components/search-bar.html.twig' %}
-
-            {# Useful links #}
-            {# TODO: add links #}
-            <div class="useful-links row">
-                <div class="col">
-                    <a href="#">Explore catalog</a>
-                </div>
-                <div class="col">
-                    <a href="#">Latest acquisitions</a>
-                </div>
-                <div class="col">
-                    <a href="#">Trending searches</a>
+            <div class="input-group">
+                <input type="text" name="q" value="{{ app.request.get('q') }}" class="form-control" autofocus>
+                <div class="input-group-append">
+                    <select name="i" class="custom-select">
+                        <option value="" selected>All catalog</option>
+                        {% for code, item in rosetta.institutions %}
+                            <option value="{{ code }}">{{ item.short_name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
         </div>
+        <div class="col-auto d-none d-md-block">
+            {# Search action button #}
+            <button class="btn btn-primary m-0 ml-2" type="submit">Search</button>
+        </div>
     </div>
-{% endblock %}
+</form>
