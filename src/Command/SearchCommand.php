@@ -25,6 +25,7 @@ use App\RosettaBundle\Utils\SearchQuery;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SearchCommand extends Command {
@@ -40,11 +41,20 @@ class SearchCommand extends Command {
         $this->setDescription('Performs a search directly from the terminal');
         $this->setHelp('Performs a search of the provided query using the Rosetta Engine');
         $this->addArgument('query', InputArgument::REQUIRED, 'The terms to search.');
+        $this->addOption(
+            'databases',
+            'db',
+            InputOption::VALUE_OPTIONAL,
+            'Institutions (sources) IDs to fetch results from separated by commas',
+            null
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
         $query = $input->getArgument('query');
-        $res = $this->engine->search(new SearchQuery($query));
+        $databases = $input->getOption('databases');
+        $databases = empty($databases) ? null : explode(',', $databases);
+        $res = $this->engine->search(new SearchQuery($query), $databases);
 
         $output->writeln("Found " . count($res) . " results:");
         $output->write(print_r($res, true));

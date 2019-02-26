@@ -36,11 +36,12 @@ class SearchEngine {
 
     /**
      * Run new search
-     * @param  SearchQuery      $query Search query
-     * @return AbstractEntity[]        Search results
+     * @param  SearchQuery      $query     Search query
+     * @param  string[]|null    $databases Institution IDs to fetch results from, null for any
+     * @return AbstractEntity[]            Search results
      */
-    public function search(SearchQuery $query) {
-        $results = $this->getResultsFromSources($query);
+    public function search(SearchQuery $query, ?array $databases=null) {
+        $results = $this->getResultsFromSources($query, $databases);
         // TODO: clean results
         // TODO: merge results
         return $results;
@@ -49,17 +50,20 @@ class SearchEngine {
 
     /**
      * Get results from sources
-     * @param  SearchQuery      $query Search query
-     * @return AbstractEntity[]        Search results
+     * @param  SearchQuery      $query     Search query
+     * @param  string[]|null    $databases Institution IDs to fetch results from, null for any
+     * @return AbstractEntity[]            Search results
      */
-    private function getResultsFromSources(SearchQuery $query) {
+    private function getResultsFromSources(SearchQuery $query, ?array $databases=null) {
         // Instantiate and configure providers
         $providers = [];
         foreach ($this->config->getInstitutions() as $institution) {
-            $providerType = $institution->getProvider()['type'];
-            $provider = new $providerType($this->logger);
-            $provider->configure($institution, $query);
-            $providers[] = $provider;
+            if (empty($databases) || in_array($institution->getId(), $databases)) {
+                $providerType = $institution->getProvider()['type'];
+                $provider = new $providerType($this->logger);
+                $provider->configure($institution, $query);
+                $providers[] = $provider;
+            }
         }
 
         // Execute search
