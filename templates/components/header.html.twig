@@ -42,9 +42,13 @@
     </nav>
 
     {# Institution leading #}
-    <section class="leading" style="background-image: url({{ rosetta_asset('uned-leading') }})">
+    {% set leading = '' %}
+    {% if rosetta.context.leading is not empty %}
+        {% set leading = ' style="background-image:url(' ~ rosetta.context.leading ~ ')"' %}
+    {% endif %}
+    <section class="leading"{{ leading|raw }}>
         <div class="container">
-            <img class="logo" src="{{ rosetta_asset('uned-logo') }}">
+            {% include 'components/logo.html.twig' %}
         </div>
         <div class="bottom-bar">
             <div class="container">

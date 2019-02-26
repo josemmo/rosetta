@@ -22,6 +22,7 @@ namespace App\Twig;
 
 use App\RosettaBundle\Service\ConfigEngine;
 use Symfony\Component\Asset\Packages;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
 use Twig\TwigFunction;
@@ -32,16 +33,19 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
 
     private $config;
     private $packages;
+    private $request;
     private $assetsCache = [];
 
     /**
      * AppExtension constructor
-     * @param ConfigEngine $config   Configuration Engine
-     * @param Packages     $packages Packages Service
+     * @param ConfigEngine $config       Configuration Engine
+     * @param Packages     $packages     Packages Service
+     * @param RequestStack $requestStack Request Service
      */
-    public function __construct(ConfigEngine $config, Packages $packages) {
+    public function __construct(ConfigEngine $config, Packages $packages, RequestStack $requestStack) {
         $this->config = $config;
         $this->packages = $packages;
+        $this->request = $requestStack->getCurrentRequest();
         $this->buildAssetsCache();
     }
 
@@ -67,6 +71,7 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
      * @inheritdoc
      */
     public function getGlobals() {
+        // Get institutions
         $institutions = [];
         foreach ($this->config->getInstitutions() as $institution) {
             $institutions[$institution->getId()] = [
@@ -75,10 +80,20 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
             ];
         }
 
+        // Get request context
+        $i = $this->request->get('i');
+        if (!isset($institutions[$i])) $i = null;
+        $context = [
+            "institution" => $i,
+            "logo" => $this->getRosettaAsset("$i-logo", "logo"),
+            "leading" => $this->getRosettaAsset("$i-leading", "leading"),
+        ];
+
         return [
             "rosetta" => [
                 "opac" => $this->config->getOpacSettings(),
-                "institutions" => $institutions
+                "institutions" => $institutions,
+                "context" => $context
             ]
         ];
     }
@@ -96,11 +111,14 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
 
     /**
      * Get Rosetta custom asset path from name
-     * @param  string      $tag Asset name (extension is optional)
-     * @return string|null      Asset path or null if doesn't exist
+     * @param  string      $tag      Asset name (extension is optional)
+     * @param  string|null $fallback Fallback asset name in case the first doesn't exist
+     * @return string|null           Asset path or null if doesn't exist
      */
-    public function getRosettaAsset(string $tag) {
-        if (!isset($this->assetsCache[$tag])) return null;
+    public function getRosettaAsset(string $tag, string $fallback=null) {
+        if (!isset($this->assetsCache[$tag])) {
+            return is_null($fallback) ? null : $this->getRosettaAsset($fallback);
+        }
         return $this->packages->getUrl($this->assetsCache[$tag]);
     }
 

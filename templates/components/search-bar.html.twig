@@ -23,9 +23,10 @@
                 <input type="text" name="q" value="{{ app.request.get('q') }}" class="form-control" autofocus>
                 <div class="input-group-append">
                     <select name="i" class="custom-select">
-                        <option value="" selected>All catalog</option>
+                        <option value=""{{ rosetta.context.institution ? '' : ' selected' }}>All catalog</option>
                         {% for code, item in rosetta.institutions %}
-                            <option value="{{ code }}">{{ item.short_name }}</option>
+                            {% set selected = (code == rosetta.context.institution) ? ' selected' : '' %}
+                            <option value="{{ code }}"{{ selected }}>{{ item.short_name }}</option>
                         {% endfor %}
                     </select>
                 </div>
