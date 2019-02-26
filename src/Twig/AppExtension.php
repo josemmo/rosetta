@@ -21,18 +21,45 @@
 namespace App\Twig;
 
 use App\RosettaBundle\Service\ConfigEngine;
+use Symfony\Component\Asset\Packages;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
+use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension implements GlobalsInterface {
+    const ASSETS_DIR =  __DIR__ . "/../../assets/custom/";
+    const ASSETS_URL = "build/images/";
+
     private $config;
+    private $packages;
+    private $assetsCache = [];
 
     /**
      * AppExtension constructor
-     * @param ConfigEngine $config Configuration Engine
+     * @param ConfigEngine $config   Configuration Engine
+     * @param Packages     $packages Packages Service
      */
-    public function __construct(ConfigEngine $config) {
+    public function __construct(ConfigEngine $config, Packages $packages) {
         $this->config = $config;
+        $this->packages = $packages;
+        $this->buildAssetsCache();
+    }
+
+
+    /**
+     * Build assets cache
+     */
+    private function buildAssetsCache() {
+        $handle = opendir(self::ASSETS_DIR);
+        if ($handle === false) return;
+
+        while (false !== ($entry = readdir($handle))) {
+            if ($entry == "." || $entry == ".." || $entry == ".gitignore") continue;
+            $filename = pathinfo($entry, PATHINFO_FILENAME);
+            $this->assetsCache[$filename] = self::ASSETS_URL . $entry;
+        }
+
+        closedir($handle);
     }
 
 
@@ -54,6 +81,27 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
                 "institutions" => $institutions
             ]
         ];
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function getFunctions() {
+        return [
+            new TwigFunction('rosetta_asset', [$this, 'getRosettaAsset'])
+        ];
+    }
+
+
+    /**
+     * Get Rosetta custom asset path from name
+     * @param  string      $tag Asset name (extension is optional)
+     * @return string|null      Asset path or null if doesn't exist
+     */
+    public function getRosettaAsset(string $tag) {
+        if (!isset($this->assetsCache[$tag])) return null;
+        return $this->packages->getUrl($this->assetsCache[$tag]);
     }
 
 }

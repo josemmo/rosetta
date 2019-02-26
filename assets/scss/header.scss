@@ -53,6 +53,17 @@ header .top-links {
 
 /* LEADING */
 header .leading {
-    height: 200px;
-    background: $accent-color;
+    padding: 5rem 0 0;
+    background: $accent-color no-repeat center;
+    background-size: cover;
+
+    .logo {
+        max-height: 80px;
+    }
+
+    .bottom-bar {
+        margin-top: 2rem;
+        padding: 0.8rem 0;
+        background: rgba(0,0,0,0.6);
+    }
 }

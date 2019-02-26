@@ -42,7 +42,18 @@
     </nav>
 
     {# Institution leading #}
-    <section class="leading">
-        {# TODO #}
+    <section class="leading" style="background-image: url({{ rosetta_asset('uned-leading') }})">
+        <div class="container">
+            <img class="logo" src="{{ rosetta_asset('uned-logo') }}">
+        </div>
+        <div class="bottom-bar">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-7 col">
+                        {% include 'components/search-bar.html.twig' %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </header>
