@@ -1,4 +1,4 @@
-/*
+/*!
  * Rosetta - A free (libre) Integrated Library System for the 21st century.
  * Copyright (C) 2019 José M. Moreno <josemmo@pm.me>
  *
@@ -17,6 +17,42 @@
  */
 
 
-// Load dependencies
-import '../scss/app.scss'
-import 'bootstrap/js/src/collapse'
+/* TOP LINKS */
+header .top-links {
+    color: rgba($background-color, 0.8);
+    background-color: $foreground-color;
+    font-size: 0.8em;
+    text-transform: uppercase;
+
+    .nav-link {
+        color: inherit;
+        transition: color ease-in-out 0.1s;
+
+        &:hover {
+            color: $background-color !important;
+        }
+    }
+
+    .navbar-toggler {
+        padding: 0 0 0.2rem;
+        border: none;
+
+        .navbar-toggler-icon {
+            width: 1em;
+            height: 1em;
+        }
+    }
+}
+
+@include media-breakpoint-up(md) {
+    header .top-links {
+        padding: 0;
+    }
+}
+
+
+/* LEADING */
+header .leading {
+    height: 200px;
+    background: $accent-color;
+}

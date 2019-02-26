@@ -1,4 +1,5 @@
-/*
+<?php
+/**
  * Rosetta - A free (libre) Integrated Library System for the 21st century.
  * Copyright (C) 2019 José M. Moreno <josemmo@pm.me>
  *
@@ -17,6 +18,18 @@
  */
 
 
-// Load dependencies
-import '../scss/app.scss'
-import 'bootstrap/js/src/collapse'
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
+
+class SearchController extends AbstractController {
+
+    /**
+     * @Route("/search", name="search")
+     */
+    public function homepage() {
+        return $this->render("pages/search.html.twig");
+    }
+
+}

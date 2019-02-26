@@ -17,8 +17,8 @@
  */
 
 
-$default-color: #333;
-$accent-color: #d70b23;
+$foreground-color: #333;
 $background-color: #f7f7f7;
+$accent-color: #d70b23;
 
-$muted-color: lighten($default-color, 30%);
+$muted-color: lighten($foreground-color, 30%);
