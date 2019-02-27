@@ -15,23 +15,10 @@
  # You should have received a copy of the GNU General Public License
  # along with this program. If not, see <https://www.gnu.org/licenses/>.
  #}
-
-
-{% extends 'base.html.twig' %}
-
-{% block content %}
-    {# Header #}
-    {% include 'components/header.html.twig' %}
-
-    {# Search results #}
-    <main role="main" class="container py-3">
-        <div class="row no-gutters">
-            {% for i in 0..20 %}
-                <div class="col-6 col-md-2">
-                    {% include 'components/search-result.html.twig' %}
-                </div>
-            {% endfor %}
-        </div>
-        <div class="spinner mt-5"></div>
-    </main>
-{% endblock %}
+<div class="search-result">
+    <div class="cover-wrapper">
+        <a href="#" class="cover" style="background-image:url(https://loremflickr.com/290/400/book,cover/all/?lock={{ loop.index }})"></a>
+    </div>
+    <a href="#" class="title">Inteligencia artificial: ejercicios resueltos</a>
+    <span class="subtitle">Holger Billhardt</span>
+</div>
