@@ -21,10 +21,21 @@
 namespace App\RosettaBundle\Service;
 
 use App\RosettaBundle\Entity\Database;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class ConfigEngine {
+    private $request;
     private $opac;
     private $databases = [];
+
+    /**
+     * ConfigEngine constructor
+     * @param RequestStack $requestStack Request Stack Service
+     */
+    public function __construct(RequestStack $requestStack) {
+        $this->request = $requestStack->getCurrentRequest();
+    }
+
 
     /**
      * Set configuration
@@ -47,6 +58,16 @@ class ConfigEngine {
      */
     public function getOpacSettings() {
         return $this->opac;
+    }
+
+
+    /**
+     * Get current database from context
+     * @return Database|null Database instance or null for all catalog
+     */
+    public function getCurrentDatabase(): ?Database {
+        $dbId = $this->request->get('d');
+        return $this->databases[$dbId] ?? null;
     }
 
 

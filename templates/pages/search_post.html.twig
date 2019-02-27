@@ -15,10 +15,10 @@
  # You should have received a copy of the GNU General Public License
  # along with this program. If not, see <https://www.gnu.org/licenses/>.
  #}
-<div class="search-result">
-    <div class="cover-wrapper">
-        <a href="#" class="cover" style="background-image:url(https://loremflickr.com/290/400/book,cover/all/?lock={{ loop.index }})"></a>
-    </div>
-    <a href="#" class="title">{{ entity.title }}</a>
-    <span class="subtitle">{{ entity.authors[0].fullname }}</span>
+<div class="row no-gutters">
+    {% for entity in results %}
+        <div class="col-6 col-md-2">
+            {% include 'components/search-result.html.twig' with {'entity': entity, 'loop': loop} only %}
+        </div>
+    {% endfor %}
 </div>

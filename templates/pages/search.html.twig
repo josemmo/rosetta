@@ -24,14 +24,7 @@
     {% include 'components/header.html.twig' %}
 
     {# Search results #}
-    <main role="main" class="container py-3">
-        <div class="row no-gutters">
-            {% for i in 0..20 %}
-                <div class="col-6 col-md-2">
-                    {% include 'components/search-result.html.twig' %}
-                </div>
-            {% endfor %}
-        </div>
+    <main role="main" class="container py-3" data-awaiting-search>
         <div class="spinner mt-5"></div>
     </main>
 {% endblock %}

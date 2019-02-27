@@ -22,7 +22,6 @@ namespace App\Twig;
 
 use App\RosettaBundle\Service\ConfigEngine;
 use Symfony\Component\Asset\Packages;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
 use Twig\TwigFunction;
@@ -33,19 +32,16 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
 
     private $config;
     private $packages;
-    private $request;
     private $assetsCache = [];
 
     /**
      * AppExtension constructor
-     * @param ConfigEngine $config       Configuration Engine
-     * @param Packages     $packages     Packages Service
-     * @param RequestStack $requestStack Request Service
+     * @param ConfigEngine $config   Configuration Engine
+     * @param Packages     $packages Packages Service
      */
-    public function __construct(ConfigEngine $config, Packages $packages, RequestStack $requestStack) {
+    public function __construct(ConfigEngine $config, Packages $packages) {
         $this->config = $config;
         $this->packages = $packages;
-        $this->request = $requestStack->getCurrentRequest();
         $this->buildAssetsCache();
     }
 
@@ -81,8 +77,8 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
         }
 
         // Get request context
-        $dbId = $this->request->get('d');
-        if (!isset($databases[$dbId])) $dbId = null;
+        $db = $this->config->getCurrentDatabase();
+        $dbId = empty($db) ? null : $db->getId();
         $context = [
             "db" => $dbId,
             "logo" => $this->getRosettaAsset("$dbId-logo", "logo"),

@@ -20,15 +20,36 @@
 
 namespace App\Controller;
 
+use App\RosettaBundle\Service\ConfigEngine;
+use App\RosettaBundle\Service\SearchEngine;
+use App\RosettaBundle\Utils\SearchQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class SearchController extends AbstractController {
 
     /**
+     * @Route("/search", methods={"POST"}, name="search_post")
+     */
+    public function getResults(Request $request, ConfigEngine $config, SearchEngine $engine) {
+        // Get query and database
+        $query = new SearchQuery($request->get('q'));
+        $db = $config->getCurrentDatabase();
+        $dbIds = empty($db) ? null : [$db->getId()];
+
+        // Render results
+        $results = $engine->search($query, $dbIds);
+        return $this->render("pages/search_post.html.twig", [
+            "results" => $results
+        ]);
+    }
+
+
+    /**
      * @Route("/search", name="search")
      */
-    public function homepage() {
+    public function search() {
         return $this->render("pages/search.html.twig");
     }
 

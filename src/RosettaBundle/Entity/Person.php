@@ -102,6 +102,15 @@ class Person extends AbstractEntity {
 
 
     /**
+     * Get fullname
+     * @return string Fullname
+     */
+    public function getFullname(): string {
+        return $this->getFirstname() . " " . $this->getLastname();
+    }
+
+
+    /**
      * Get description
      * @return string|null Description
      */

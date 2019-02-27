@@ -17,12 +17,18 @@
  */
 
 
-// Load dependencies
-import '../scss/app.scss'
-import 'bootstrap/js/src/collapse'
+import $ from 'jquery'
 
-// Require custom assets
-require.context('../custom', true, /\.(jpe?g|png|svg|gif|bmp)$/i)
+const SEARCH_ATTR = 'data-awaiting-search'
 
-// Load app components
-import './search'
+$(() => {
+    // Get search container from DOM
+    const $container = $(`main[${SEARCH_ATTR}]`)
+    if ($container.length !== 1) return
+    $container.removeAttr(SEARCH_ATTR)
+
+    // Fetch results from server
+    $.post(document.location.href).done((res) => {
+        $container.html(res)
+    })
+})
