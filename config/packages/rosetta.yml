@@ -7,6 +7,12 @@ rosetta:
     # Primary search sources to be used to get available materials from a given library.
     # Multiple sources are allowed.
     databases:
+        - id: 'uva'
+          name: 'Universidad de Valladolid'
+          short_name: 'UVa'
+          provider:
+              type: App\RosettaBundle\Provider\Innopac
+              url: 'http://almena.uva.es/search/a?searchtype=Y&searcharg={{query}}&SORT=D'
         - id: 'uned'
           name: 'Universidad Nacional de Educación a Distancia'
           short_name: 'UNED'

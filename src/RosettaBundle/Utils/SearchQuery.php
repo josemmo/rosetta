@@ -37,6 +37,11 @@ class SearchQuery {
         "publisher" => 1018,
         "editor" => 1020
     ];
+    const INNOPAC_CODES = [
+        "title" => "t",
+        "subject" => "s",
+        "author" => "a"
+    ];
 
     private static $isbnTools = null;
 
@@ -244,6 +249,29 @@ class SearchQuery {
 
         $rpn = implode(' ', $rpn);
         return $rpn;
+    }
+
+
+    /**
+     * To INNOPAC search query
+     * @return string INNOPAC query
+     */
+    public function toInnopac(): string {
+        $res = [];
+
+        if ($this->operand == self::OP_AND || $this->operand == self::OP_OR) {
+            $res[] = "(" . $this->left->toInnopac() . ")";
+            $res[] = ($this->operand == self::OP_AND) ? " and " : " or ";
+            $res[] = "(" . $this->right->toInnopac() . ")";
+        } else {
+            $code = self::INNOPAC_CODES[$this->left] ?? null;
+            if (!empty($code)) $res[] = "$code:";
+            $subject = str_replace("%", "", $this->right);
+            $res[] = '"' . addslashes($subject) . '"';
+        }
+
+        $res = implode('', $res);
+        return $res;
     }
 
 
