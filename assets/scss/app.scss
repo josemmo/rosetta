@@ -18,10 +18,13 @@
 
 
 // Dependencies
+@import "~bourbon/core/_bourbon";
 @import "./_theme";
 @import "./bootstrap";
+@import "./base";
 
 // App components
-@import "./base";
-@import "./header";
-@import "./homepage";
+@import "components/header";
+
+// App pages
+@import "pages/homepage";

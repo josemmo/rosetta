@@ -26,7 +26,7 @@ header .top-links {
 
     .nav-link {
         color: inherit;
-        transition: color ease-in-out 0.1s;
+        @include prefixer(transition, color ease-in-out 0.1s, ("webkit", "moz", "o"));
 
         &:hover {
             color: $background-color !important;
