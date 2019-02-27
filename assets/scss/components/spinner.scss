@@ -17,15 +17,21 @@
  */
 
 
-// Dependencies
-@import "~bourbon/core/_bourbon";
-@import "./_theme";
-@import "./bootstrap";
-@import "./base";
+.spinner {
+    display: block;
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto;
+    border: solid 0.2rem rgba($accent-color, 0.1);
+    border-right-color: $accent-color;
+    @include prefixer(border-radius, 50%, ("webkit", "moz"));
+    @include prefixer(animation, spinner-anim linear infinite 0.8s, ("webkit", "moz", "o"));
+}
 
-// App components
-@import "components/header";
-@import "components/spinner";
-
-// App pages
-@import "pages/homepage";
+@mixin spinner-anim {
+    0%    { @include prefixer(transform, rotate(0deg),   ("webkit", "moz", "o")) }
+    100%  { @include prefixer(transform, rotate(360deg), ("webkit", "moz", "o")) }
+}
+@-webkit-keyframes spinner-anim { @include spinner-anim }
+@-moz-keyframes    spinner-anim { @include spinner-anim }
+@keyframes         spinner-anim { @include spinner-anim }
