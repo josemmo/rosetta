@@ -6,7 +6,7 @@ rosetta:
 
     # Primary search sources to be used to get available materials from a given library.
     # Multiple sources are allowed.
-    sources:
+    databases:
         - id: 'uned'
           name: 'Universidad Nacional de Educación a Distancia'
           short_name: 'UNED'

@@ -20,11 +20,11 @@
 
 namespace App\RosettaBundle\Service;
 
-use App\RosettaBundle\Entity\Institution;
+use App\RosettaBundle\Entity\Database;
 
 class ConfigEngine {
     private $opac;
-    private $institutions = [];
+    private $databases = [];
 
     /**
      * Set configuration
@@ -34,9 +34,9 @@ class ConfigEngine {
         // Save OPAC settings
         $this->opac = $config['opac'];
 
-        // Create institution instances
-        foreach ($config['sources'] as $source) {
-            $this->institutions[$source['id']] = new Institution($source);
+        // Create database instances
+        foreach ($config['databases'] as $source) {
+            $this->databases[$source['id']] = new Database($source);
         }
     }
 
@@ -51,11 +51,11 @@ class ConfigEngine {
 
 
     /**
-     * Get institutions
-     * @return Institution[] Institutions
+     * Get databases
+     * @return Database[] Databases
      */
-    public function getInstitutions(): array {
-        return $this->institutions;
+    public function getDatabases(): array {
+        return $this->databases;
     }
 
 }

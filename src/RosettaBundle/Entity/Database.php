@@ -21,17 +21,17 @@
 namespace App\RosettaBundle\Entity;
 
 /**
- * An institution is a class representation of a source extracted from Rosetta configuration.
+ * A database is a class representation of a source extracted from Rosetta configuration.
  */
-class Institution {
+class Database {
     private $id;
     private $name;
     private $shortName;
     private $provider;
 
     /**
-     * Institution constructor
-     * @param array $props Institution properties
+     * Database constructor
+     * @param array $props Database properties
      */
     public function __construct(array $props) {
         $this->id = $props['id'];

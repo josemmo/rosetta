@@ -21,7 +21,7 @@
 namespace App\RosettaBundle\Provider;
 
 use App\RosettaBundle\Entity\AbstractEntity;
-use App\RosettaBundle\Entity\Institution;
+use App\RosettaBundle\Entity\Database;
 use App\RosettaBundle\Utils\SearchQuery;
 use Psr\Log\LoggerInterface;
 
@@ -37,10 +37,10 @@ abstract class AbstractProvider {
      * Configure provider
      * This method will be called immediately after the instantiation of the provider.
      *
-     * @param Institution $institution Institution to fetch configuration from
-     * @param SearchQuery $query       Search query
+     * @param Database    $database Database to fetch configuration from
+     * @param SearchQuery $query    Search query
      */
-    public abstract function configure(Institution $institution, SearchQuery $query);
+    public abstract function configure(Database $database, SearchQuery $query);
 
 
     /**

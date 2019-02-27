@@ -37,7 +37,7 @@ class SearchEngine {
     /**
      * Run new search
      * @param  SearchQuery      $query     Search query
-     * @param  string[]|null    $databases Institution IDs to fetch results from, null for any
+     * @param  string[]|null    $databases Database IDs to fetch results from, null for any
      * @return AbstractEntity[]            Search results
      */
     public function search(SearchQuery $query, ?array $databases=null) {
@@ -51,17 +51,17 @@ class SearchEngine {
     /**
      * Get results from sources
      * @param  SearchQuery      $query     Search query
-     * @param  string[]|null    $databases Institution IDs to fetch results from, null for any
+     * @param  string[]|null    $databases Database IDs to fetch results from, null for any
      * @return AbstractEntity[]            Search results
      */
     private function getResultsFromSources(SearchQuery $query, ?array $databases=null) {
         // Instantiate and configure providers
         $providers = [];
-        foreach ($this->config->getInstitutions() as $institution) {
-            if (empty($databases) || in_array($institution->getId(), $databases)) {
-                $providerType = $institution->getProvider()['type'];
+        foreach ($this->config->getDatabases() as $db) {
+            if (empty($databases) || in_array($db->getId(), $databases)) {
+                $providerType = $db->getProvider()['type'];
                 $provider = new $providerType($this->logger);
-                $provider->configure($institution, $query);
+                $provider->configure($db, $query);
                 $providers[] = $provider;
             }
         }

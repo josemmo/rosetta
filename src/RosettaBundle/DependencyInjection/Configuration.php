@@ -35,7 +35,7 @@ class Configuration implements ConfigurationInterface {
                         ->scalarNode('app_name')->end()
                     ->end()
                 ->end()
-                ->arrayNode('sources')
+                ->arrayNode('databases')
                     ->arrayPrototype()
                         ->children()
                             ->scalarNode('id')->end()

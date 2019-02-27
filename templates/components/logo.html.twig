@@ -15,7 +15,7 @@
  # You should have received a copy of the GNU General Public License
  # along with this program. If not, see <https://www.gnu.org/licenses/>.
  #}
-{% set name = rosetta.institutions[rosetta.context.institution].name|default(rosetta.opac.app_name) %}
+{% set name = rosetta.databases[rosetta.context.db].name|default(rosetta.opac.app_name) %}
 {% if rosetta.context.logo is empty %}
     <h1>{{ name }}</h1>
 {% else %}

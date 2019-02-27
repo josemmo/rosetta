@@ -24,7 +24,7 @@ use App\RosettaBundle\Entity\AbstractEntity;
 use App\RosettaBundle\Entity\Book;
 use App\RosettaBundle\Entity\Edition;
 use App\RosettaBundle\Entity\Holding;
-use App\RosettaBundle\Entity\Institution;
+use App\RosettaBundle\Entity\Database;
 use App\RosettaBundle\Entity\Person;
 use App\RosettaBundle\Entity\PhysicalLocation;
 use App\RosettaBundle\Entity\Relation;
@@ -44,11 +44,11 @@ class Z3950 extends AbstractProvider {
     /**
      * @inheritdoc
      */
-    public function configure(Institution $institution, SearchQuery $query) {
+    public function configure(Database $database, SearchQuery $query) {
         self::$executed = false; // Reset flag for all Z39.50 instances
 
         // Fill presets for configuration
-        $config = $institution->getProvider();
+        $config = $database->getProvider();
         if (isset(self::PRESETS[$config['preset']])) {
             foreach (self::PRESETS[$config['preset']] as $prop=>$value) {
                 if (empty($config[$prop])) $config[$prop] = $value;
@@ -115,6 +115,8 @@ class Z3950 extends AbstractProvider {
      * Parse MARC21 result
      * @param  \SimpleXMLElement    $rawResult Result in MARC21 XML
      * @return AbstractEntity|false            Parsed result
+     * @throws \Nicebooks\Isbn\Exception\InvalidIsbnException
+     * @throws \Nicebooks\Isbn\Exception\IsbnNotConvertibleException
      */
     private function parseResult(\SimpleXMLElement $rawResult) {
         // TODO: for now, we assume all items are books
@@ -198,10 +200,6 @@ class Z3950 extends AbstractProvider {
                 // TODO: set lent until / loanable
 
                 $target = $editions[''] ?? reset($editions);
-                if ($target === false) {
-                    var_dump($rawResult->asXML());
-                    exit;
-                }
                 $target->addHolding($holding);
             }
         }

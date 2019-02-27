@@ -71,28 +71,28 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
      * @inheritdoc
      */
     public function getGlobals() {
-        // Get institutions
-        $institutions = [];
-        foreach ($this->config->getInstitutions() as $institution) {
-            $institutions[$institution->getId()] = [
-                "name" => $institution->getName(),
-                "short_name" => $institution->getShortName()
+        // Get databases
+        $databases = [];
+        foreach ($this->config->getDatabases() as $db) {
+            $databases[$db->getId()] = [
+                "name" => $db->getName(),
+                "short_name" => $db->getShortName()
             ];
         }
 
         // Get request context
-        $i = $this->request->get('i');
-        if (!isset($institutions[$i])) $i = null;
+        $dbId = $this->request->get('d');
+        if (!isset($databases[$dbId])) $dbId = null;
         $context = [
-            "institution" => $i,
-            "logo" => $this->getRosettaAsset("$i-logo", "logo"),
-            "leading" => $this->getRosettaAsset("$i-leading", "leading"),
+            "db" => $dbId,
+            "logo" => $this->getRosettaAsset("$dbId-logo", "logo"),
+            "leading" => $this->getRosettaAsset("$dbId-leading", "leading"),
         ];
 
         return [
             "rosetta" => [
                 "opac" => $this->config->getOpacSettings(),
-                "institutions" => $institutions,
+                "databases" => $databases,
                 "context" => $context
             ]
         ];

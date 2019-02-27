@@ -45,7 +45,7 @@ class SearchCommand extends Command {
             'databases',
             'db',
             InputOption::VALUE_OPTIONAL,
-            'Institutions (sources) IDs to fetch results from separated by commas',
+            'Databases IDs to fetch results from separated by commas',
             null
         );
     }
