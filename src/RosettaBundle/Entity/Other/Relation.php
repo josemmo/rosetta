@@ -18,7 +18,9 @@
  */
 
 
-namespace App\RosettaBundle\Entity;
+namespace App\RosettaBundle\Entity\Other;
+
+use App\RosettaBundle\Entity\AbstractEntity;
 
 class Relation {
     const IS_AUTHOR_OF = 1;

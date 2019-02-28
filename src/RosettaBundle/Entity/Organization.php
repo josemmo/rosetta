@@ -20,6 +20,8 @@
 
 namespace App\RosettaBundle\Entity;
 
+use App\RosettaBundle\Entity\Other\Relation;
+
 class Organization extends AbstractEntity {
     private $name;
     private $foundationDate = null;

@@ -20,6 +20,9 @@
 
 namespace App\RosettaBundle\Entity;
 
+use App\RosettaBundle\Entity\Other\Identifier;
+use App\RosettaBundle\Entity\Other\Relation;
+
 /**
  * An AbstractEntity is anything that can be found using the Search Engine.
  */

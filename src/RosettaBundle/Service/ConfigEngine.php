@@ -20,7 +20,7 @@
 
 namespace App\RosettaBundle\Service;
 
-use App\RosettaBundle\Entity\Database;
+use App\RosettaBundle\Entity\Other\Database;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class ConfigEngine {

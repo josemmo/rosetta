@@ -20,7 +20,7 @@
 
 namespace App\RosettaBundle\Provider;
 
-use App\RosettaBundle\Entity\Database;
+use App\RosettaBundle\Entity\Other\Database;
 use App\RosettaBundle\Utils\SearchQuery;
 
 class Innopac extends AbstractProvider {

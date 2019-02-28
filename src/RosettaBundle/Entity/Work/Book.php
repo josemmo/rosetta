@@ -18,12 +18,12 @@
  */
 
 
-namespace App\RosettaBundle\Work\Entity;
+namespace App\RosettaBundle\Entity\Work;
 
 use App\RosettaBundle\Entity\AbstractWork;
-use App\RosettaBundle\Entity\Identifier;
 use App\RosettaBundle\Entity\Organization;
-use App\RosettaBundle\Entity\Relation;
+use App\RosettaBundle\Entity\Other\Identifier;
+use App\RosettaBundle\Entity\Other\Relation;
 use Nicebooks\Isbn\Isbn;
 
 class Book extends AbstractWork {

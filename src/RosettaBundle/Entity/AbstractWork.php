@@ -20,6 +20,9 @@
 
 namespace App\RosettaBundle\Entity;
 
+use App\RosettaBundle\Entity\Other\Holding;
+use App\RosettaBundle\Entity\Other\Relation;
+
 /**
  * An AbstractWork is a type of AbstractEntity that can be consulted or borrowed.
  */

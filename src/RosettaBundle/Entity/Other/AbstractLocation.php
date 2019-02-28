@@ -18,18 +18,11 @@
  */
 
 
-namespace App\RosettaBundle\Entity;
+namespace App\RosettaBundle\Entity\Other;
 
-class PhysicalLocation extends AbstractLocation {
-
+/**
+ * An AbstractLocation represents a placeholder for a location.
+ */
+abstract class AbstractLocation {
     // TODO: not implemented
-
-    /**
-     * Get location type
-     * @return int Location type
-     */
-    public function getType(): int {
-        return self::PHYSICAL_LOCATION;
-    }
-
 }

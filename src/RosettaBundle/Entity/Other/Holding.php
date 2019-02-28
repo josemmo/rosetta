@@ -18,7 +18,7 @@
  */
 
 
-namespace App\RosettaBundle\Entity;
+namespace App\RosettaBundle\Entity\Other;
 
 class Holding {
     private $callNumber;

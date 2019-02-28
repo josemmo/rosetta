@@ -18,7 +18,7 @@
  */
 
 
-namespace App\RosettaBundle\Entity;
+namespace App\RosettaBundle\Entity\Other;
 
 /**
  * A database is a class representation of a source extracted from Rosetta configuration.

@@ -20,52 +20,18 @@
 
 namespace App\RosettaBundle\Entity;
 
-use App\RosettaBundle\Utils\TextUtils;
-
 class Person extends AbstractEntity {
-    private static $cache = [];
-
-    private $firstname;
-    private $lastname;
+    private $firstname = null;
+    private $lastname = null;
     private $description = null;
     private $birthDate = null;
     private $deathDate = null;
 
     /**
-     * Static constructor
-     * @param  string $firstname Firstname
-     * @param  string $lastname  Lastname
-     * @return static            Person instance
-     */
-    public static function of(string $firstname, string $lastname) {
-        $firstname = trim($firstname, ' ,.');
-        $lastname = trim($lastname, ' ,.');
-        $tag = mb_strtolower("$lastname,$firstname");
-        $tag = TextUtils::removeAccents($tag);
-
-        if (isset(self::$cache[$tag])) return self::$cache[$tag];
-        $instance = new self($firstname, $lastname);
-        self::$cache[$tag] = $instance;
-        return $instance;
-    }
-
-
-    /**
-     * Person constructor
-     * @param string $firstname Firstname
-     * @param string $lastname  Lastname
-     */
-    public function __construct(string $firstname, string $lastname) {
-        $this->setFirstname($firstname);
-        $this->setLastname($lastname);
-    }
-
-
-    /**
      * Get firstname
-     * @return string Firstname
+     * @return string|null Firstname
      */
-    public function getFirstname(): string {
+    public function getFirstname(): ?string {
         return $this->firstname;
     }
 
@@ -83,9 +49,9 @@ class Person extends AbstractEntity {
 
     /**
      * Get lastname
-     * @return string Lastname
+     * @return string|null Lastname
      */
-    public function getLastname(): string {
+    public function getLastname(): ?string {
         return $this->lastname;
     }
 
@@ -106,7 +72,7 @@ class Person extends AbstractEntity {
      * @return string Full name
      */
     public function getName(): string {
-        return $this->getFirstname() . " " . $this->getLastname();
+        return implode(" ", array_filter([$this->firstname, $this->lastname]));
     }
 
 

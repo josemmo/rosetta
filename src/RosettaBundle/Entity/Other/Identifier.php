@@ -18,14 +18,41 @@
  */
 
 
-namespace App\RosettaBundle\Entity;
+namespace App\RosettaBundle\Entity\Other;
 
-/**
- * An AbstractLocation represents a placeholder for a location.
- */
-abstract class AbstractLocation {
-    const PHYSICAL_LOCATION = 1;
-    const DIGITAL_LOCATION = 2;
+class Identifier {
+    const ISBN_10 = 1;
+    const ISBN_13 = 2;
+    const OCLC = 3;
 
-    public abstract function getType(): int;
+    private $type;
+    private $id;
+
+    /**
+     * Identifier constructor
+     * @param int    $type Type
+     * @param string $id   ID
+     */
+    public function __construct(int $type, string $id) {
+        $this->type = $type;
+        $this->id = $id;
+    }
+
+
+    /**
+     * Get type
+     * @return string Type
+     */
+    public function getType(): string {
+        return $this->type;
+    }
+
+
+    /**
+     * Get ID
+     * @return int ID
+     */
+    public function getId(): int {
+        return $this->id;
+    }
 }
