@@ -36,8 +36,8 @@ class Organization extends AbstractEntity {
 
     /**
      * Set name
-     * @param  string       $name Name
-     * @return Organization       This instance
+     * @param  string $name Name
+     * @return static       This instance
      */
     public function setName(string $name): self {
         $this->name = $name;
@@ -56,7 +56,7 @@ class Organization extends AbstractEntity {
 
     /**
      * @param \DateTime|null $foundationDate Foundation date
-     * @return Organization                  This instance
+     * @return static                        This instance
      */
     public function setFoundationDate(?\DateTime $foundationDate): self {
         $this->foundationDate = $foundationDate;
@@ -75,8 +75,8 @@ class Organization extends AbstractEntity {
 
     /**
      * Set website
-     * @param  string       $website Website
-     * @return Organization          This instance
+     * @param  string $website Website
+     * @return static          This instance
      */
     public function setWebsite(?string $website): self {
         $this->website = $website;
@@ -89,14 +89,14 @@ class Organization extends AbstractEntity {
      * @return Person[] Founders
      */
     public function getFounders(): array {
-        return $this->getRelated(Relation::IS_FOUNDER_OF);
+        return $this->getRelatedOfType(Relation::IS_FOUNDER_OF);
     }
 
 
     /**
      * Add founder
-     * @param  Person       $founder Founder
-     * @return Organization          This instance
+     * @param  Person $founder Founder
+     * @return static          This instance
      */
     public function addFounder(Person $founder): self {
         $this->addRelation(new Relation($founder, Relation::IS_FOUNDER_OF, $this));

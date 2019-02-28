@@ -35,7 +35,7 @@ class Person extends AbstractEntity {
      * Static constructor
      * @param  string $firstname Firstname
      * @param  string $lastname  Lastname
-     * @return Person            Person instance
+     * @return static            Person instance
      */
     public static function of(string $firstname, string $lastname) {
         $firstname = trim($firstname, ' ,.');
@@ -73,7 +73,7 @@ class Person extends AbstractEntity {
     /**
      * Set firstname
      * @param  string $firstname Firstname
-     * @return Person            This instance
+     * @return static            This instance
      */
     public function setFirstname(string $firstname): self {
         $this->firstname = $firstname;
@@ -93,7 +93,7 @@ class Person extends AbstractEntity {
     /**
      * Set lastname
      * @param  string $lastname Lastname
-     * @return Person           This instance
+     * @return static           This instance
      */
     public function setLastname(string $lastname): self {
         $this->lastname = $lastname;
@@ -102,10 +102,10 @@ class Person extends AbstractEntity {
 
 
     /**
-     * Get fullname
-     * @return string Fullname
+     * Get full name
+     * @return string Full name
      */
-    public function getFullname(): string {
+    public function getName(): string {
         return $this->getFirstname() . " " . $this->getLastname();
     }
 
@@ -122,7 +122,7 @@ class Person extends AbstractEntity {
     /**
      * Set description
      * @param  string|null $description Description
-     * @return Person                   This instance
+     * @return static                   This instance
      */
     public function setDescription(?string $description): self {
         $this->description = $description;
@@ -142,7 +142,7 @@ class Person extends AbstractEntity {
     /**
      * Set birth date
      * @param  \DateTime|null $birthDate Birth date
-     * @return Person                    This instance
+     * @return static                    This instance
      */
     public function setBirthDate(?\DateTime $birthDate): self {
         $this->birthDate = $birthDate;
@@ -162,7 +162,7 @@ class Person extends AbstractEntity {
     /**
      * Set death date
      * @param  \DateTime|null $deathDate Death date
-     * @return Person                    This instance
+     * @return static                    This instance
      */
     public function setDeathDate(?\DateTime $deathDate): self {
         $this->deathDate = $deathDate;

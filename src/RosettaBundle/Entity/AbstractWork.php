@@ -24,7 +24,91 @@ namespace App\RosettaBundle\Entity;
  * An AbstractWork is a type of AbstractEntity that can be consulted or borrowed.
  */
 abstract class AbstractWork extends AbstractEntity {
+    private $title = null;
+    private $legalDeposits = [];
+    private $pubDate = null;
+    private $languages = [];
     private $holdings = [];
+
+    /**
+     * Set title
+     * @return string|null Title
+     */
+    public function getTitle(): ?string {
+        return $this->title;
+    }
+
+
+    /**
+     * Set title
+     * @param  string $title Title
+     * @return static        This instance
+     */
+    public function setTitle(string $title): self {
+        $this->title = $title;
+        return $this;
+    }
+
+
+    /**
+     * Get legal deposits
+     * @return string[] Legal deposits
+     */
+    public function getLegalDeposit(): array {
+        return $this->legalDeposits;
+    }
+
+
+    /**
+     * Add legal deposit
+     * @param  string $legalDeposit Legal deposit
+     * @return static               This instance
+     */
+    public function addLegalDeposit(string $legalDeposit): self {
+        $this->legalDeposits[] = $legalDeposit;
+        return $this;
+    }
+
+
+    /**
+     * Get publication date
+     * @return \DateTime|null Publication date
+     */
+    public function getPubDate(): ?\DateTime {
+        return $this->pubDate;
+    }
+
+
+    /**
+     * Set publication date
+     * @param  \DateTime|null $pubDate Publication date
+     * @return static                  This instance
+     */
+    public function setPubDate(?\DateTime $pubDate): self {
+        $this->pubDate = $pubDate;
+        return $this;
+    }
+
+
+    /**
+     * Get languages
+     * @return string[] Two-letter language codes according to ISO 639-1
+     */
+    public function getLanguages(): array {
+        return $this->languages;
+    }
+
+
+    /**
+     * Add language
+     * @param  string $language Two-letter language code according to ISO 639-1
+     * @return static           This instance
+     */
+    public function addLanguage(string $language): self {
+        $this->languages[] = $language;
+        return $this;
+    }
+
 
     /**
      * Get work holdings
@@ -37,11 +121,40 @@ abstract class AbstractWork extends AbstractEntity {
 
     /**
      * Add holding
-     * @param  Holding      $holding Holding instance
-     * @return AbstractWork          This instance
+     * @param  Holding $holding Holding instance
+     * @return static           This instance
      */
     public function addHolding(Holding $holding): self {
         $this->holdings[] = $holding;
+        return $this;
+    }
+
+
+    /**
+     * Get authors
+     * @return Person[] Work authors
+     */
+    public function getAuthors(): array {
+        return $this->getRelatedOfType(Relation::IS_AUTHOR_OF);
+    }
+
+
+    /**
+     * Get main author (creator)
+     * @return static|null Creator
+     */
+    public function getCreator() {
+        return $this->getFirstRelatedOfType(Relation::IS_AUTHOR_OF);
+    }
+
+
+    /**
+     * Add author
+     * @param  Person $author Author
+     * @return static         This instance
+     */
+    public function addAuthor(Person $author): self {
+        $this->addRelation(new Relation($author, Relation::IS_AUTHOR_OF, $this));
         return $this;
     }
 

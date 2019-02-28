@@ -46,7 +46,7 @@ class Relation {
 
     /**
      * Get type of relation
-     * @return int
+     * @return int Type of relation
      */
     public function getType(): int {
         return $this->type;
@@ -55,7 +55,7 @@ class Relation {
 
     /**
      * Get origin entity
-     * @return AbstractEntity
+     * @return AbstractEntity Origin entity
      */
     public function getFrom() {
         return $this->from;
@@ -64,7 +64,7 @@ class Relation {
 
     /**
      * Get destination entity
-     * @return AbstractEntity
+     * @return AbstractEntity Destination entity
      */
     public function getTo() {
         return $this->to;

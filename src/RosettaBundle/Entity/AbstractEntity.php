@@ -24,7 +24,61 @@ namespace App\RosettaBundle\Entity;
  * An AbstractEntity is anything that can be found using the Search Engine.
  */
 abstract class AbstractEntity {
+    private $imageUrl = null;
+    private $identifiers = [];
     private $relations = [];
+
+    /**
+     * Get image URL
+     * @return string|null Image URL
+     */
+    public function getImageUrl(): ?string {
+        return $this->imageUrl;
+    }
+
+
+    /**
+     * Set image URL
+     * @param  string|null $imageUrl Image URL
+     * @return static                This instance
+     */
+    public function setImageUrl(?string $imageUrl): self {
+        $this->imageUrl = $imageUrl;
+    }
+
+
+    /**
+     * Get identifiers
+     * @return Identifier[] Entity identifiers
+     */
+    public function getIdentifiers(): array {
+        return $this->identifiers;
+    }
+
+
+    /**
+     * Add identifier
+     * @param  Identifier $identifier Identifier
+     * @return static                 This instance
+     */
+    public function addIdentifier(Identifier $identifier): self {
+        $this->identifiers[] = $identifier;
+    }
+
+
+    /**
+     * Get entity IDs of given type
+     * @param  int      $type Identifier type
+     * @return string[]       Entity IDs
+     */
+    public function getIdsOfType(int $type): array {
+        $res = [];
+        foreach ($this->identifiers as $identifier) {
+            if ($identifier->getType() == $type) $res[] = $identifier->getId();
+        }
+        return $res;
+    }
+
 
     /**
      * Get entity relations
@@ -37,8 +91,8 @@ abstract class AbstractEntity {
 
     /**
      * Add relation
-     * @param  Relation       $relation Relation
-     * @return AbstractEntity           This instance
+     * @param  Relation $relation Relation
+     * @return static             This instance
      */
     public function addRelation(Relation $relation): self {
         $this->relations[] = $relation;
@@ -47,47 +101,11 @@ abstract class AbstractEntity {
 
 
     /**
-     * Remove relation
-     * @param  Relation       $target Relation to remove
-     * @return AbstractEntity         This instance
+     * Get related entities of given type
+     * @param  int      $type Relation type
+     * @return static[]       Abstract Entities
      */
-    public function removeRelation(Relation $target): self {
-        foreach ($this->relations as $i=>$relation) {
-            if ($target === $relation) {
-                array_splice($this->relations, $i, 1);
-                break;
-            }
-        }
-        return $this;
-    }
-
-
-    /**
-     * Overwrite exiting relation of this type or create a new one if it doesn't exist
-     * @param  Relation       $relation Relation
-     * @return AbstractEntity           This instance
-     */
-    public function overwriteRelation(Relation $relation): self {
-        // Replace existing relation
-        foreach ($this->relations as $i=>$existingRelation) {
-            if ($existingRelation->getType() == $relation->getType()) {
-                $this->relations[$i] = $relation;
-                return $this;
-            }
-        }
-
-        // Create new relation if doesn't exist
-        $this->addRelation($relation);
-        return $this;
-    }
-
-
-    /**
-     * Get related entities for given type
-     * @param  int              $type Relation type
-     * @return AbstractEntity[]       Abstract Entities
-     */
-    public function getRelated(int $type): array {
+    public function getRelatedOfType(int $type): array {
         $res = [];
         foreach ($this->relations as $relation) {
             if ($relation->getType() == $type) $res[] = $relation->getOther($this);
@@ -97,11 +115,11 @@ abstract class AbstractEntity {
 
 
     /**
-     * Get first related entity for given type
-     * @param  int                 $type Relation type
-     * @return AbstractEntity|null       Abstract Entity
+     * Get first related entity of given type
+     * @param  int         $type Relation type
+     * @return static|null       Abstract Entity
      */
-    public function getFirstRelated(int $type) {
+    public function getFirstRelatedOfType(int $type) {
         foreach ($this->relations as $relation) {
             if ($relation->getType() == $type) return $relation->getOther($this);
         }

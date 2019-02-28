@@ -49,7 +49,7 @@ class Holding {
     /**
      * Set call number
      * @param  string  $callNumber Call number
-     * @return Holding             This instance
+     * @return static              This instance
      */
     public function setCallNumber(string $callNumber): self {
         $this->callNumber = $callNumber;
@@ -69,7 +69,7 @@ class Holding {
     /**
      * Set location
      * @param  AbstractLocation $location Holding location
-     * @return Holding                    This instance
+     * @return static                     This instance
      */
     public function setLocation(AbstractLocation $location): self {
         $this->location = $location;
@@ -89,7 +89,7 @@ class Holding {
     /**
      * Set loanable flag
      * @param  boolean $loanable Is loanable
-     * @return Holding           This instance
+     * @return static            This instance
      */
     public function setLoanable(bool $loanable): self {
         $this->loanable = $loanable;
@@ -109,7 +109,7 @@ class Holding {
     /**
      * Set lent until date
      * @param \DateTime|null $lentUntil Lent until date (null if available)
-     * @return Holding                  This instance
+     * @return static                   This instance
      */
     public function setLentUntil(?\DateTime $lentUntil): self {
         $this->lentUntil = $lentUntil;
