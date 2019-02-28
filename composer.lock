@@ -1374,16 +1374,16 @@
         },
         {
             "name": "nicebooks/isbn",
-            "version": "0.2.17",
+            "version": "0.2.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nicebooks-com/isbn.git",
-                "reference": "ffe5b9345311e70e5053a4d00833a9ead96e0b5a"
+                "reference": "4086af1010dc928fa706674a0f865950af8c18ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nicebooks-com/isbn/zipball/ffe5b9345311e70e5053a4d00833a9ead96e0b5a",
-                "reference": "ffe5b9345311e70e5053a4d00833a9ead96e0b5a",
+                "url": "https://api.github.com/repos/nicebooks-com/isbn/zipball/4086af1010dc928fa706674a0f865950af8c18ce",
+                "reference": "4086af1010dc928fa706674a0f865950af8c18ce",
                 "shasum": ""
             },
             "require": {
@@ -1413,7 +1413,7 @@
                 "book",
                 "books"
             ],
-            "time": "2019-02-06T10:51:21+00:00"
+            "time": "2019-02-27T11:11:50+00:00"
         },
         {
             "name": "ocramius/package-versions",
