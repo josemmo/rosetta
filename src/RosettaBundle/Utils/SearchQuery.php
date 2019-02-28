@@ -50,19 +50,41 @@ class SearchQuery {
     private $right = null;
 
     /**
+     * Static constructor
+     * @param  string|array $query Raw query string or query tokens
+     * @return SearchQuery         SearchQuery instance
+     */
+    public static function of($query): self {
+        try {
+            return new self($query);
+        } catch (\Exception $e) {
+            return self::getLiteralSearch($query);
+        }
+    }
+
+
+    /**
+     * Get tokens for literal search
+     * @param  string      $query Search query
+     * @return SearchQuery         SearchQuery instance
+     */
+    private static function getLiteralSearch(string $query): self {
+        return self::of(["any", self::OP_EQUALS, "%$query%"]);
+    }
+
+
+    /**
      * SearchQuery constructor
-     * @param  string|array $query  Raw query string or query tokens
-     * @param  boolean      $strict Whether to throw an exception or fix query if malformed
+     * @param  string|array $query Raw query string or query tokens
      * @throws \Exception
      */
-    public function __construct($query, $strict=false) {
+    public function __construct($query) {
         if (is_null(self::$isbnTools)) self::$isbnTools = new IsbnTools();
 
         // Get tokens array
         $tokens = is_array($query) ? $query : $this->tokenizeQuery($query);
         if (!is_array($tokens) || count($tokens) != 3) {
-            if ($strict) throw new \Exception("Malformed query string");
-            $tokens = $this->getRegularSearchTokens($query);
+            throw new \Exception("Malformed query string");
         }
 
         // Save tokens to this instance
@@ -100,7 +122,7 @@ class SearchQuery {
         }
 
         // Fallback to default search
-        return $this->getRegularSearchTokens($query);
+        throw new \Exception("Could not tokenize query");
     }
 
 
@@ -182,11 +204,23 @@ class SearchQuery {
         $tuple = $tokens[0];
         for ($i=0; $i<=count($tokens)-3; $i+=2) {
             $left = new self($tuple);
-            $operand = $tokens[$i+1];
+            $operand = $this->getLogicalOperand($tokens[$i+1]);
             $right = new self($tokens[$i+2]);
             $tuple = [$left, $operand, $right];
         }
         return $tuple;
+    }
+
+
+    /**
+     * Get logical operand
+     * @param  string     $input Raw operand
+     * @return string            Operand code
+     * @throws \Exception        Exception
+     */
+    private function getLogicalOperand(string $input) {
+        if ($input == self::OP_AND || $input == self::OP_OR) return $input;
+        throw new \Exception('Unexpected logical operand');
     }
 
 
@@ -211,44 +245,44 @@ class SearchQuery {
 
 
     /**
-     * Get tokens for regular (literal) search
-     * @param  string     $query Search query
-     * @return array             Tokens
-     * @throws \Exception
+     * Format ISBN
+     * @param  string $input ISBN
+     * @return string        Formatted ISBN
      */
-    private function getRegularSearchTokens($query) {
-        return [
-            new self(['title', self::OP_EQUALS, "%$query%"]),
-            self::OP_OR,
-            new self(['author', self::OP_EQUALS, "%$query%"])
-        ];
+    private function formatIsbn(string $input) {
+        try {
+            return self::$isbnTools->format($input);
+        } catch (\Exception $e) {
+            return $input;
+        }
     }
 
 
     /**
      * Query to RPN syntax
      * @return string RPN query
-     * @throws \Nicebooks\Isbn\Exception\InvalidIsbnException
      */
     public function toRpn(): string {
-        $rpn = [];
-
         if ($this->operand == self::OP_AND || $this->operand == self::OP_OR) {
-            $rpn[] = ($this->operand == self::OP_AND) ? "@and" : "@or";
-            $rpn[] = $this->left->toRpn();
-            $rpn[] = $this->right->toRpn();
-        } else {
-            $rpn[] = "@attr";
-            $rpn[] = "1=" . self::RPN_CODES[$this->left];
-            if ($this->left == "isbn") {
-                $rpn[] = '"' . self::$isbnTools->format($this->right) . '"';
-            } else {
-                $rpn[] = '"' . addslashes($this->right) . '"';
-            }
+            $res = ($this->operand == self::OP_AND) ? "@and" : "@or";
+            $res .= " " . $this->left->toRpn();
+            $res .= " " . $this->right->toRpn();
+            return $res;
         }
 
-        $rpn = implode(' ', $rpn);
-        return $rpn;
+        if ($this->left == "any") {
+            return self::of([
+                self::of(['title', self::OP_EQUALS, $this->right]),
+                self::OP_OR,
+                self::of(['author', self::OP_EQUALS, $this->right])
+            ])->toRpn();
+        }
+
+        $res = "@attr";
+        $res .= " 1=" . self::RPN_CODES[$this->left];
+        $subject = ($this->left == "isbn") ? $this->formatIsbn($this->right) : $this->right;
+        $res .= ' "' . addslashes($subject) . '"';
+        return $res;
     }
 
 

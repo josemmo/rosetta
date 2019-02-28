@@ -20,7 +20,6 @@
 
 namespace App\Command;
 
-use App\RosettaBundle\Service\SearchEngine;
 use App\RosettaBundle\Utils\SearchQuery;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -28,35 +27,36 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SearchCommand extends Command {
-    protected static $defaultName = "rosetta:search";
-    private $engine;
-
-    public function __construct(SearchEngine $engine) {
-        $this->engine = $engine;
-        parent::__construct();
-    }
+class QueryCommand extends Command {
+    protected static $defaultName = "rosetta:query";
 
     protected function configure() {
-        $this->setDescription('Performs a search directly from the terminal');
-        $this->setHelp('Performs a search of the provided query using the Rosetta Engine');
-        $this->addArgument('query', InputArgument::REQUIRED, 'The terms to search');
+        $this->setDescription('Interprets a query and outputs its internal representation');
+        $this->setHelp('Intended for debugging, this command shows the expected SearchQuery of an input');
+        $this->addArgument('query', InputArgument::REQUIRED, 'Query to parse');
         $this->addOption(
-            'databases',
-            'd',
+            'syntax',
+            's',
             InputOption::VALUE_OPTIONAL,
-            'Databases IDs to fetch results from separated by commas',
-            null
+            'Output syntax (string, rpn, etc.)',
+            ""
         );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
-        $query = $input->getArgument('query');
-        $databases = $input->getOption('databases');
-        $databases = empty($databases) ? null : explode(',', $databases);
-        $res = $this->engine->search(SearchQuery::of($query), $databases);
+        // Create instance of SearchQuery
+        $query = SearchQuery::of($input->getArgument('query'));
 
-        $output->writeln("Found " . count($res) . " results:");
-        $output->write(print_r($res, true));
+        // Get output syntax
+        $syntax = ucfirst($input->getOption('syntax'));
+        if (method_exists($query, "to$syntax")) {
+            $syntax = "to$syntax";
+        } else {
+            $syntax = "__toString";
+        }
+
+        // Send output
+        $output->writeln($query->{$syntax}());
     }
+
 }

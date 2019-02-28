@@ -34,7 +34,7 @@ class SearchController extends AbstractController {
      */
     public function getResults(Request $request, ConfigEngine $config, SearchEngine $engine) {
         // Get query and database
-        $query = new SearchQuery($request->get('q'));
+        $query = SearchQuery::of($request->get('q'));
         $db = $config->getCurrentDatabase();
         $dbIds = empty($db) ? null : [$db->getId()];
 

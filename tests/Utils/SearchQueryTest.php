@@ -30,18 +30,17 @@ class SearchQueryTest extends TestCase {
 
     /**
      * Test SearchQuery tokenization
-     * @throws \Exception
      */
     public function testTokenization() {
-        $defaultQuery = (string) new SearchQuery(self::DEFAULT_QUERY);
-        $this->assertEquals('(("title" EQUALS "%test%") OR ("author" EQUALS "%test%"))', $defaultQuery);
+        $defaultQuery = (string) SearchQuery::of(self::DEFAULT_QUERY);
+        $this->assertEquals('("any" EQUALS "%test%")', $defaultQuery);
 
-        $simpleQuery = (string) new SearchQuery(self::SIMPLE_QUERY);
+        $simpleQuery = (string) SearchQuery::of(self::SIMPLE_QUERY);
         $simpleExpected = '((("title" EQUALS "%la galatea%") AND ("author" EQUALS "%cervantes%")) AND ' .
                           '("publisher" EQUALS "Project Gutenberg"))';
         $this->assertEquals($simpleExpected, $simpleQuery);
 
-        $advancedQuery = (string) new SearchQuery(self::ADVANCED_QUERY);
+        $advancedQuery = (string) SearchQuery::of(self::ADVANCED_QUERY);
         $advancedExpected = '(("author" EQUALS "Cervantes, Miguel de") AND ' .
                             '(("title" EQUALS "%quijote%") OR ("title" EQUALS "la galatea")))';
         $this->assertEquals($advancedExpected, $advancedQuery);
@@ -50,22 +49,31 @@ class SearchQueryTest extends TestCase {
 
     /**
      * Test RPN query
-     * @throws \Nicebooks\Isbn\Exception\InvalidIsbnException
-     * @throws \Exception
      */
     public function testRpn() {
-        $defaultQuery = (new SearchQuery(self::DEFAULT_QUERY))->toRpn();
+        $defaultQuery = (SearchQuery::of(self::DEFAULT_QUERY))->toRpn();
         $this->assertEquals('@or @attr 1=4 "%test%" @attr 1=1003 "%test%"', $defaultQuery);
 
-        $simpleQuery = (new SearchQuery(self::SIMPLE_QUERY))->toRpn();
+        $simpleQuery = (SearchQuery::of(self::SIMPLE_QUERY))->toRpn();
         $simpleExpected = '@and @and @attr 1=4 "%la galatea%" ' .
                           '@attr 1=1003 "%cervantes%" @attr 1=1018 "Project Gutenberg"';
         $this->assertEquals($simpleExpected, $simpleQuery);
 
-        $advancedQuery = (new SearchQuery(self::ADVANCED_QUERY))->toRpn();
+        $advancedQuery = (SearchQuery::of(self::ADVANCED_QUERY))->toRpn();
         $advancedExpected = '@and @attr 1=1003 "Cervantes, Miguel de" ' .
                             '@or @attr 1=4 "%quijote%" @attr 1=4 "la galatea"';
         $this->assertEquals($advancedExpected, $advancedQuery);
+    }
+
+
+    /**
+     * Test malformed queries
+     */
+    public function testMalformedQueries() {
+        $input = '"this (isn\'t a valid:query))';
+        $expected = '("any" EQUALS ' . json_encode("%$input%", JSON_UNESCAPED_UNICODE) . ')';
+        $output = (string) SearchQuery::of($input);
+        $this->assertEquals($expected, $output);
     }
 
 }
