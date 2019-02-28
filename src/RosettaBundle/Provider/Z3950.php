@@ -37,6 +37,7 @@ class Z3950 extends AbstractProvider {
     ];
 
     private static $executed = false;
+    private static $maxTimeout = 0;
 
     private $config;
     private $conn;
@@ -68,6 +69,9 @@ class Z3950 extends AbstractProvider {
         yaz_range($conn, 1, $config['max_results']);
         yaz_search($conn, 'rpn', $query->toRpn());
         $this->conn = $conn;
+
+        // Update max timeout
+        if ($config['timeout'] > self::$maxTimeout) self::$maxTimeout = $config['timeout'];
     }
 
 
@@ -77,10 +81,11 @@ class Z3950 extends AbstractProvider {
     public function search() {
         if (self::$executed) return;
 
-        $waitConfig = array('timeout' => $this->config['timeout']);
+        $waitConfig = array('timeout' => self::$maxTimeout);
         yaz_wait($waitConfig);
 
         self::$executed = true;
+        self::$maxTimeout = 0;
     }
 
 
