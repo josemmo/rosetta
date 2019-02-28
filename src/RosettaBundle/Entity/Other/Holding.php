@@ -28,12 +28,11 @@ class Holding {
 
     /**
      * Holding constructor
-     * @param string           $callNumber Call number (pressmark)
-     * @param AbstractLocation $location   Holding location
+     * @param string $callNumber Call number (pressmark)
      */
-    public function __construct(string $callNumber, AbstractLocation $location) {
+    public function __construct(string $callNumber) {
         $this->setCallNumber($callNumber);
-        $this->setLocation($location);
+        //$this->setLocation($location); // TODO: uncomment when location classes are implemented
     }
 
 

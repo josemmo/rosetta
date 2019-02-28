@@ -18,10 +18,12 @@
  */
 
 
-namespace App\RosettaBundle\Entity;
+namespace App\RosettaBundle\Entity\Work;
 
+use App\RosettaBundle\Entity\AbstractEntity;
 use App\RosettaBundle\Entity\Other\Holding;
 use App\RosettaBundle\Entity\Other\Relation;
+use App\RosettaBundle\Entity\Person;
 
 /**
  * An AbstractWork is a type of AbstractEntity that can be consulted or borrowed.

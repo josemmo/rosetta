@@ -20,7 +20,6 @@
 
 namespace App\RosettaBundle\Entity\Work;
 
-use App\RosettaBundle\Entity\AbstractWork;
 use App\RosettaBundle\Entity\Organization;
 use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Entity\Other\Relation;
@@ -117,8 +116,8 @@ class Book extends AbstractWork {
     public function addIsbn(string $isbn): self {
         try {
             $isbnInstance = Isbn::of($isbn);
-            $isbn10 = $isbnInstance->to10()->format();
-            $isbn13 = $isbnInstance->to13()->format();
+            $isbn10 = str_replace('-', '', $isbnInstance->to10()->format());
+            $isbn13 = str_replace('-', '', $isbnInstance->to13()->format());
             $this->addIdentifier(new Identifier(Identifier::ISBN_10, $isbn10));
             $this->addIdentifier(new Identifier(Identifier::ISBN_13, $isbn13));
         } catch (\Exception $e) {}

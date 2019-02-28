@@ -20,15 +20,10 @@
 
 namespace App\RosettaBundle\Provider;
 
-use App\RosettaBundle\Entity\AbstractEntity;
-use App\RosettaBundle\Entity\Book;
-use App\RosettaBundle\Entity\Edition;
-use App\RosettaBundle\Entity\Holding;
-use App\RosettaBundle\Entity\Database;
-use App\RosettaBundle\Entity\Person;
-use App\RosettaBundle\Entity\PhysicalLocation;
-use App\RosettaBundle\Entity\Relation;
-use App\RosettaBundle\Utils\Marc21Parser;
+use App\RosettaBundle\Entity\Other\Database;
+use App\RosettaBundle\Entity\Other\Holding;
+use App\RosettaBundle\Entity\Work\AbstractWork;
+use App\RosettaBundle\Entity\Work\Book;
 use App\RosettaBundle\Utils\SearchQuery;
 
 class Z3950 extends AbstractProvider {
@@ -107,9 +102,10 @@ class Z3950 extends AbstractProvider {
         $hits = yaz_hits($this->conn);
         for ($r=1; $r<=min($this->config['max_results'], $hits); $r++) {
             $result = yaz_record($this->conn, $r, 'xml');
+            $result = preg_replace('/xmlns=".+"/', '', $result);
             $result = new \SimpleXMLElement($result);
             $parsedResult = $this->parseResult($result);
-            if (!empty($parsedResult)) $results[] = $parsedResult;
+            if (!is_null($parsedResult)) $results[] = $parsedResult;
         }
 
         return $results;
@@ -118,98 +114,66 @@ class Z3950 extends AbstractProvider {
 
     /**
      * Parse MARC21 result
-     * @param  \SimpleXMLElement    $rawResult Result in MARC21 XML
-     * @return AbstractEntity|false            Parsed result
-     * @throws \Nicebooks\Isbn\Exception\InvalidIsbnException
-     * @throws \Nicebooks\Isbn\Exception\IsbnNotConvertibleException
+     * @param  \SimpleXMLElement $rawResult Result in MARC21 XML
+     * @return AbstractWork|null            Parsed result
      */
     private function parseResult(\SimpleXMLElement $rawResult) {
-        // TODO: for now, we assume all items are books
-        $book = new Book();
-        $legalDeposits = [];
-        $editions = [];
+        $record = $rawResult->bibliographicRecord->record ?? $rawResult;
+        if (empty($record)) return null;
 
-        // Get bibliography data
-        $biblio = $rawResult->bibliographicRecord->record ?? $rawResult;
-        foreach ($biblio->datafield as $df) {
-            $tag = (string) $df['tag'];
-            if ($tag == "017") { /* Legal deposit */
-                $volume = Marc21Parser::extractVolume($df->subfield);
-                $legalDeposits[$volume] = explode('(', $df->subfield, 2)[0];
-            } elseif ($tag == "020") { /* Editions */
-                $isbn = explode(' ', $df->subfield, 2)[0];
-                $volume = Marc21Parser::extractVolume($df->subfield);
-                try {
-                    $editions[$volume] = new Edition($isbn, $volume);
-                } catch (\Exception $e) {
-                    $this->logger->error("Invalid ISBN", [
-                        "url" => $this->config['url'],
-                        "isbn" => $isbn
-                    ]);
-                }
-            } elseif ($tag == "245") { /* Title */
-                foreach ($df->subfield as $subfield) {
-                    switch ($subfield['code']) {
-                        case 'a':
-                            $book->setTitle($subfield);
-                            break;
-                        case 'b':
-                            $book->setSubtitle($subfield);
-                            break;
-                    }
-                }
-            } elseif ($tag == "500") { /* Notes */
-                $book->addNote($df->subfield);
-            } elseif ($tag == "100" || $tag == "700") { /* Authors */
-                $firstName = null;
-                $lastName = null;
-                $relation = Relation::IS_AUTHOR_OF;
-                foreach ($df->subfield as $subfield) {
-                    switch ($subfield['code']) {
-                        case 'a':
-                            list($lastName, $firstName) = explode(',', "$subfield,");
-                            break;
-                        case 'e':
-                            $relation = Marc21Parser::getRelation($subfield);
-                            break;
-                    }
-                }
-                if (empty($relation)) {
-                    $this->logger->warning("Unknown author relation, assuming author", [
-                        "marc21" => $df->asXML()
-                    ]);
-                    $relation = Relation::IS_AUTHOR_OF;
-                }
-                $person = Person::of($firstName, $lastName);
-                $book->addRelation(new Relation($person, $relation, $book));
-            }
-        }
-
-        // Add book editions
-        if (empty($editions)) {
-            $edition = new Edition();
-            $book->addEdition($edition);
-            $editions[] = $edition;
+        // Initialize work instance
+        $res = null;
+        $type = substr($record->leader, 6, 1);
+        if ($type == "a" || $type == "t") {
+            $res = $this->parseBook($record);
         } else {
-            foreach ($editions as $volume=>$edition) {
-                $edition->setLegalDeposit($legalDeposits[$volume] ?? null);
-                $book->addEdition($edition);
-            }
+            $this->logger->warning('Unknown record type', [
+                "leader" => (string) $record->leader,
+                "type" => $type,
+                "url" => $this->config['url']
+            ]);
+        }
+        if (is_null($res)) return null;
+
+        // Add common attributes
+        $res->setTitle($record->xpath('datafield[@tag="245"]/subfield[@code="a"]')[0]);
+        foreach ($record->xpath('datafield[@tag="017"]') as $elem) {
+            $res->addLegalDeposit($elem->subfield[0]);
         }
 
-        // Get holdings data
-        if (!empty($rawResult->holdings)) {
-            foreach ($rawResult->holdings->holding as $holdingData) {
-                $location = new PhysicalLocation(); // TODO
-                $holding = new Holding($holdingData->callNumber, $location);
-                // TODO: set lent until / loanable
-
-                $target = $editions[''] ?? reset($editions);
-                $target->addHolding($holding);
-            }
+        // Add holdings
+        foreach ($rawResult->holdings->holding as $elem) {
+            $holding = new Holding($elem->callNumber);
+            $res->addHolding($holding);
         }
 
-        return $book;
+        return $res;
+    }
+
+
+    /**
+     * Parse book
+     * @param  \SimpleXMLElement $record MARC21 record
+     * @return Book|null                 Book instance
+     */
+    private function parseBook(\SimpleXMLElement $record) {
+        $res = new Book();
+
+        // OCLC numbers
+        $oclcTag = $this->config['oclc_field'];
+        foreach ($record->xpath("datafield[@tag='$oclcTag']") as $elem) {
+            $oclcNumber = preg_replace('/[^0-9]/', '', $elem->subfield[0]);
+            $res->addOclcNumber($oclcNumber);
+        }
+
+        // ISBN codes
+        foreach ($record->xpath('datafield[@tag="020"]') as $elem) {
+            $isbn = preg_replace('/\([^)]+\)/','', $elem->subfield[0]);
+            $isbn = preg_replace('/[^0-9]/', '', $isbn);
+            $res->addIsbn($isbn);
+        }
+
+        return $res;
     }
 
 }

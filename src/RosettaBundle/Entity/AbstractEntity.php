@@ -47,6 +47,7 @@ abstract class AbstractEntity {
      */
     public function setImageUrl(?string $imageUrl): self {
         $this->imageUrl = $imageUrl;
+        return $this;
     }
 
 
@@ -66,6 +67,7 @@ abstract class AbstractEntity {
      */
     public function addIdentifier(Identifier $identifier): self {
         $this->identifiers[] = $identifier;
+        return $this;
     }
 
 
