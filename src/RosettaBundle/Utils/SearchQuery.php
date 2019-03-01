@@ -280,7 +280,9 @@ class SearchQuery {
 
         $res = "@attr";
         $res .= " 1=" . self::RPN_CODES[$this->left];
-        $subject = ($this->left == "isbn") ? $this->formatIsbn($this->right) : $this->right;
+        $subject = ($this->left == "isbn") ?
+            $this->formatIsbn($this->right) :
+            str_replace("%", "**", $this->right);
         $res .= ' "' . addslashes($subject) . '"';
         return $res;
     }
