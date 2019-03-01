@@ -52,16 +52,16 @@ class SearchQueryTest extends TestCase {
      */
     public function testRpn() {
         $defaultQuery = (SearchQuery::of(self::DEFAULT_QUERY))->toRpn();
-        $this->assertEquals('@or @attr 1=4 "%test%" @attr 1=1003 "%test%"', $defaultQuery);
+        $this->assertEquals('@or @attr 1=4 "**test**" @attr 1=1003 "**test**"', $defaultQuery);
 
         $simpleQuery = (SearchQuery::of(self::SIMPLE_QUERY))->toRpn();
-        $simpleExpected = '@and @and @attr 1=4 "%la galatea%" ' .
-                          '@attr 1=1003 "%cervantes%" @attr 1=1018 "Project Gutenberg"';
+        $simpleExpected = '@and @and @attr 1=4 "**la galatea**" ' .
+                          '@attr 1=1003 "**cervantes**" @attr 1=1018 "Project Gutenberg"';
         $this->assertEquals($simpleExpected, $simpleQuery);
 
         $advancedQuery = (SearchQuery::of(self::ADVANCED_QUERY))->toRpn();
         $advancedExpected = '@and @attr 1=1003 "Cervantes, Miguel de" ' .
-                            '@or @attr 1=4 "%quijote%" @attr 1=4 "la galatea"';
+                            '@or @attr 1=4 "**quijote**" @attr 1=4 "la galatea"';
         $this->assertEquals($advancedExpected, $advancedQuery);
     }
 
