@@ -22,6 +22,8 @@ namespace App\RosettaBundle\Provider;
 
 use App\RosettaBundle\Entity\Other\Database;
 use App\RosettaBundle\Entity\Other\Holding;
+use App\RosettaBundle\Entity\Other\Relation;
+use App\RosettaBundle\Entity\Person;
 use App\RosettaBundle\Entity\Work\AbstractWork;
 use App\RosettaBundle\Entity\Work\Book;
 use App\RosettaBundle\Utils\SearchQuery;
@@ -135,16 +137,51 @@ class Z3950 extends AbstractProvider {
         }
         if (is_null($res)) return null;
 
-        // Add common attributes
-        $res->setTitle($record->xpath('datafield[@tag="245"]/subfield[@code="a"]')[0]);
+        // Add title
+        $title = $record->xpath('datafield[@tag="245"]/subfield[@code="a"]')[0];
+        $subtitle = $record->xpath('datafield[@tag="245"]/subfield[@code="b"]');
+        if (!empty($subtitle)) $title .= " " . $subtitle[0];
+        $res->setTitle($title);
+
+        // Add legal attributes
         foreach ($record->xpath('datafield[@tag="017"]') as $elem) {
             $res->addLegalDeposit($elem->subfield[0]);
         }
 
+        // Add authors
+        foreach (['100', '600', '700'] as $tag) {
+            foreach ($record->xpath("datafield[@tag='$tag']") as $elem) {
+                $name = (string) $elem->xpath('subfield[@code="a"]')[0];
+                list($lastname, $firstname) = explode(',', "$name,");
+
+                $type = null;
+                $relatorCode = $elem->xpath('subfield[@code="e"]');
+                if (!empty($relatorCode)) {
+                    $type = $this->getRelation($relatorCode[0]);
+                    if (is_null($type)) {
+                        $this->logger->warning('Unknown relator code, assuming author', [
+                            "firstname" => $firstname,
+                            "lastname" => $lastname,
+                            "relatorCode" => $relatorCode,
+                            "url" => $this->config['url']
+                        ]);
+                    }
+                }
+                if (is_null($type)) $type = Relation::IS_AUTHOR_OF;
+
+                $person = new Person();
+                $person->setFirstname($firstname);
+                $person->setLastname($lastname);
+                $res->addRelation(new Relation($person, $type, $res));
+            }
+        }
+
         // Add holdings
-        foreach ($rawResult->holdings->holding as $elem) {
-            $holding = new Holding($elem->callNumber);
-            $res->addHolding($holding);
+        if (!empty($rawResult->holdings)) {
+            foreach ($rawResult->holdings->holding as $elem) {
+                $holding = new Holding($elem->callNumber);
+                $res->addHolding($holding);
+            }
         }
 
         return $res;
@@ -174,6 +211,28 @@ class Z3950 extends AbstractProvider {
         }
 
         return $res;
+    }
+
+
+    /**
+     * Get relation code from relation string representation
+     * @param  string   $relatorCode MARC21 relator code
+     * @return int|null              Relation ID
+     */
+    private function getRelation(string $relatorCode): ?int {
+        $relatorCode = preg_replace('/[^a-z]/', '', $relatorCode);
+        switch ($relatorCode) {
+            case 'ed':
+            case 'edt':
+            case 'edc':
+            case 'edm':
+                return Relation::IS_EDITOR_OF;
+            case 'il':
+            case 'ill':
+            case 'art':
+                return Relation::IS_ILLUSTRATOR_OF;
+        }
+        return null;
     }
 
 }

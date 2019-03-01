@@ -152,15 +152,4 @@ abstract class AbstractWork extends AbstractEntity {
         return $this->getFirstRelatedOfType(Relation::IS_AUTHOR_OF);
     }
 
-
-    /**
-     * Add author
-     * @param  Person $author Author
-     * @return static         This instance
-     */
-    public function addAuthor(Person $author): self {
-        $this->addRelation(new Relation($author, Relation::IS_AUTHOR_OF, $this));
-        return $this;
-    }
-
 }
