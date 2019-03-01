@@ -20,25 +20,17 @@
 
 namespace App\RosettaBundle\Provider;
 
-use App\RosettaBundle\Entity\Other\Database;
-use App\RosettaBundle\Utils\SearchQuery;
+use App\RosettaBundle\Entity\Work\AbstractWork;
 
-class Innopac extends AbstractProvider {
-    private static $executed = false;
-    private static $requests = [];
-    private static $instances = [];
-
-    private $results = [];
+class Innopac extends AbstractHttpProvider {
 
     /**
      * @inheritdoc
      */
-    public function configure(Database $database, SearchQuery $query) {
-        self::$executed = false; // Reset flag for all INNOPAC instances
-
+    public function prepare() {
         // Prepare request URL
-        $reqUrl = $database->getProvider()['url'];
-        $reqUrl = str_replace('{{query}}', urlencode($query->toInnopac()), $reqUrl);
+        $reqUrl = $this->config['url'];
+        $reqUrl = str_replace('{{query}}', urlencode($this->query->toInnopac()), $reqUrl);
 
         // Create new cURL request
         $ch = curl_init();
@@ -55,42 +47,7 @@ class Innopac extends AbstractProvider {
         ]);
 
         // Add request to queue
-        self::$requests[] = $ch;
-        self::$instances[] = $this;
-    }
-
-
-    /**
-     * @inheritdoc
-     */
-    public function search() {
-        if (self::$executed) return;
-
-        // Execute requests
-        $mh = curl_multi_init();
-        foreach (self::$requests as $ch) curl_multi_add_handle($mh, $ch);
-        $running = null;
-        do {
-            curl_multi_exec($mh, $running);
-        } while ($running);
-
-        // Parse responses
-        foreach (self::$requests as $i=>$ch) {
-            $res = curl_multi_getcontent($ch);
-            self::$instances[$i]->parseResponse($res);
-        }
-
-        // Close handles
-        foreach (self::$requests as $ch) {
-            curl_multi_remove_handle($mh, $ch);
-            curl_close($ch);
-        }
-        curl_multi_close($mh);
-
-        // Reset internal state
-        self::$executed = true;
-        self::$requests = [];
-        self::$instances = [];
+        $this->enqueueRequest($ch);
     }
 
 
@@ -98,16 +55,22 @@ class Innopac extends AbstractProvider {
      * @inheritdoc
      */
     public function getResults(): array {
-        return $this->results;
+        $results = [];
+        foreach ($this->responses as &$res) {
+            array_merge($results, $this->parseResponse($res));
+            unset($res);
+        }
+        return $results;
     }
 
 
     /**
      * Parse response
-     * @param string $res HTML response
+     * @param  string         $res HTML response
+     * @return AbstractWork[]      Results
      */
     public function parseResponse(string &$res) {
-        // TODO: not implemented
+        return []; // TODO: not implemented
     }
 
 }
