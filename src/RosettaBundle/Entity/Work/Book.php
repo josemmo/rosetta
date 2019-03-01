@@ -120,7 +120,9 @@ class Book extends AbstractWork {
             $isbn13 = str_replace('-', '', $isbnInstance->to13()->format());
             $this->addIdentifier(new Identifier(Identifier::ISBN_10, $isbn10));
             $this->addIdentifier(new Identifier(Identifier::ISBN_13, $isbn13));
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+            // Ignore ISBN if invalid
+        }
         return $this;
     }
 
