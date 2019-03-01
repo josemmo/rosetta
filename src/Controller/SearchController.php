@@ -33,13 +33,18 @@ class SearchController extends AbstractController {
      * @Route("/search", methods={"POST"}, name="search_post")
      */
     public function getResults(Request $request, ConfigEngine $config, SearchEngine $engine) {
-        // Get query and database
-        $query = SearchQuery::of($request->get('q'));
-        $db = $config->getCurrentDatabase();
-        $dbIds = empty($db) ? null : [$db->getId()];
+        $results = [];
+
+        // Get results from search engine
+        $queryString = trim($request->get('q'));
+        if (!empty($queryString)) {
+            $query = SearchQuery::of($queryString);
+            $db = $config->getCurrentDatabase();
+            $dbIds = empty($db) ? null : [$db->getId()];
+            $results = $engine->search($query, $dbIds);
+        }
 
         // Render results
-        $results = $engine->search($query, $dbIds);
         return $this->render("pages/search_post.html.twig", [
             "results" => $results
         ]);

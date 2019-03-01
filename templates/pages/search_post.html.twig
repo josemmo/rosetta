@@ -15,10 +15,18 @@
  # You should have received a copy of the GNU General Public License
  # along with this program. If not, see <https://www.gnu.org/licenses/>.
  #}
-<div class="row no-gutters">
-    {% for entity in results %}
-        <div class="col-6 col-md-2">
-            {% include 'components/search-result.html.twig' with {'entity': entity, 'loop': loop} only %}
-        </div>
-    {% endfor %}
-</div>
+
+{% if results %}
+    <div class="row no-gutters">
+        {% for entity in results %}
+            <div class="col-6 col-md-2">
+                {% include 'components/search-result.html.twig' with {'entity': entity, 'loop': loop} only %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="py-4 text-center">
+        <h2 class="mb-3">No results found</h2>
+        <p>Try to narrow your search by filtering by title, author or database.</p>
+    </div>
+{% endif %}
