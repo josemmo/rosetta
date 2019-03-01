@@ -11,5 +11,6 @@ return [
     Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true, 'test' => true],
     Symfony\Bundle\WebServerBundle\WebServerBundle::class => ['dev' => true],
     Symfony\WebpackEncoreBundle\WebpackEncoreBundle::class => ['all' => true],
+    Shivas\VersioningBundle\ShivasVersioningBundle::class => ['all' => true],
     App\RosettaBundle\RosettaBundle::class => ['all' => true],
 ];

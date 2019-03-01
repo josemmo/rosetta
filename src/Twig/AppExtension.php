@@ -71,7 +71,7 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
         $databases = [];
         foreach ($this->config->getDatabases() as $db) {
             $databases[$db->getId()] = [
-                "name" => $db->getName(),
+                "name"       => $db->getName(),
                 "short_name" => $db->getShortName()
             ];
         }
@@ -80,16 +80,17 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
         $db = $this->config->getCurrentDatabase();
         $dbId = empty($db) ? null : $db->getId();
         $context = [
-            "db" => $dbId,
-            "logo" => $this->getRosettaAsset("$dbId-logo", "logo"),
+            "db"      => $dbId,
+            "logo"    => $this->getRosettaAsset("$dbId-logo", "logo"),
             "leading" => $this->getRosettaAsset("$dbId-leading", "leading"),
         ];
 
         return [
             "rosetta" => [
-                "opac" => $this->config->getOpacSettings(),
+                "version"   => $this->config->getVersion(),
+                "opac"      => $this->config->getOpacSettings(),
                 "databases" => $databases,
-                "context" => $context
+                "context"   => $context
             ]
         ];
     }

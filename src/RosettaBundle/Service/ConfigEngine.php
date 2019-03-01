@@ -21,19 +21,24 @@
 namespace App\RosettaBundle\Service;
 
 use App\RosettaBundle\Entity\Other\Database;
+use Shivas\VersioningBundle\Service\VersionManager;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class ConfigEngine {
     private $request;
+    private $version;
     private $opac;
     private $databases = [];
 
     /**
      * ConfigEngine constructor
-     * @param RequestStack $requestStack Request Stack Service
+     * @param  RequestStack   $requestStack   Request Stack Service
+     * @param  VersionManager $versionManager Version Manager Service
+     * @throws \Psr\Cache\InvalidArgumentException
      */
-    public function __construct(RequestStack $requestStack) {
+    public function __construct(RequestStack $requestStack, VersionManager $versionManager) {
         $this->request = $requestStack->getCurrentRequest();
+        $this->version = $versionManager->getVersion();
     }
 
 
@@ -49,6 +54,15 @@ class ConfigEngine {
         foreach ($config['databases'] as $source) {
             $this->databases[$source['id']] = new Database($source);
         }
+    }
+
+
+    /**
+     * Get app version
+     * @return string App version
+     */
+    public function getVersion() {
+        return $this->version->getVersionString();
     }
 
 
