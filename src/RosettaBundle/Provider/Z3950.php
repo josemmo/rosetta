@@ -20,67 +20,55 @@
 
 namespace App\RosettaBundle\Provider;
 
-use App\RosettaBundle\Entity\Other\Database;
 use App\RosettaBundle\Entity\Other\Holding;
 use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
 use App\RosettaBundle\Entity\Work\AbstractWork;
 use App\RosettaBundle\Entity\Work\Book;
-use App\RosettaBundle\Utils\SearchQuery;
 
 class Z3950 extends AbstractProvider {
-    const PRESETS = [
-        "millenium" => ["syntax" => "opac"]
-    ];
-
     private static $executed = false;
     private static $maxTimeout = 0;
 
-    private $config;
     private $conn;
 
     /**
      * @inheritdoc
      */
-    public function configure(Database $database, SearchQuery $query) {
-        self::$executed = false; // Reset flag for all Z39.50 instances
-
-        // Fill presets for configuration
-        $config = $database->getProvider();
-        if (isset(self::PRESETS[$config['preset']])) {
-            foreach (self::PRESETS[$config['preset']] as $prop=>$value) {
-                if (empty($config[$prop])) $config[$prop] = $value;
-            }
-        }
-        $this->config = $config;
+    public function prepare() {
+        self::$executed = false;
 
         // Prepare YAZ instance
         $yazConfig = [];
-        if (!is_null($config['user'])) $yazConfig['user'] = $config['user'];
-        if (!is_null($config['group'])) $yazConfig['group'] = $config['group'];
-        if (!is_null($config['password'])) $yazConfig['password'] = $config['password'];
+        if (!is_null($this->config['user'])) $yazConfig['user'] = $this->config['user'];
+        if (!is_null($this->config['group'])) $yazConfig['group'] = $this->config['group'];
+        if (!is_null($this->config['password'])) $yazConfig['password'] = $this->config['password'];
 
         // Create YAZ instance
-        $conn = yaz_connect($config['url'], $yazConfig);
-        yaz_syntax($conn, $config['syntax'] ?? "usmarc");
-        yaz_range($conn, 1, $config['max_results']);
-        yaz_search($conn, 'rpn', $query->toRpn());
+        $conn = yaz_connect($this->config['url'], $yazConfig);
+        yaz_syntax($conn, $this->config['syntax'] ?? "usmarc");
+        yaz_range($conn, 1, $this->config['max_results']);
+        yaz_search($conn, 'rpn', $this->query->toRpn());
         $this->conn = $conn;
 
         // Update max timeout
-        if ($config['timeout'] > self::$maxTimeout) self::$maxTimeout = $config['timeout'];
+        if ($this->config['timeout'] > self::$maxTimeout) {
+            self::$maxTimeout = $this->config['timeout'];
+        }
     }
 
 
     /**
      * @inheritdoc
      */
-    public function search() {
+    public function execute() {
         if (self::$executed) return;
 
+        // Execute all search queries
         $waitConfig = array('timeout' => self::$maxTimeout);
         yaz_wait($waitConfig);
 
+        // Reset flags
         self::$executed = true;
         self::$maxTimeout = 0;
     }
@@ -111,6 +99,16 @@ class Z3950 extends AbstractProvider {
         }
 
         return $results;
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    protected function getPresets(): array {
+        return [
+            "millenium" => ["syntax" => "opac"]
+        ];
     }
 
 

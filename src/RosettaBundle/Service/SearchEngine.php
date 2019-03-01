@@ -59,15 +59,16 @@ class SearchEngine {
         $providers = [];
         foreach ($this->config->getDatabases() as $db) {
             if (empty($databases) || in_array($db->getId(), $databases)) {
-                $providerType = $db->getProvider()['type'];
-                $provider = new $providerType($this->logger);
-                $provider->configure($db, $query);
+                $config = $db->getProvider();
+                $provider = new $config['type']($this->logger);
+                $provider->configure($config, $query);
+                $provider->prepare();
                 $providers[] = $provider;
             }
         }
 
         // Execute search
-        foreach ($providers as $provider) $provider->search();
+        foreach ($providers as $provider) $provider->execute();
 
         // Fetch search results
         $results = [];

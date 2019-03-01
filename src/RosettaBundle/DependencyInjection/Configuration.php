@@ -28,7 +28,7 @@ class Configuration implements ConfigurationInterface {
     public function getConfigTreeBuilder() {
         $treeBuilder = new TreeBuilder('rosetta');
 
-        $treeBuilder->getRootNode()
+        $node = $treeBuilder->getRootNode()
             ->children()
                 ->arrayNode('opac')
                     ->children()
@@ -41,31 +41,44 @@ class Configuration implements ConfigurationInterface {
                             ->scalarNode('id')->end()
                             ->scalarNode('name')->end()
                             ->scalarNode('short_name')->end()
-                            ->arrayNode('provider')
-                                ->children()
-                                    ->scalarNode('type')->end()
-                                    ->scalarNode('url')->end()
-                                    ->scalarNode('preset')->defaultNull()->end()
-                                    ->scalarNode('user')->defaultNull()->end()
-                                    ->scalarNode('group')->defaultNull()->end()
-                                    ->scalarNode('password')->defaultNull()->end()
-                                    ->scalarNode('syntax')->defaultNull()->end()
-                                    ->integerNode('oclc_field')->defaultValue(935)->end()
-                                    ->integerNode('timeout')
-                                        ->defaultValue(3)
-                                        ->min(1)
-                                    ->end()
-                                    ->integerNode('max_results')
-                                        ->defaultValue(20)
-                                        ->min(1)
-                                    ->end()
-                                ->end()
+                            ->arrayNode('provider');
+        $node =                 $this->attachProviderNode($node)
+                            ->end()
                         ->end()
                     ->end()
+                ->end()
+                ->arrayNode('external_providers')
+                    ->defaultValue([])
+                    ->arrayPrototype();
+                    $this->attachProviderNode($node)
                 ->end()
             ->end();
 
         return $treeBuilder;
+    }
+
+
+    private function attachProviderNode($node) {
+        return $node
+            ->children()
+                ->scalarNode('type')->end()
+                ->scalarNode('url')->defaultNull()->end()
+                ->scalarNode('preset')->defaultNull()->end()
+                ->scalarNode('user')->defaultNull()->end()
+                ->scalarNode('group')->defaultNull()->end()
+                ->scalarNode('password')->defaultNull()->end()
+                ->scalarNode('key')->defaultNull()->end()
+                ->scalarNode('syntax')->defaultNull()->end()
+                ->integerNode('oclc_field')->defaultValue(935)->end()
+                ->integerNode('timeout')
+                    ->defaultValue(3)
+                    ->min(1)
+                ->end()
+                ->integerNode('max_results')
+                    ->defaultValue(20)
+                    ->min(1)
+                ->end()
+            ->end();
     }
 
 }

@@ -21,12 +21,13 @@
 namespace App\RosettaBundle\Provider;
 
 use App\RosettaBundle\Entity\AbstractEntity;
-use App\RosettaBundle\Entity\Other\Database;
 use App\RosettaBundle\Utils\SearchQuery;
 use Psr\Log\LoggerInterface;
 
 abstract class AbstractProvider {
     protected $logger;
+    protected $config;
+    protected $query;
 
     public function __construct(LoggerInterface $logger) {
         $this->logger = $logger;
@@ -36,19 +37,36 @@ abstract class AbstractProvider {
     /**
      * Configure provider
      * This method will be called immediately after the instantiation of the provider.
-     *
-     * @param Database    $database Database to fetch configuration from
-     * @param SearchQuery $query    Search query
+     * @param array       $config Provider configuration
+     * @param SearchQuery $query  Search query
      */
-    public abstract function configure(Database $database, SearchQuery $query);
+    public function configure(array $config, SearchQuery $query) {
+        $presets = $this->getPresets();
+        if (isset($presets[$config['preset']])) {
+            foreach ($presets[$config['preset']] as $prop=>$value) {
+                if (empty($config[$prop])) $config[$prop] = $value;
+            }
+        }
+
+        $this->config = $config;
+        $this->query = $query;
+    }
+
+
+    /**
+     * Prepare search
+     * After configuration is done, another change will be given to each provider
+     * to prepare the search before is executed.
+     */
+    public abstract function prepare();
 
 
     /**
      * Execute search
-     * Once all providers have been initialized, a request to execute the search will
+     * Once *all* providers are ready, a request to execute the search will
      * be sent to each provider.
      */
-    public abstract function search();
+    public abstract function execute();
 
 
     /**
@@ -56,5 +74,14 @@ abstract class AbstractProvider {
      * @return AbstractEntity[] Search results
      */
     public abstract function getResults(): array;
+
+
+    /**
+     * Get configuration presets
+     * @return array Presets
+     */
+    protected function getPresets(): array {
+        return [];
+    }
 
 }
