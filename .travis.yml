@@ -52,3 +52,5 @@ deploy:
     provider: heroku
     api_key: $HEROKU_KEY
     app: rosetta-staging
+    on:
+        php: 7.2 # Deploy once per build

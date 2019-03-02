@@ -1,8 +1,8 @@
-FROM ubuntu:xenial
+FROM ubuntu:18.04
 
 # Install dependencies
 RUN apt update -y && apt upgrade -yqq
-RUN apt install -y apache2 nodejs php yaz libyaz-dev
+RUN apt install -y apache2 nodejs yaz libyaz-dev php php-pear php-dev php-curl
 
 # Build YAZ extension
 RUN pecl channel-update pecl.php.net
