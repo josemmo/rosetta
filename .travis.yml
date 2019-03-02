@@ -47,3 +47,8 @@ script:
     - php ./bin/console lint:xliff translations # Validate XLIFF translations
     - php ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction # Validate Doctrine mappings
     - php ./bin/phpunit                         # Run tests
+
+deploy:
+    provider: heroku
+    api_key: $HEROKU_KEY
+    app: rosetta-staging
