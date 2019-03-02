@@ -20,7 +20,7 @@
 
 namespace App\RosettaBundle\Provider;
 
-use App\RosettaBundle\Utils\SearchQuery;
+use App\RosettaBundle\Query\SearchQuery;
 
 abstract class AbstractHttpProvider extends AbstractProvider {
     private static $executed = false;

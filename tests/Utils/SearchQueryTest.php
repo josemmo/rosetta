@@ -20,7 +20,7 @@
 
 namespace App\Tests\Utils;
 
-use App\RosettaBundle\Utils\SearchQuery;
+use App\RosettaBundle\Query\SearchQuery;
 use PHPUnit\Framework\TestCase;
 
 class SearchQueryTest extends TestCase {
@@ -33,16 +33,17 @@ class SearchQueryTest extends TestCase {
      */
     public function testTokenization() {
         $defaultQuery = (string) SearchQuery::of(self::DEFAULT_QUERY);
-        $this->assertEquals('("any" EQUALS "%test%")', $defaultQuery);
+        $this->assertEquals('(<any CONTAINS "test">)', $defaultQuery);
 
         $simpleQuery = (string) SearchQuery::of(self::SIMPLE_QUERY);
-        $simpleExpected = '((("title" EQUALS "%la galatea%") AND ("author" EQUALS "%cervantes%")) AND ' .
-                          '("publisher" EQUALS "Project Gutenberg"))';
+        $simpleExpected = '(<title CONTAINS "la galatea"> AND ' .
+                          '<author CONTAINS "cervantes"> AND ' .
+                          '<publisher EQUALS "Project Gutenberg">)';
         $this->assertEquals($simpleExpected, $simpleQuery);
 
         $advancedQuery = (string) SearchQuery::of(self::ADVANCED_QUERY);
-        $advancedExpected = '(("author" EQUALS "Cervantes, Miguel de") AND ' .
-                            '(("title" EQUALS "%quijote%") OR ("title" EQUALS "la galatea")))';
+        $advancedExpected = '(<author EQUALS "Cervantes, Miguel de"> AND ' .
+                            '(<title CONTAINS "quijote"> OR <title EQUALS "la galatea">))';
         $this->assertEquals($advancedExpected, $advancedQuery);
     }
 
@@ -52,16 +53,16 @@ class SearchQueryTest extends TestCase {
      */
     public function testRpn() {
         $defaultQuery = (SearchQuery::of(self::DEFAULT_QUERY))->toRpn();
-        $this->assertEquals('@or @attr 1=4 "**test**" @attr 1=1003 "**test**"', $defaultQuery);
+        $this->assertEquals('@or @attr 1=4 "test" @attr 1=1003 "test"', $defaultQuery);
 
         $simpleQuery = (SearchQuery::of(self::SIMPLE_QUERY))->toRpn();
-        $simpleExpected = '@and @and @attr 1=4 "**la galatea**" ' .
-                          '@attr 1=1003 "**cervantes**" @attr 1=1018 "Project Gutenberg"';
+        $simpleExpected = '@and @attr 1=4 "la galatea" @and ' .
+                          '@attr 1=1003 "cervantes" @attr 1=1018 "Project Gutenberg"';
         $this->assertEquals($simpleExpected, $simpleQuery);
 
         $advancedQuery = (SearchQuery::of(self::ADVANCED_QUERY))->toRpn();
         $advancedExpected = '@and @attr 1=1003 "Cervantes, Miguel de" ' .
-                            '@or @attr 1=4 "**quijote**" @attr 1=4 "la galatea"';
+                            '@or @attr 1=4 "quijote" @attr 1=4 "la galatea"';
         $this->assertEquals($advancedExpected, $advancedQuery);
     }
 
@@ -71,7 +72,7 @@ class SearchQueryTest extends TestCase {
      */
     public function testMalformedQueries() {
         $input = '"this (isn\'t a valid:query))';
-        $expected = '("any" EQUALS ' . json_encode("%$input%", JSON_UNESCAPED_UNICODE) . ')';
+        $expected = '(<any CONTAINS ' . json_encode($input, JSON_UNESCAPED_UNICODE) . '>)';
         $output = (string) SearchQuery::of($input);
         $this->assertEquals($expected, $output);
     }

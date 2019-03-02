@@ -21,7 +21,7 @@
 namespace App\RosettaBundle\Service;
 
 use App\RosettaBundle\Entity\AbstractEntity;
-use App\RosettaBundle\Utils\SearchQuery;
+use App\RosettaBundle\Query\SearchQuery;
 use Psr\Log\LoggerInterface;
 
 class SearchEngine {

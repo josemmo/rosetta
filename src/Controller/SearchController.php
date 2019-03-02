@@ -22,7 +22,7 @@ namespace App\Controller;
 
 use App\RosettaBundle\Service\ConfigEngine;
 use App\RosettaBundle\Service\SearchEngine;
-use App\RosettaBundle\Utils\SearchQuery;
+use App\RosettaBundle\Query\SearchQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;

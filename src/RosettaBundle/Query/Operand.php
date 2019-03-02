@@ -18,21 +18,22 @@
  */
 
 
-namespace App\RosettaBundle\Utils;
+namespace App\RosettaBundle\Query;
 
+class Operand {
+    const EQUALS = "EQUALS";
+    const CONTAINS = "CONTAINS";
+    const AND = "AND";
+    const OR = "OR";
 
-class TextUtils {
+    private static $logicalOperands = [self::AND, self::OR];
 
     /**
-     * Remove accents
-     * @param  string $input Input string
-     * @return string        Parsed string
+     * Is logical operand
+     * @param  string  $op Operand
+     * @return boolean     Is valid
      */
-    public static function removeAccents(string $input) {
-        return strtr($input,
-            "ÁÀÄÂÉÈËÊÍÌÏÎÓÒÖÔÚÙÜÛáàäâéèëêíìïîóòöôúùüû",
-            "AAAAEEEEIIIIOOOOUUUUaaaaeeeeiiiioooouuuu"
-        );
+    public static function isLogicalOperand(string $op): bool {
+        return in_array($op, self::$logicalOperands);
     }
-
 }
