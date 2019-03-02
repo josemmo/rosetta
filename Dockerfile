@@ -2,9 +2,15 @@ FROM ubuntu:18.04
 
 # Install dependencies
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update -y && apt upgrade -yqq && apt clean -y && apt autoremove -y
-RUN apt install -y nginx yaz libyaz-dev php php-fpm php-pear php-dev php-curl
-RUN apt install -y nodejs npm node-gyp
+RUN apt update -y && apt upgrade -yqq
+RUN apt install -y curl nginx yaz libyaz-dev php php-fpm php-pear php-dev php-curl
+
+# Install NodeJS
+RUN apt remove --purge nodejs npm
+RUN apt clean -y && apt autoclean -y
+RUN apt install -f && apt autoremove -y
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN apt install -y nodejs
 
 # Build YAZ extension
 RUN pecl channel-update pecl.php.net
