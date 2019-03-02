@@ -1,6 +1,7 @@
 FROM ubuntu:18.04
 
 # Install dependencies
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update -y && apt upgrade -yqq
 RUN apt install -y apache2 nodejs yaz libyaz-dev php php-pear php-dev php-curl
 
