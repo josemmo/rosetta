@@ -4,7 +4,7 @@ FROM ubuntu:18.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update -y && apt upgrade -yqq && apt clean -y && apt autoremove -y
 RUN apt install -y nginx yaz libyaz-dev php php-fpm php-pear php-dev php-curl
-RUN apt install -y nodejs npm
+RUN apt install -y nodejs npm node-gyp
 
 # Build YAZ extension
 RUN pecl channel-update pecl.php.net
