@@ -68,6 +68,23 @@ class SearchQueryTest extends TestCase {
 
 
     /**
+     * Test INNOPAC query
+     */
+    public function testInnopac() {
+        $defaultQuery = (SearchQuery::of(self::DEFAULT_QUERY))->toInnopac();
+        $this->assertEquals('"test"', $defaultQuery);
+
+        $simpleQuery = (SearchQuery::of(self::SIMPLE_QUERY))->toInnopac();
+        $simpleExpected = 't:"la galatea" and a:"cervantes" and "Project Gutenberg"';
+        $this->assertEquals($simpleExpected, $simpleQuery);
+
+        $advancedQuery = (SearchQuery::of(self::ADVANCED_QUERY))->toInnopac();
+        $advancedExpected = 'a:"Cervantes, Miguel de" and (t:"quijote" or t:"la galatea")';
+        $this->assertEquals($advancedExpected, $advancedQuery);
+    }
+
+
+    /**
      * Test malformed queries
      */
     public function testMalformedQueries() {
