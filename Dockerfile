@@ -2,8 +2,9 @@ FROM ubuntu:18.04
 
 # Install dependencies
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update -y && apt upgrade -yqq
-RUN apt install -y nginx nodejs npm yaz libyaz-dev php php-fpm php-pear php-dev php-curl
+RUN apt update -y && apt upgrade -yqq && apt clean -y && apt autoremove -y
+RUN apt install -y nginx yaz libyaz-dev php php-fpm php-pear php-dev php-curl
+RUN apt install -y nodejs npm
 
 # Build YAZ extension
 RUN pecl channel-update pecl.php.net
@@ -18,6 +19,6 @@ RUN npm update -g npm && npm install && npm run build
 RUN composer self-update && composer install --no-dev --optimize-autoloader
 
 # Start app
-RUN systemctl restart php7.2-fpm
+RUN systemctl restart php-fpm
 RUN systemctl restart nginx
 EXPOSE 80
