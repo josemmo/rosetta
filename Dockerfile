@@ -20,7 +20,7 @@ RUN echo 'extension=yaz.so' >> /etc/php/7.2/fpm/php.ini
 # Build app
 WORKDIR /rosetta
 COPY . .
-COPY ./docker/nginx.conf /etc/nginx/sites-available/default
+COPY ./.docker/nginx.conf /etc/nginx/sites-available/default
 RUN npm update -g npm && npm install && npm run build
 RUN composer self-update && composer install --no-dev --optimize-autoloader
 
