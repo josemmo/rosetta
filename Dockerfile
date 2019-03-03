@@ -2,7 +2,6 @@ FROM ubuntu:18.04
 
 # Install dependencies
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt remove --purge apache2
 RUN apt update -y && apt upgrade -yqq
 RUN apt install -y curl nginx yaz libyaz-dev php php-fpm php-pear php-dev php-curl composer
 
