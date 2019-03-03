@@ -1,30 +1,38 @@
-FROM ubuntu:18.04
+FROM php:7.3-fpm-stretch
 
 # Install dependencies
-ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update -y && apt upgrade -yqq
-RUN apt install -y curl nginx yaz libyaz-dev php php-fpm php-pear php-dev php-curl composer
+RUN apt install -y curl gnupg
+
+# Install nginx server
+RUN apt install -y nginx
+COPY ./.docker/nginx.conf /etc/nginx/sites-available/default
 
 # Install NodeJS
-RUN apt remove --purge nodejs npm
-RUN apt clean -y && apt autoclean -y
-RUN apt install -f && apt autoremove -y
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt install -y nodejs
 
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php
+RUN mv composer.phar /usr/local/bin/composer
+
+# Build ZIP extension
+RUN apt install -y zip libzip-dev
+RUN docker-php-ext-configure zip --with-libzip
+RUN docker-php-ext-install zip
+
 # Build YAZ extension
-RUN pecl channel-update pecl.php.net
-RUN printf "\n" | pecl install yaz
-RUN echo 'extension=yaz.so' >> /etc/php/7.2/fpm/php.ini
+RUN apt install -y yaz libyaz-dev
+RUN pecl install yaz
+RUN docker-php-ext-enable yaz
 
 # Build app
 WORKDIR /rosetta
 COPY . .
-COPY ./.docker/nginx.conf /etc/nginx/sites-available/default
+ENV APP_ENV=prod
 RUN npm update -g npm && npm install && npm run build
 RUN composer install --no-dev --optimize-autoloader
 
 # Start app
-RUN systemctl restart php-fpm
-RUN systemctl restart nginx
+CMD service nginx start
 EXPOSE 80
