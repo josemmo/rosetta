@@ -4,10 +4,6 @@ FROM php:7.3-fpm-stretch
 RUN apt update -y && apt upgrade -yqq
 RUN apt install -y curl gnupg
 
-# Install nginx server
-RUN apt install -y nginx
-COPY ./.docker/nginx.conf /etc/nginx/sites-available/default
-
 # Install NodeJS
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN apt install -y nodejs
@@ -32,7 +28,3 @@ COPY . .
 ENV APP_ENV=prod
 RUN npm update -g npm && npm install && npm run build
 RUN composer install --no-dev --optimize-autoloader
-
-# Start app
-CMD service nginx start
-EXPOSE 80
