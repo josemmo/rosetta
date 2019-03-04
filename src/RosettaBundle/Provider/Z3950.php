@@ -25,6 +25,7 @@ use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
 use App\RosettaBundle\Entity\Work\AbstractWork;
 use App\RosettaBundle\Entity\Work\Book;
+use ForceUTF8\Encoding;
 
 class Z3950 extends AbstractProvider {
     private static $executed = false;
@@ -92,6 +93,7 @@ class Z3950 extends AbstractProvider {
         $hits = yaz_hits($this->conn);
         for ($r=1; $r<=min($this->config['max_results'], $hits); $r++) {
             $result = yaz_record($this->conn, $r, 'xml');
+            $result = Encoding::toUTF8($result);
             $result = preg_replace('/xmlns=".+"/', '', $result);
             $result = new \SimpleXMLElement($result);
             $parsedResult = $this->parseResult($result);

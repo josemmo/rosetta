@@ -89,6 +89,9 @@
     "monolog/monolog": {
         "version": "1.24.0"
     },
+    "neitanod/forceutf8": {
+        "version": "v2.0.2"
+    },
     "nicebooks/isbn": {
         "version": "0.2.17"
     },

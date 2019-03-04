@@ -82,6 +82,7 @@
       <path value="$PROJECT_DIR$/vendor/nicebooks/isbn" />
       <path value="$PROJECT_DIR$/vendor/nikolaposa/version" />
       <path value="$PROJECT_DIR$/vendor/shivas/versioning-bundle" />
+      <path value="$PROJECT_DIR$/vendor/neitanod/forceutf8" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.1" />
