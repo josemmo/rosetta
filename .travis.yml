@@ -35,9 +35,10 @@ before_install:
     - composer self-update               # Make sure Composer itself is updated before continuing
 
 install:
-    - composer install --no-interaction # Install Composer dependencies
-    - npm install                       # Install NodeJS dependencies
-    - npm run build                     # Build static assets
+    - echo "$DEPLOY_SSH_KEY" >> ~/.ssh/known_hosts # Trust deploy server public key
+    - composer install --no-interaction            # Install Composer dependencies
+    - npm install                                  # Install NodeJS dependencies
+    - npm run build                                # Build static assets
 
 script:
     - composer validate --no-check-all --strict # Validate composer.json and composer.lock
