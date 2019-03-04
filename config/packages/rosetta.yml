@@ -13,13 +13,13 @@ rosetta:
           provider:
               type: App\RosettaBundle\Provider\Innopac
               url: 'http://almena.uva.es/search/a?searchtype=Y&searcharg={{query}}&SORT=D'
-        - id: 'uned'
-          name: 'Universidad Nacional de Educación a Distancia'
-          short_name: 'UNED'
+
+        - id: 'ur'
+          name: 'Universidad de La Rioja'
+          short_name: 'UR'
           provider:
               type: App\RosettaBundle\Provider\Z3950
-              preset: 'unicorn'
-              url: 'biblio15.uned.es:2200/unicorn'
+              url: 'merly.unirioja.es:9000/ABSYSE'
 
         - id: 'ub'
           name: 'Universitat de Barcelona'
