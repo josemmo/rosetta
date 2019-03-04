@@ -49,8 +49,8 @@ script:
     - php ./bin/phpunit                         # Run tests
 
 deploy:
-    provider: heroku
-    api_key: $HEROKU_KEY
-    app: rosetta-staging
+    provider: script
+    script: bash .docker/deploy.sh
     on:
         php: 7.2 # Deploy once per build
+        branch: master
