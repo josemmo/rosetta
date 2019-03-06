@@ -41,18 +41,28 @@ class Identifier {
 
     /**
      * Get type
-     * @return string Type
+     * @return int Type
      */
-    public function getType(): string {
+    public function getType(): int {
         return $this->type;
     }
 
 
     /**
      * Get ID
-     * @return int ID
+     * @return string ID
      */
-    public function getId(): int {
+    public function getId(): string {
         return $this->id;
     }
+
+
+    /**
+     * To string representation
+     * @return string Identifier representation as text
+     */
+    public function __toString() {
+        return "{$this->type}:{$this->id}";
+    }
+
 }

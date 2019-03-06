@@ -66,6 +66,14 @@ abstract class AbstractEntity {
      * @return static                 This instance
      */
     public function addIdentifier(Identifier $identifier): self {
+        // Make sure it doesn't exist yet
+        $newTag = (string) $identifier;
+        foreach ($this->identifiers as $existing) {
+            $oldTag = (string) $existing;
+            if ($newTag === $oldTag) return $this;
+        }
+
+        // Associate identifier
         $this->identifiers[] = $identifier;
         return $this;
     }
