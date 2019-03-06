@@ -87,6 +87,24 @@ class SearchQuery {
 
 
     /**
+     * Get operand
+     * @return string Operand
+     */
+    public function getOperand(): string {
+        return $this->operand;
+    }
+
+
+    /**
+     * Get items
+     * @return mixed[] Items
+     */
+    public function getItems(): array {
+        return $this->items;
+    }
+
+
+    /**
      * Tokenize query string into an array
      * @param  string   $query Query
      * @return string[]        Tokens

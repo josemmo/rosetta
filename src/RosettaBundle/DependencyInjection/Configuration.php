@@ -68,6 +68,7 @@ class Configuration implements ConfigurationInterface {
                 ->scalarNode('group')->defaultNull()->end()
                 ->scalarNode('password')->defaultNull()->end()
                 ->scalarNode('key')->defaultNull()->end()
+                ->scalarNode('country')->defaultNull()->end()
                 ->scalarNode('syntax')->defaultNull()->end()
                 ->integerNode('oclc_field')->defaultValue(935)->end()
                 ->integerNode('timeout')
