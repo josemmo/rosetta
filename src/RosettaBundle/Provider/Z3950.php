@@ -162,7 +162,7 @@ class Z3950 extends AbstractProvider {
                         $this->logger->warning('Unknown relator code, assuming author', [
                             "firstname" => $firstname,
                             "lastname" => $lastname,
-                            "relatorCode" => $relatorCode,
+                            "relatorCode" => (string) $relatorCode[0],
                             "url" => $this->config['url']
                         ]);
                     }
