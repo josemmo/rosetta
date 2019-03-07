@@ -26,8 +26,24 @@ class Identifier {
     const OCLC = 3;
     const GBOOKS = 4;
 
+    private static $searchQueryFields = [
+        self::ISBN_10 => "isbn",
+        self::ISBN_13 => "isbn",
+        self::OCLC => "oclc"
+    ];
+
     private $type;
     private $id;
+
+    /**
+     * Identifier type to SearchQuery field
+     * @param  int         $type Type
+     * @return string|null       SearchQuery field
+     */
+    public static function toSearchQueryField(int $type): ?string {
+        return self::$searchQueryFields[$type] ?? null;
+    }
+
 
     /**
      * Identifier constructor
@@ -64,6 +80,15 @@ class Identifier {
      */
     public function __toString() {
         return "{$this->type}:{$this->id}";
+    }
+
+
+    /**
+     * To SearchQuery expression
+     * @return string SearchQuery expression
+     */
+    public function toSearchQuery(): string {
+        return self::toSearchQueryField($this->type) . ":" . $this->id;
     }
 
 }

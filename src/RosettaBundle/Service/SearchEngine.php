@@ -43,11 +43,17 @@ class SearchEngine {
      * @return AbstractEntity[]            Search results
      */
     public function search(SearchQuery $query, ?array $databases=null) {
-        $results = $this->getLocalResults($query, $databases);
-        $externalResults = $this->getExternalResults($results);
-        // TODO: clean results
-        // TODO: merge results
-        return array_merge($results, $externalResults);
+        // Fetch results
+        $localResults = $this->getLocalResults($query, $databases);
+        $externalResults = $this->getExternalResults($localResults);
+        $results = array_merge($localResults, $externalResults);
+        unset($localResults);
+        unset($externalResults);
+
+        // Combine results
+        $results = $this->groupResults($results);
+        $results = $this->combineGroupedResults($results);
+        return $results;
     }
 
 
@@ -133,6 +139,70 @@ class SearchEngine {
 
         // Get results
         return $this->getResultsFromProviders($query, $providersConfig);
+    }
+
+
+    /**
+     * Group results that are the same
+     * @param  AbstractEntity[]   $entities Array of entities
+     * @return AbstractEntity[][]           Grouped entities
+     */
+    private function groupResults(array $entities): array {
+        // Create table of identifiers
+        $ids = [];
+        foreach ($entities as $i=>$item) {
+            foreach ($item->getIdentifiers() as $identifier) {
+                if ($identifier->getType() == Identifier::ISBN_13) continue;
+                $id = (string) $identifier;
+                if (!isset($ids[$id])) $ids[$id] = [];
+                $ids[$id][] = $i;
+            }
+        }
+
+        // Sort IDs array by length (required for proper grouping)
+        $ids = array_values($ids);
+        usort($ids, function($a, $b) {
+            return count($b) <=> count($a);
+        });
+
+        // Create groups
+        $groups = [];
+        $itemGroupPair = [];
+        foreach ($ids as &$items) {
+            // Find group ID
+            $groupId = count($groups);
+            foreach ($items as &$itemId) {
+                if (isset($itemGroupPair[$itemId])) {
+                    $groupId = $itemGroupPair[$itemId];
+                    break;
+                }
+            }
+
+            // Add items to group
+            if (!isset($groups[$groupId])) $groups[$groupId] = [];
+            foreach ($items as &$itemId) {
+                if (!in_array($itemId, $groups[$groupId])) $groups[$groupId][] = $itemId;
+                $itemGroupPair[$itemId] = $groupId;
+            }
+        }
+
+        // Replace IDs with entities
+        foreach ($groups as &$group) {
+            foreach ($group as &$id) $id = $entities[$id];
+        }
+
+        return $groups;
+    }
+
+
+    /**
+     * Combine grouped results
+     * @param  AbstractEntity[][] $groupedEntities Grouped entities
+     * @return AbstractEntity[]                    Array of entities
+     */
+    private function combineGroupedResults(array $groupedEntities): array {
+        // TODO: combine entities properties
+        return array_map(function ($group) { return $group[0]; }, $groupedEntities);
     }
 
 }
