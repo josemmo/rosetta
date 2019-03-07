@@ -56,7 +56,7 @@ abstract class AbstractEntity {
      * @return Identifier[] Entity identifiers
      */
     public function getIdentifiers(): array {
-        return $this->identifiers;
+        return array_values($this->identifiers);
     }
 
 
@@ -66,7 +66,8 @@ abstract class AbstractEntity {
      * @return static                 This instance
      */
     public function addIdentifier(Identifier $identifier): self {
-        $this->identifiers[] = $identifier;
+        $tag = (string) $identifier;
+        if (!isset($this->identifiers[$tag])) $this->identifiers[$tag] = $identifier;
         return $this;
     }
 

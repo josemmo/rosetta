@@ -32,35 +32,9 @@ class Innopac extends AbstractHttpProvider {
         $reqUrl = $this->config['url'];
         $reqUrl = str_replace('{{query}}', urlencode($this->query->toInnopac()), $reqUrl);
 
-        // Create new cURL request
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $reqUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Pragma: no-cache',
-            'Cache-Control: no-cache',
-            'User-Agent: rosetta',
-            'Dnt: 1',
-            'Accept-Encoding: gzip, deflate'
-        ]);
-
         // Add request to queue
+        $ch = $this->newCurlRequest($reqUrl);
         $this->enqueueRequest($ch);
-    }
-
-
-    /**
-     * @inheritdoc
-     */
-    public function getResults(): array {
-        $results = [];
-        foreach ($this->responses as &$res) {
-            array_merge($results, $this->parseResponse($res));
-            unset($res);
-        }
-        return $results;
     }
 
 
@@ -69,7 +43,7 @@ class Innopac extends AbstractHttpProvider {
      * @param  string         $res HTML response
      * @return AbstractWork[]      Results
      */
-    public function parseResponse(string &$res) {
+    protected function parseResponse(string &$res) {
         return []; // TODO: not implemented
     }
 

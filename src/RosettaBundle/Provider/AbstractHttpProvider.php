@@ -20,6 +20,7 @@
 
 namespace App\RosettaBundle\Provider;
 
+use App\RosettaBundle\Entity\AbstractEntity;
 use App\RosettaBundle\Query\SearchQuery;
 
 abstract class AbstractHttpProvider extends AbstractProvider {
@@ -68,6 +69,48 @@ abstract class AbstractHttpProvider extends AbstractProvider {
         self::$executed = true;
         self::$requests = [];
         self::$instances = [];
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function getResults(): array {
+        $results = [];
+        foreach ($this->responses as &$res) {
+            $results = array_merge($results, $this->parseResponse($res));
+            unset($res);
+        }
+        return $results;
+    }
+
+
+    /**
+     * Parse response
+     * @param  string           $res HTML response
+     * @return AbstractEntity[]      Results
+     */
+    protected abstract function parseResponse(string &$res);
+
+
+    /**
+     * Create new cURL request
+     * @param  string   $url Request URL
+     * @return resource      cURL resource
+     */
+    protected function newCurlRequest(string $url) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Pragma: no-cache',
+            'Cache-Control: no-cache',
+            'User-Agent: rosetta',
+            'Dnt: 1',
+            'Accept-Encoding: gzip, deflate'
+        ]);
+        return $ch;
     }
 
 

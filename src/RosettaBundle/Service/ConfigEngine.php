@@ -29,6 +29,7 @@ class ConfigEngine {
     private $version;
     private $opac;
     private $databases = [];
+    private $externalProviders = [];
 
     /**
      * ConfigEngine constructor
@@ -54,6 +55,9 @@ class ConfigEngine {
         foreach ($config['databases'] as $source) {
             $this->databases[$source['id']] = new Database($source);
         }
+
+        // Save external providers
+        $this->externalProviders = $config['external_providers'];
     }
 
 
@@ -91,6 +95,15 @@ class ConfigEngine {
      */
     public function getDatabases(): array {
         return $this->databases;
+    }
+
+
+    /**
+     * Get external providers
+     * @return array External providers
+     */
+    public function getExternalProviders(): array {
+        return $this->externalProviders;
     }
 
 }

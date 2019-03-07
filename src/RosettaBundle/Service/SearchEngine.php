@@ -21,6 +21,8 @@
 namespace App\RosettaBundle\Service;
 
 use App\RosettaBundle\Entity\AbstractEntity;
+use App\RosettaBundle\Entity\Other\Identifier;
+use App\RosettaBundle\Query\Operand;
 use App\RosettaBundle\Query\SearchQuery;
 use Psr\Log\LoggerInterface;
 
@@ -41,30 +43,34 @@ class SearchEngine {
      * @return AbstractEntity[]            Search results
      */
     public function search(SearchQuery $query, ?array $databases=null) {
-        $results = $this->getResultsFromSources($query, $databases);
-        // TODO: clean results
-        // TODO: merge results
+        // Fetch results
+        $localResults = $this->getLocalResults($query, $databases);
+        $externalResults = $this->getExternalResults($localResults);
+        $results = array_merge($localResults, $externalResults);
+        unset($localResults);
+        unset($externalResults);
+
+        // Combine results
+        $results = $this->groupResults($results);
+        $results = $this->combineGroupedResults($results);
         return $results;
     }
 
 
     /**
      * Get results from sources
-     * @param  SearchQuery      $query     Search query
-     * @param  string[]|null    $databases Database IDs to fetch results from, null for any
-     * @return AbstractEntity[]            Search results
+     * @param  SearchQuery      $query           Search query
+     * @param  array            $providersConfig Array of provider configurations
+     * @return AbstractEntity[]                  Search results
      */
-    private function getResultsFromSources(SearchQuery $query, ?array $databases=null) {
+    private function getResultsFromProviders(SearchQuery $query, array $providersConfig) {
         // Instantiate and configure providers
         $providers = [];
-        foreach ($this->config->getDatabases() as $db) {
-            if (empty($databases) || in_array($db->getId(), $databases)) {
-                $config = $db->getProvider();
-                $provider = new $config['type']($this->logger);
-                $provider->configure($config, $query);
-                $provider->prepare();
-                $providers[] = $provider;
-            }
+        foreach ($providersConfig as $config) {
+            $provider = new $config['type']($this->logger);
+            $provider->configure($config, $query);
+            $provider->prepare();
+            $providers[] = $provider;
         }
 
         // Execute search
@@ -81,6 +87,122 @@ class SearchEngine {
         foreach ($providers as $provider) unset($provider);
 
         return $results;
+    }
+
+
+    /**
+     * Get results from local sources (databases)
+     * @param  SearchQuery      $query     Search query
+     * @param  string[]|null    $databases Database IDs to fetch results from, null for any
+     * @return AbstractEntity[]            Search results
+     */
+    private function getLocalResults(SearchQuery $query, ?array $databases=null) {
+        $providersConfig = [];
+        foreach ($this->config->getDatabases() as $db) {
+            if (empty($databases) || in_array($db->getId(), $databases)) {
+                $providersConfig[] = $db->getProvider();
+            }
+        }
+
+        return $this->getResultsFromProviders($query, $providersConfig);
+    }
+
+
+    /**
+     * Get results from external sources
+     * @param  AbstractEntity[] $entities Results from database providers
+     * @return AbstractEntity[]           External results
+     */
+    private function getExternalResults(array $entities): array {
+        $providersConfig = $this->config->getExternalProviders();
+        if (empty($providersConfig)) return [];
+
+        // Get identifiers from input entities
+        $identifiers = [];
+        foreach ($entities as $entity) {
+            foreach ($entity->getIdentifiers() as $identifier) {
+                if ($identifier->getType() == Identifier::ISBN_13) continue;
+                $tag = (string) $identifier;
+                if (!isset($identifiers[$tag])) $identifiers[$tag] = $identifier->toSearchQuery();
+            }
+        }
+        if (empty($identifiers)) return [];
+
+        // Prepare search query
+        $query = [];
+        foreach ($identifiers as $expression) {
+            $query[] = $expression;
+            $query[] = Operand::OR;
+        }
+        array_pop($query);
+        $query = SearchQuery::of($query);
+
+        // Get results
+        return $this->getResultsFromProviders($query, $providersConfig);
+    }
+
+
+    /**
+     * Group results that are the same
+     * @param  AbstractEntity[]   $entities Array of entities
+     * @return AbstractEntity[][]           Grouped entities
+     */
+    private function groupResults(array $entities): array {
+        // Create table of identifiers
+        $ids = [];
+        foreach ($entities as $i=>$item) {
+            foreach ($item->getIdentifiers() as $identifier) {
+                if ($identifier->getType() == Identifier::ISBN_13) continue;
+                $id = (string) $identifier;
+                if (!isset($ids[$id])) $ids[$id] = [];
+                $ids[$id][] = $i;
+            }
+        }
+
+        // Sort IDs array by length (required for proper grouping)
+        $ids = array_values($ids);
+        usort($ids, function($a, $b) {
+            return count($b) <=> count($a);
+        });
+
+        // Create groups
+        $groups = [];
+        $itemGroupPair = [];
+        foreach ($ids as &$items) {
+            // Find group ID
+            $groupId = count($groups);
+            foreach ($items as &$itemId) {
+                if (isset($itemGroupPair[$itemId])) {
+                    $groupId = $itemGroupPair[$itemId];
+                    break;
+                }
+            }
+
+            // Add items to group
+            if (!isset($groups[$groupId])) $groups[$groupId] = [];
+            foreach ($items as &$itemId) {
+                if (!in_array($itemId, $groups[$groupId])) $groups[$groupId][] = $itemId;
+                $itemGroupPair[$itemId] = $groupId;
+            }
+        }
+
+        // Replace IDs with entities
+        foreach ($groups as &$group) {
+            foreach ($group as &$id) $id = $entities[$id];
+        }
+
+        return $groups;
+    }
+
+
+    /**
+     * Combine grouped results
+     * @param  AbstractEntity[][] $groupedEntities Grouped entities
+     * @return AbstractEntity[]                    Array of entities
+     */
+    private function combineGroupedResults(array $groupedEntities): array {
+        // TODO: combine entities properties
+        return array_map(function ($group) { return $group[0]; }, $groupedEntities);
     }
 
 }

@@ -20,6 +20,7 @@
 
 namespace App\RosettaBundle\Provider;
 
+use App\RosettaBundle\Entity\Organization;
 use App\RosettaBundle\Entity\Other\Holding;
 use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
@@ -148,6 +149,21 @@ class Z3950 extends AbstractProvider {
             $res->addLegalDeposit($elem->subfield[0]);
         }
 
+        // Add publisher
+        $publisher = $record->xpath('datafield[@tag="260"]/subfield[@code="b"]');
+        if (!empty($publisher)) {
+            $organization = new Organization();
+            $organization->setName($publisher[0]);
+            $res->addPublisher($organization);
+        }
+
+        // Add published year
+        $pubYear = $record->xpath('datafield[@tag="260"]/subfield[@code="c"]');
+        if (!empty($pubYear)) {
+            preg_match('/[0-9]{4}/', $pubYear[0], $matches);
+            if (!empty($matches)) $res->setPubDate($matches[0]);
+        }
+
         // Add authors
         foreach (['100', '600', '700'] as $tag) {
             foreach ($record->xpath("datafield[@tag='$tag']") as $elem) {
@@ -162,7 +178,7 @@ class Z3950 extends AbstractProvider {
                         $this->logger->warning('Unknown relator code, assuming author', [
                             "firstname" => $firstname,
                             "lastname" => $lastname,
-                            "relatorCode" => $relatorCode,
+                            "relatorCode" => (string) $relatorCode[0],
                             "url" => $this->config['url']
                         ]);
                     }
@@ -177,7 +193,7 @@ class Z3950 extends AbstractProvider {
         }
 
         // Add holdings
-        if (!empty($rawResult->holdings)) {
+        if ($this->config['get_holdings'] && !empty($rawResult->holdings)) {
             foreach ($rawResult->holdings->holding as $elem) {
                 $holding = new Holding($elem->callNumber);
                 $res->addHolding($holding);
