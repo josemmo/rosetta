@@ -21,11 +21,31 @@
 namespace App\RosettaBundle\Entity;
 
 class Person extends AbstractEntity {
+    private $name = null;
     private $firstname = null;
     private $lastname = null;
     private $description = null;
     private $birthDate = null;
     private $deathDate = null;
+
+    /**
+     * Get full name
+     * @return string Full name
+     */
+    public function getName(): string {
+        if (!is_null($this->name)) return $this->name;
+        return implode(" ", array_filter([$this->firstname, $this->lastname]));
+    }
+
+
+    /**
+     * Set full name
+     * @param string|null $name Full name
+     */
+    public function setName(?string $name) {
+        $this->name = $name;
+    }
+
 
     /**
      * Get firstname
@@ -64,15 +84,6 @@ class Person extends AbstractEntity {
     public function setLastname(string $lastname): self {
         $this->lastname = $lastname;
         return $this;
-    }
-
-
-    /**
-     * Get full name
-     * @return string Full name
-     */
-    public function getName(): string {
-        return implode(" ", array_filter([$this->firstname, $this->lastname]));
     }
 
 

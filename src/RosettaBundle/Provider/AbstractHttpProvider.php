@@ -78,7 +78,7 @@ abstract class AbstractHttpProvider extends AbstractProvider {
     public function getResults(): array {
         $results = [];
         foreach ($this->responses as &$res) {
-            array_merge($results, $this->parseResponse($res));
+            $results = array_merge($results, $this->parseResponse($res));
             unset($res);
         }
         return $results;

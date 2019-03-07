@@ -20,6 +20,9 @@
 
 namespace App\RosettaBundle\Provider;
 
+use App\RosettaBundle\Entity\Other\Identifier;
+use App\RosettaBundle\Entity\Other\Relation;
+use App\RosettaBundle\Entity\Person;
 use App\RosettaBundle\Entity\Work\Book;
 use App\RosettaBundle\Query\SearchQuery;
 
@@ -59,7 +62,49 @@ class GoogleBooks extends AbstractHttpProvider {
      * @return Book[]      Results
      */
     protected function parseResponse(string &$res) {
-        return []; // TODO: not implemented
+        $res = json_decode($res, true);
+        if (empty($res['items'])) return [];
+
+        $results = [];
+        foreach ($res['items'] as &$data) {
+            $item = new Book();
+
+            // Set title
+            $title = $data['volumeInfo']['title'];
+            if (isset($data['volumeInfo']['subtitle'])) $title .= ": " . $data['volumeInfo']['subtitle'];
+            $item->setTitle($title);
+
+            // Add authors
+            foreach ($data['volumeInfo']['authors'] as $authorName) {
+                $person = new Person();
+                $person->setName($authorName);
+                $item->addRelation(new Relation($person, Relation::IS_AUTHOR_OF, $item));
+            }
+
+            // Add identifiers
+            foreach ($data['volumeInfo']['industryIdentifiers'] as &$elem) {
+                $item->addIsbn($elem['identifier']);
+            }
+            $item->addIdentifier(new Identifier(Identifier::GBOOKS, $data['id']));
+
+            // Set page number
+            if (isset($data['volumeInfo']['pageCount'])) {
+                $item->setNumOfPages($data['volumeInfo']['pageCount']);
+            }
+
+            // Set cover URL
+            $imageUrl = $data['volumeInfo']['imageLinks']['thumbnail'] ?? null;
+            $item->setImageUrl($imageUrl);
+
+            // Set language
+            if (isset($data['volumeInfo']['language'])) {
+                $item->addLanguage($data['volumeInfo']['language']);
+            }
+
+            $results[] = $item;
+        }
+
+        return $results;
     }
 
 }

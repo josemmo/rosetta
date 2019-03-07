@@ -24,6 +24,7 @@ class Identifier {
     const ISBN_10 = 1;
     const ISBN_13 = 2;
     const OCLC = 3;
+    const GBOOKS = 4;
 
     private $type;
     private $id;
