@@ -33,3 +33,4 @@ rosetta:
     # fields from entities fetched from the local databases.
     external_providers:
         - type: App\RosettaBundle\Provider\GoogleBooks
+          get_holdings: true

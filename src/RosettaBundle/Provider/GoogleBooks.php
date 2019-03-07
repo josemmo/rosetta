@@ -118,6 +118,11 @@ class GoogleBooks extends AbstractHttpProvider {
                 $item->addLanguage($data['volumeInfo']['language']);
             }
 
+            // Add holdings
+            if ($this->config['get_holdings'] && $data['saleInfo']['saleability'] !== "NOT_FOR_SALE") {
+                // TODO: implement holdings location first
+            }
+
             $results[] = $item;
         }
 

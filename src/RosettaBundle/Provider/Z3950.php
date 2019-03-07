@@ -193,7 +193,7 @@ class Z3950 extends AbstractProvider {
         }
 
         // Add holdings
-        if (!empty($rawResult->holdings)) {
+        if ($this->config['get_holdings'] && !empty($rawResult->holdings)) {
             foreach ($rawResult->holdings->holding as $elem) {
                 $holding = new Holding($elem->callNumber);
                 $res->addHolding($holding);

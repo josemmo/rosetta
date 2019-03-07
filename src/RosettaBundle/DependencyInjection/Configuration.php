@@ -28,6 +28,7 @@ class Configuration implements ConfigurationInterface {
     public function getConfigTreeBuilder() {
         $treeBuilder = new TreeBuilder('rosetta');
 
+        // Build configuration tree
         $node = $treeBuilder->getRootNode()
             ->children()
                 ->arrayNode('opac')
@@ -54,6 +55,17 @@ class Configuration implements ConfigurationInterface {
                 ->end()
             ->end();
 
+        // Fill default values for "get_holdings"
+        $treeBuilder->getRootNode()->validate()->always(function($val) {
+            foreach ($val['databases'] as &$db) {
+                if (is_null($db['provider']['get_holdings'])) $db['provider']['get_holdings'] = true;
+            }
+            foreach ($val['external_providers'] as &$provider) {
+                if (is_null($provider['get_holdings'])) $provider['get_holdings'] = false;
+            }
+            return $val;
+        })->end();
+
         return $treeBuilder;
     }
 
@@ -71,6 +83,7 @@ class Configuration implements ConfigurationInterface {
                 ->scalarNode('country')->defaultNull()->end()
                 ->scalarNode('syntax')->defaultNull()->end()
                 ->integerNode('oclc_field')->defaultValue(935)->end()
+                ->booleanNode('get_holdings')->defaultNull()->end()
                 ->integerNode('timeout')
                     ->defaultValue(3)
                     ->min(1)
