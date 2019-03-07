@@ -21,6 +21,8 @@
 namespace App\RosettaBundle\Service;
 
 use App\RosettaBundle\Entity\AbstractEntity;
+use App\RosettaBundle\Entity\Other\Identifier;
+use App\RosettaBundle\Query\Operand;
 use App\RosettaBundle\Query\SearchQuery;
 use Psr\Log\LoggerInterface;
 
@@ -41,30 +43,28 @@ class SearchEngine {
      * @return AbstractEntity[]            Search results
      */
     public function search(SearchQuery $query, ?array $databases=null) {
-        $results = $this->getResultsFromSources($query, $databases);
+        $results = $this->getLocalResults($query, $databases);
+        $externalResults = $this->getExternalResults($results);
         // TODO: clean results
         // TODO: merge results
-        return $results;
+        return array_merge($results, $externalResults);
     }
 
 
     /**
      * Get results from sources
-     * @param  SearchQuery      $query     Search query
-     * @param  string[]|null    $databases Database IDs to fetch results from, null for any
-     * @return AbstractEntity[]            Search results
+     * @param  SearchQuery      $query           Search query
+     * @param  array            $providersConfig Array of provider configurations
+     * @return AbstractEntity[]                  Search results
      */
-    private function getResultsFromSources(SearchQuery $query, ?array $databases=null) {
+    private function getResultsFromProviders(SearchQuery $query, array $providersConfig) {
         // Instantiate and configure providers
         $providers = [];
-        foreach ($this->config->getDatabases() as $db) {
-            if (empty($databases) || in_array($db->getId(), $databases)) {
-                $config = $db->getProvider();
-                $provider = new $config['type']($this->logger);
-                $provider->configure($config, $query);
-                $provider->prepare();
-                $providers[] = $provider;
-            }
+        foreach ($providersConfig as $config) {
+            $provider = new $config['type']($this->logger);
+            $provider->configure($config, $query);
+            $provider->prepare();
+            $providers[] = $provider;
         }
 
         // Execute search
@@ -81,6 +81,58 @@ class SearchEngine {
         foreach ($providers as $provider) unset($provider);
 
         return $results;
+    }
+
+
+    /**
+     * Get results from local sources (databases)
+     * @param  SearchQuery      $query     Search query
+     * @param  string[]|null    $databases Database IDs to fetch results from, null for any
+     * @return AbstractEntity[]            Search results
+     */
+    private function getLocalResults(SearchQuery $query, ?array $databases=null) {
+        $providersConfig = [];
+        foreach ($this->config->getDatabases() as $db) {
+            if (empty($databases) || in_array($db->getId(), $databases)) {
+                $providersConfig[] = $db->getProvider();
+            }
+        }
+
+        return $this->getResultsFromProviders($query, $providersConfig);
+    }
+
+
+    /**
+     * Get results from external sources
+     * @param  AbstractEntity[] $entities Results from database providers
+     * @return AbstractEntity[]           External results
+     */
+    private function getExternalResults(array $entities): array {
+        $providersConfig = $this->config->getExternalProviders();
+        if (empty($providersConfig)) return [];
+
+        // Get identifiers from input entities
+        $identifiers = [];
+        foreach ($entities as $entity) {
+            foreach ($entity->getIdentifiers() as $identifier) {
+                if ($identifier->getType() == Identifier::ISBN_13) continue;
+                $tag = (string) $identifier;
+                if (!isset($identifiers[$tag])) $identifiers[$tag] = $identifier->toSearchQuery();
+            }
+        }
+        if (empty($identifiers)) return [];
+
+        // Prepare search query
+        $query = [];
+        foreach ($identifiers as $expression) {
+            $query[] = $expression;
+            $query[] = Operand::OR;
+        }
+        array_pop($query);
+        $query = SearchQuery::of($query);
+
+        // Get results
+        return $this->getResultsFromProviders($query, $providersConfig);
     }
 
 }
