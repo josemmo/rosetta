@@ -20,6 +20,7 @@
 
 namespace App\RosettaBundle\Provider;
 
+use App\RosettaBundle\Entity\Organization;
 use App\RosettaBundle\Entity\Other\Holding;
 use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
@@ -146,6 +147,21 @@ class Z3950 extends AbstractProvider {
         // Add legal attributes
         foreach ($record->xpath('datafield[@tag="017"]') as $elem) {
             $res->addLegalDeposit($elem->subfield[0]);
+        }
+
+        // Add publisher
+        $publisher = $record->xpath('datafield[@tag="260"]/subfield[@code="b"]');
+        if (!empty($publisher)) {
+            $organization = new Organization();
+            $organization->setName($publisher[0]);
+            $res->addPublisher($organization);
+        }
+
+        // Add published year
+        $pubYear = $record->xpath('datafield[@tag="260"]/subfield[@code="c"]');
+        if (!empty($pubYear)) {
+            preg_match('/[0-9]{4}/', $pubYear[0], $matches);
+            if (!empty($matches)) $res->setPubDate($matches[0]);
         }
 
         // Add authors

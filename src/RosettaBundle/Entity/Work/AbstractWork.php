@@ -31,7 +31,9 @@ use App\RosettaBundle\Entity\Person;
 abstract class AbstractWork extends AbstractEntity {
     private $title = null;
     private $legalDeposits = [];
-    private $pubDate = null;
+    private $pubYear = null;
+    private $pubMonth = null;
+    private $pubDay = null;
     private $languages = [];
     private $holdings = [];
 
@@ -76,21 +78,16 @@ abstract class AbstractWork extends AbstractEntity {
 
 
     /**
-     * Get publication date
-     * @return \DateTime|null Publication date
-     */
-    public function getPubDate(): ?\DateTime {
-        return $this->pubDate;
-    }
-
-
-    /**
      * Set publication date
-     * @param  \DateTime|null $pubDate Publication date
-     * @return static                  This instance
+     * @param  int      $year  Publication year
+     * @param  int|null $month Publication month
+     * @param  int|null $day   Publication day
+     * @return static          This instance
      */
-    public function setPubDate(?\DateTime $pubDate): self {
-        $this->pubDate = $pubDate;
+    public function setPubDate(int $year, int $month=null, int $day=null): self {
+        $this->pubYear = $year;
+        $this->pubMonth = $month;
+        $this->pubDay = $day;
         return $this;
     }
 

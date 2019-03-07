@@ -20,6 +20,7 @@
 
 namespace App\RosettaBundle\Provider;
 
+use App\RosettaBundle\Entity\Organization;
 use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
@@ -81,6 +82,22 @@ class GoogleBooks extends AbstractHttpProvider {
                 $item->addRelation(new Relation($person, Relation::IS_AUTHOR_OF, $item));
             }
 
+            // Add publisher
+            $publisher = $data['volumeInfo']['publisher'] ?? null;
+            if (!empty($publisher)) {
+                $organization = new Organization();
+                $organization->setName($publisher);
+                $item->addPublisher($organization);
+            }
+
+            // Add published date
+            $pubDate = $data['volumeInfo']['publishedDate'] ?? null;
+            if (!is_null($pubDate)) {
+                $pubDate = explode('-', $pubDate);
+                $pubDate = array_pad($pubDate, 3, null);
+                $item->setPubDate($pubDate[0], $pubDate[1], $pubDate[2]);
+            }
+
             // Add identifiers
             foreach ($data['volumeInfo']['industryIdentifiers'] as &$elem) {
                 $item->addIsbn($elem['identifier']);
@@ -94,7 +111,7 @@ class GoogleBooks extends AbstractHttpProvider {
 
             // Set cover URL
             $imageUrl = $data['volumeInfo']['imageLinks']['thumbnail'] ?? null;
-            $item->setImageUrl($imageUrl);
+            if (!empty($imageUrl)) $item->setImageUrl($imageUrl);
 
             // Set language
             if (isset($data['volumeInfo']['language'])) {
