@@ -146,4 +146,18 @@ class Book extends AbstractWork {
         return $this;
     }
 
+
+    /**
+     * @inheritdoc
+     */
+    public function merge($other) {
+        // Number of pages
+        if (!empty($other->getNumOfPages())) $this->setNumOfPages($other->getNumOfPages());
+
+        // Number of volumes
+        if (!empty($other->getNumOfVolumes())) $this->setNumOfVolumes($other->getNumOfVolumes());
+
+        return parent::merge($other);
+    }
+
 }

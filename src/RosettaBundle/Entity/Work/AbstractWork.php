@@ -72,7 +72,10 @@ abstract class AbstractWork extends AbstractEntity {
      * @return static               This instance
      */
     public function addLegalDeposit(string $legalDeposit): self {
-        $this->legalDeposits[] = $legalDeposit;
+        $legalDeposit = trim($legalDeposit);
+        if (!in_array($legalDeposit, $this->legalDeposits)) {
+            $this->legalDeposits[] = $legalDeposit;
+        }
         return $this;
     }
 
@@ -93,6 +96,15 @@ abstract class AbstractWork extends AbstractEntity {
 
 
     /**
+     * Get publication date
+     * @return int[] Publication year, month and day array
+     */
+    public function getPubDate(): array {
+        return [$this->pubYear, $this->pubMonth, $this->pubDay];
+    }
+
+
+    /**
      * Get languages
      * @return string[] Two-letter language codes according to ISO 639-1
      */
@@ -107,7 +119,7 @@ abstract class AbstractWork extends AbstractEntity {
      * @return static           This instance
      */
     public function addLanguage(string $language): self {
-        $this->languages[] = $language;
+        if (!in_array($language, $this->languages)) $this->languages[] = $language;
         return $this;
     }
 
@@ -147,6 +159,33 @@ abstract class AbstractWork extends AbstractEntity {
      */
     public function getCreator() {
         return $this->getFirstRelatedOfType(Relation::IS_AUTHOR_OF);
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function merge($other) {
+        // Title
+        if (!empty($other->getTitle())) $this->setTitle($other->getTitle());
+
+        // Legal Deposits
+        foreach ($other->getLegalDeposit() as $ld) $this->addLegalDeposit($ld);
+
+        // Publication date
+        $pubDate = $this->getPubDate();
+        foreach ($other->getPubDate() as $i=>$elem) {
+            if (!empty($elem)) $pubDate[$i] = $elem;
+        }
+        $this->setPubDate(...$pubDate);
+
+        // Languages
+        foreach ($other->getLanguages() as $lang) $this->addLanguage($lang);
+
+        // Holdings
+        foreach ($other->getHoldings() as $holding) $this->addHolding($holding);
+
+        return parent::merge($other);
     }
 
 }

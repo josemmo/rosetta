@@ -201,8 +201,15 @@ class SearchEngine {
      * @return AbstractEntity[]                    Array of entities
      */
     private function combineGroupedResults(array $groupedEntities): array {
-        // TODO: combine entities properties
-        return array_map(function ($group) { return $group[0]; }, $groupedEntities);
+        $res = [];
+
+        foreach ($groupedEntities as $group) {
+            $entity = $group[0];
+            for ($i=1; $i<count($group); $i++) $entity->merge($group[$i]);
+            $res[] = $entity;
+        }
+
+        return $res;
     }
 
 }

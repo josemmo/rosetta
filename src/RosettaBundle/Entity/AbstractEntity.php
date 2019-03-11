@@ -132,4 +132,20 @@ abstract class AbstractEntity {
         return null;
     }
 
+
+    /**
+     * Merge this entity with another one
+     * @param  static $other Entity to merge with
+     * @return static        This instance
+     */
+    public function merge($other) {
+        // Image URL
+        if (!is_null($other->getImageUrl())) $this->setImageUrl($other->getImageUrl());
+
+        // Identifiers
+        foreach ($other->getIdentifiers() as $identifier) $this->addIdentifier($identifier);
+
+        return $this;
+    }
+
 }
