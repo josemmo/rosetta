@@ -27,5 +27,6 @@ $btn-focus-width: 1px;
 
 // Custom select fix
 .input-group-append .custom-select {
-    @include border-left-radius(0);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
