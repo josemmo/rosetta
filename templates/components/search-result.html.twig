@@ -15,9 +15,9 @@
  # You should have received a copy of the GNU General Public License
  # along with this program. If not, see <https://www.gnu.org/licenses/>.
  #}
-<div class="search-result">
+<div class="search-result {{ entity.entityType }}">
     <div class="cover-wrapper">
-        <a href="#" class="cover" style="background-image:url(https://loremflickr.com/290/400/book,cover/all/?lock={{ loop.index }})"></a>
+        <a href="#" class="cover" style="background-image:url('{{ entity.imageUrl }}')"></a>
     </div>
     <a href="#" class="title">{{ entity.title }}</a>
     {% if entity.creator %}<span class="subtitle">{{ entity.creator.name }}</span>{% endif %}

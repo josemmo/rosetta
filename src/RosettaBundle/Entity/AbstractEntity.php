@@ -134,6 +134,17 @@ abstract class AbstractEntity {
 
 
     /**
+     * Get entity type
+     * @return string Entity type
+     */
+    public function getEntityType(): string {
+        $type = explode('\\', static::class);
+        $type = str_replace('Abstract', '', end($type));
+        return strtolower($type);
+    }
+
+
+    /**
      * Merge this entity with another one
      * @param  static $other Entity to merge with
      * @return static        This instance
