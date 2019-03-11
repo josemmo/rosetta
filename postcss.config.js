@@ -1,4 +1,4 @@
-/*!
+/*
  * Rosetta - A free (libre) Integrated Library System for the 21st century.
  * Copyright (C) 2019 José M. Moreno <josemmo@pm.me>
  *
@@ -16,17 +16,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-body, html {
-    width: 100%;
-    height: 100%;
-}
-
-body {
-    color: $foreground-color;
-    background-color: $background-color;
-}
-
-::selection {
-    background-color: rgba($accent-color, 0.2);
+module.exports = {
+    plugins: {
+        autoprefixer: {}
+    }
 }
