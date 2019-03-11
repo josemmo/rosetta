@@ -84,6 +84,7 @@ class Configuration implements ConfigurationInterface {
                 ->scalarNode('syntax')->defaultNull()->end()
                 ->integerNode('oclc_field')->defaultValue(935)->end()
                 ->booleanNode('get_holdings')->defaultNull()->end()
+                ->scalarNode('covers_url')->defaultNull()->end()
                 ->integerNode('timeout')
                     ->defaultValue(3)
                     ->min(1)

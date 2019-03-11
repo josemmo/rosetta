@@ -226,6 +226,14 @@ class Z3950 extends AbstractProvider {
             $res->addIsbn($isbn);
         }
 
+        // Add cover
+        if (!is_null($this->config['covers_url'])) {
+            $imageUrl = $this->config['covers_url'];
+            $imageUrl = str_replace('{{isbn10}}', $res->getIsbn10s()[0] ?? '', $imageUrl);
+            $imageUrl = str_replace('{{isbn13}}', $res->getIsbn13s()[0] ?? '', $imageUrl);
+            $res->setImageUrl($imageUrl);
+        }
+
         return $res;
     }
 

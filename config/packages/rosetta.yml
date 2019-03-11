@@ -20,6 +20,7 @@ rosetta:
           provider:
               type: App\RosettaBundle\Provider\Z3950
               url: 'merly.unirioja.es:9000/ABSYSE'
+              covers_url: 'https://www.syndetics.com/index.php?isbn={{isbn13}}/LC.GIF&client=uvalla'
 
         - id: 'ub'
           name: 'Universitat de Barcelona'
@@ -28,6 +29,7 @@ rosetta:
               type: App\RosettaBundle\Provider\Z3950
               preset: 'millenium'
               url: 'ub.cbuc.cat:210/INNOPAC'
+              covers_url: 'https://cobertes.csuc.cat/cobertes.php?isbn={{isbn13}}&institucio=UB'
 
     # Third-party sources to be used to fix incorrect values and fill-in missing
     # fields from entities fetched from the local databases.
