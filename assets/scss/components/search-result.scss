@@ -30,7 +30,7 @@
         border-radius: 3px;
         overflow: hidden;
 
-        &:after {
+        &::after {
             content: '';
             position: absolute;
             width: 100%;
@@ -76,7 +76,7 @@
 /* DEFAULT BACKGROUNDS */
 $types: entity book;
 @each $type in $types {
-    .search-result.#{$type} .cover-wrapper:after {
+    .search-result.#{$type} .cover-wrapper::after {
         mask-image: url('./../../images/#{$type}.svg');
     }
 }
