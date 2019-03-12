@@ -12,7 +12,7 @@ rosetta:
           short_name: 'UVa'
           provider:
               type: App\RosettaBundle\Provider\Innopac
-              url: 'http://almena.uva.es/search/a?searchtype=Y&searcharg={{query}}&SORT=D'
+              url: 'http://almena.uva.es/search*S1/{{args}}'
 
         - id: 'ur'
           name: 'Universidad de La Rioja'

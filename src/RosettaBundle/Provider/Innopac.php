@@ -21,6 +21,7 @@
 namespace App\RosettaBundle\Provider;
 
 use App\RosettaBundle\Entity\Work\AbstractWork;
+use App\RosettaBundle\Query\Comparison;
 
 class Innopac extends AbstractHttpProvider {
 
@@ -28,13 +29,28 @@ class Innopac extends AbstractHttpProvider {
      * @inheritdoc
      */
     public function prepare() {
-        // Prepare request URL
-        $reqUrl = $this->config['url'];
-        $reqUrl = str_replace('{{query}}', urlencode($this->query->toInnopac()), $reqUrl);
+        // Find ISBN in query
+        $isbn = null;
+        foreach ($this->query->getItems() as $item) {
+            if (($item instanceof Comparison) && ($item->getField() == "isbn")) {
+                $isbn = $item->getValue();
+                break;
+            }
+        }
 
-        // Add request to queue
-        $ch = $this->newCurlRequest($reqUrl);
-        $this->enqueueRequest($ch);
+        // Enqueue ISBN request
+        if (!is_null($isbn)) {
+            $reqUrl = $this->config['url'];
+            $reqUrl = str_replace('{{args}}', '?searchtype=i&searcharg=' . urlencode($isbn), $reqUrl);
+            $this->enqueueRequest($this->newCurlRequest($reqUrl));
+            return;
+        }
+
+        // Enqueue regular search
+        $reqUrl = $this->config['url'];
+        $args = "?searchtype=X&searcharg=" . urlencode($this->query->toInnopac());
+        $reqUrl = str_replace('{{args}}', $args, $reqUrl);
+        $this->enqueueRequest($this->newCurlRequest($reqUrl));
     }
 
 
@@ -44,7 +60,28 @@ class Innopac extends AbstractHttpProvider {
      * @return AbstractWork[]      Results
      */
     protected function parseResponse(string &$res) {
-        return []; // TODO: not implemented
+        $res = explode('<tr class="briefCiteRow">', $res);
+        if (count($res) < 2) return [];
+
+        // Parse results
+        $results = [];
+        for ($i=1; $i<count($res); $i++) {
+            $result = $this->parseResult($res[$i]);
+            if (!is_null($result)) $results[] = $result;
+        }
+
+        return $results;
+    }
+
+
+    /**
+     * Parse result
+     * @param  string            $res HTML response
+     * @return AbstractWork|null      Result or null if failed to parse
+     */
+    private function parseResult(string &$res) {
+        // TODO: not implemented
+        return null;
     }
 
 }
