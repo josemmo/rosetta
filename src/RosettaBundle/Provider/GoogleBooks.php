@@ -76,10 +76,12 @@ class GoogleBooks extends AbstractHttpProvider {
             $item->setTitle($title);
 
             // Add authors
-            foreach ($data['volumeInfo']['authors'] as $authorName) {
-                $person = new Person();
-                $person->setName($authorName);
-                $item->addRelation(new Relation($person, Relation::IS_AUTHOR_OF, $item));
+            if (isset($data['volumeInfo']['authors'])) {
+                foreach ($data['volumeInfo']['authors'] as $authorName) {
+                    $person = new Person();
+                    $person->setName($authorName);
+                    $item->addRelation(new Relation($person, Relation::IS_AUTHOR_OF, $item));
+                }
             }
 
             // Add publisher
