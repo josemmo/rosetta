@@ -100,7 +100,9 @@ class SearchEngine {
         $providersConfig = [];
         foreach ($this->config->getDatabases() as $db) {
             if (empty($databases) || in_array($db->getId(), $databases)) {
-                $providersConfig[] = $db->getProvider();
+                $config = $db->getProvider();
+                $config['id'] = $db->getId();
+                $providersConfig[] = $config;
             }
         }
 

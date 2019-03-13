@@ -73,6 +73,18 @@ abstract class AbstractEntity {
 
 
     /**
+     * Add internal ID
+     * @param  string $databaseId Database ID
+     * @param  string $internalId Internal ID
+     * @return static             This instance
+     */
+    public function addInternalId(string $databaseId, string $internalId): self {
+        $this->addIdentifier(new Identifier(Identifier::INTERNAL, "$databaseId:$internalId"));
+        return $this;
+    }
+
+
+    /**
      * Get entity IDs of given type
      * @param  int      $type Identifier type
      * @return string[]       Entity IDs

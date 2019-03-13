@@ -22,6 +22,7 @@ namespace App\RosettaBundle\Provider;
 
 use App\RosettaBundle\Entity\Organization;
 use App\RosettaBundle\Entity\Other\Holding;
+use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
 use App\RosettaBundle\Entity\Work\AbstractWork;
@@ -137,6 +138,12 @@ class Z3950 extends AbstractProvider {
             ]);
         }
         if (is_null($res)) return null;
+
+        // Add internal identifier
+        $controlNumbers = $record->xpath('controlfield[@tag="001"]');
+        foreach ($controlNumbers as $cNumber) {
+            $res->addInternalId($this->config['id'], $cNumber);
+        }
 
         // Add title
         $title = $record->xpath('datafield[@tag="245"]/subfield[@code="a"]')[0];

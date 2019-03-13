@@ -21,10 +21,11 @@
 namespace App\RosettaBundle\Entity\Other;
 
 class Identifier {
-    const ISBN_10 = 1;
-    const ISBN_13 = 2;
-    const OCLC = 3;
-    const GBOOKS = 4;
+    const INTERNAL = 1;
+    const ISBN_10 = 2;
+    const ISBN_13 = 3;
+    const OCLC = 4;
+    const GBOOKS = 5;
 
     private static $searchQueryFields = [
         self::ISBN_10 => "isbn",
@@ -79,7 +80,7 @@ class Identifier {
      * @return string Identifier representation as text
      */
     public function __toString() {
-        return "{$this->type}:{$this->id}";
+        return "{" . $this->type . "}" . $this->id;
     }
 
 
