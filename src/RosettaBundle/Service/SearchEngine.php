@@ -123,9 +123,16 @@ class SearchEngine {
         $identifiers = [];
         foreach ($entities as $entity) {
             foreach ($entity->getIdentifiers() as $identifier) {
+                // Use ISBN-10 instead of both
                 if ($identifier->getType() == Identifier::ISBN_13) continue;
+
+                // Prevent duplicates
                 $tag = (string) $identifier;
-                if (!isset($identifiers[$tag])) $identifiers[$tag] = $identifier->toSearchQuery();
+                if (isset($identifiers[$tag])) continue;
+
+                // Check this identifier is searchable
+                $identifierQuery = $identifier->toSearchQuery();
+                if (!is_null($identifierQuery)) $identifiers[$tag] = $identifierQuery;
             }
         }
         if (empty($identifiers)) return [];

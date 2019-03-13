@@ -86,10 +86,11 @@ class Identifier {
 
     /**
      * To SearchQuery expression
-     * @return string SearchQuery expression
+     * @return string|null SearchQuery expression
      */
-    public function toSearchQuery(): string {
-        return self::toSearchQueryField($this->type) . ":" . $this->id;
+    public function toSearchQuery(): ?string {
+        $field = self::toSearchQueryField($this->type);
+        return is_null($field) ? null : "$field:{$this->id}";
     }
 
 }
