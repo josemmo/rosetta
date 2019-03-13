@@ -27,6 +27,7 @@ use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
 use App\RosettaBundle\Entity\Work\AbstractWork;
 use App\RosettaBundle\Entity\Work\Book;
+use App\RosettaBundle\Utils\Normalizer;
 use ForceUTF8\Encoding;
 
 class Z3950 extends AbstractProvider {
@@ -149,6 +150,7 @@ class Z3950 extends AbstractProvider {
         $title = $record->xpath('datafield[@tag="245"]/subfield[@code="a"]')[0];
         $subtitle = $record->xpath('datafield[@tag="245"]/subfield[@code="b"]');
         if (!empty($subtitle)) $title .= " " . $subtitle[0];
+        $title = Normalizer::normalizeTitle($title);
         $res->setTitle($title);
 
         // Add legal attributes
@@ -176,6 +178,7 @@ class Z3950 extends AbstractProvider {
             foreach ($record->xpath("datafield[@tag='$tag']") as $elem) {
                 $name = (string) $elem->xpath('subfield[@code="a"]')[0];
                 list($lastname, $firstname) = explode(',', "$name,");
+                $name = Normalizer::normalizeName("$firstname $lastname");
 
                 $type = null;
                 $relatorCode = $elem->xpath('subfield[@code="e"]');
@@ -183,8 +186,7 @@ class Z3950 extends AbstractProvider {
                     $type = $this->getRelation($relatorCode[0]);
                     if (is_null($type)) {
                         $this->logger->warning('Unknown relator code, assuming author', [
-                            "firstname" => $firstname,
-                            "lastname" => $lastname,
+                            "name" => $name,
                             "relatorCode" => (string) $relatorCode[0],
                             "url" => $this->config['url']
                         ]);
@@ -193,8 +195,7 @@ class Z3950 extends AbstractProvider {
                 if (is_null($type)) $type = Relation::IS_AUTHOR_OF;
 
                 $person = new Person();
-                $person->setFirstname($firstname);
-                $person->setLastname($lastname);
+                $person->setName($name);
                 $res->addRelation(new Relation($person, $type, $res));
             }
         }

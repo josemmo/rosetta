@@ -26,6 +26,7 @@ use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
 use App\RosettaBundle\Entity\Work\Book;
 use App\RosettaBundle\Query\SearchQuery;
+use App\RosettaBundle\Utils\Normalizer;
 
 class GoogleBooks extends AbstractHttpProvider {
 
@@ -73,13 +74,13 @@ class GoogleBooks extends AbstractHttpProvider {
             // Set title
             $title = $data['volumeInfo']['title'];
             if (isset($data['volumeInfo']['subtitle'])) $title .= ": " . $data['volumeInfo']['subtitle'];
-            $item->setTitle($title);
+            $item->setTitle(Normalizer::normalizeTitle($title));
 
             // Add authors
             if (isset($data['volumeInfo']['authors'])) {
                 foreach ($data['volumeInfo']['authors'] as $authorName) {
                     $person = new Person();
-                    $person->setName($authorName);
+                    $person->setName(Normalizer::normalizeName($authorName));
                     $item->addRelation(new Relation($person, Relation::IS_AUTHOR_OF, $item));
                 }
             }
