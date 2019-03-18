@@ -53,6 +53,7 @@ class SearchEngine {
         // Combine results
         $results = $this->groupResults($results);
         $results = $this->combineGroupedResults($results);
+        $this->mergeRelatedEntities($results);
         return $results;
     }
 
@@ -219,6 +220,30 @@ class SearchEngine {
         }
 
         return $res;
+    }
+
+
+    /**
+     * Merge related entities
+     * @param AbstractEntity[] $entities Array of entities
+     */
+    private function mergeRelatedEntities(array $entities) {
+        $related = [];
+        foreach ($entities as $entity) {
+            foreach ($entity->getRelations() as $relation) {
+                $other = $relation->getOther($entity);
+                $otherTag = $other->getSummaryTag();
+                if (empty($otherTag)) continue;
+
+                if (isset($related[$otherTag])) {
+                    $related[$otherTag]->merge($other);
+                    $relation->overwriteOther($entity, $related[$otherTag]);
+                    unset($other);
+                } else {
+                    $related[$otherTag] = $other;
+                }
+            }
+        }
     }
 
 }

@@ -157,6 +157,15 @@ abstract class AbstractEntity {
 
 
     /**
+     * Get a summary string that identifies the entity's content
+     * @return string|null Summary tag
+     */
+    public function getSummaryTag(): ?string {
+        return null;
+    }
+
+
+    /**
      * Merge this entity with another one
      * @param  static $other Entity to merge with
      * @return static        This instance

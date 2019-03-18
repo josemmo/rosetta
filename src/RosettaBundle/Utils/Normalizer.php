@@ -66,4 +66,18 @@ class Normalizer {
         return implode(' ', $newName);
     }
 
+
+    /**
+     * Normalize entity tag
+     * @param  string $tag Tag
+     * @return string      Normalized tag
+     */
+    public static function normalizeTag(string $tag) {
+        $tag = mb_strtolower($tag);
+        $tag = iconv('UTF-8', 'ASCII//TRANSLIT', $tag);
+        $tag = str_replace(' ', '-', $tag);
+        $tag = preg_replace('/[^a-z0-9-]/', '', $tag);
+        return $tag;
+    }
+
 }
