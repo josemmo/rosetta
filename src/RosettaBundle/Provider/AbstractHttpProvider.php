@@ -22,10 +22,10 @@ namespace App\RosettaBundle\Provider;
 
 use App\RosettaBundle\Entity\AbstractEntity;
 use App\RosettaBundle\Query\SearchQuery;
+use App\RosettaBundle\Utils\HttpClient;
 
 abstract class AbstractHttpProvider extends AbstractProvider {
     private static $executed = false;
-    private static $requests = [];
     private static $instances = [];
 
     protected $responses = [];
@@ -46,28 +46,13 @@ abstract class AbstractHttpProvider extends AbstractProvider {
         if (self::$executed) return;
 
         // Execute requests
-        $mh = curl_multi_init();
-        foreach (self::$requests as $ch) curl_multi_add_handle($mh, $ch);
-        $running = null;
-        do {
-            curl_multi_exec($mh, $running);
-        } while ($running);
-
-        // Save responses
-        foreach (self::$requests as $i=>$ch) {
-            self::$instances[$i]->__notifyResponse(curl_multi_getcontent($ch));
+        HttpClient::sendQueue();
+        foreach (self::$instances as $reqId=>$instance) {
+            $instance->__notifyResponse(HttpClient::getResponse($reqId));
         }
-
-        // Close handles
-        foreach (self::$requests as $ch) {
-            curl_multi_remove_handle($mh, $ch);
-            curl_close($ch);
-        }
-        curl_multi_close($mh);
 
         // Reset internal state
         self::$executed = true;
-        self::$requests = [];
         self::$instances = [];
     }
 
@@ -99,20 +84,7 @@ abstract class AbstractHttpProvider extends AbstractProvider {
      * @return resource      cURL resource
      */
     protected function newCurlRequest(string $url) {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->config['timeout']);
-        curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Pragma: no-cache',
-            'Cache-Control: no-cache',
-            'User-Agent: rosetta',
-            'Dnt: 1',
-            'Accept-Encoding: gzip, deflate'
-        ]);
-        return $ch;
+        return HttpClient::newRequest($url, $this->config['timeout']);
     }
 
 
@@ -121,8 +93,8 @@ abstract class AbstractHttpProvider extends AbstractProvider {
      * @param resource $ch cURL resource
      */
     protected function enqueueRequest($ch) {
-        self::$requests[] = $ch;
-        self::$instances[] = $this;
+        $reqId = HttpClient::enqueue($ch);
+        self::$instances[$reqId] = $this;
     }
 
 
