@@ -92,7 +92,7 @@ abstract class AbstractEntity {
     public function getIdsOfType(int $type): array {
         $res = [];
         foreach ($this->identifiers as $identifier) {
-            if ($identifier->getType() == $type) $res[] = $identifier->getId();
+            if ($identifier->getType() == $type) $res[] = $identifier->getValue();
         }
         return $res;
     }

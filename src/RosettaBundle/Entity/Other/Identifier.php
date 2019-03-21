@@ -35,7 +35,7 @@ class Identifier {
     ];
 
     private $type;
-    private $id;
+    private $value;
 
     /**
      * Identifier type to SearchQuery field
@@ -49,12 +49,12 @@ class Identifier {
 
     /**
      * Identifier constructor
-     * @param int    $type Type
-     * @param string $id   ID
+     * @param int    $type  Type
+     * @param string $value Value
      */
-    public function __construct(int $type, string $id) {
+    public function __construct(int $type, string $value) {
         $this->type = $type;
-        $this->id = $id;
+        $this->value = $value;
     }
 
 
@@ -68,11 +68,11 @@ class Identifier {
 
 
     /**
-     * Get ID
-     * @return string ID
+     * Get value
+     * @return string Value
      */
-    public function getId(): string {
-        return $this->id;
+    public function getValue(): string {
+        return $this->value;
     }
 
 
@@ -81,7 +81,7 @@ class Identifier {
      * @return string Identifier representation as text
      */
     public function __toString() {
-        return "{" . $this->type . "}" . $this->id;
+        return "{" . $this->type . "}" . $this->value;
     }
 
 
@@ -91,7 +91,7 @@ class Identifier {
      */
     public function toSearchQuery(): ?string {
         $field = self::toSearchQueryField($this->type);
-        return is_null($field) ? null : "$field:{$this->id}";
+        return is_null($field) ? null : "$field:{$this->value}";
     }
 
 }
