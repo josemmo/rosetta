@@ -87,6 +87,18 @@ class HttpClient {
 
 
     /**
+     * Send single request
+     * @param  resource $ch cURL request
+     * @return string       Response
+     */
+    public static function sendSingleRequest($ch) {
+        $res = curl_exec($ch);
+        curl_close($ch);
+        return $res;
+    }
+
+
+    /**
      * Get response
      * NOTE: once called, response will be cleared from memory.
      * @param  int         $id Request ID

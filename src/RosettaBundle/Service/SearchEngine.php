@@ -29,10 +29,12 @@ use Psr\Log\LoggerInterface;
 class SearchEngine {
     private $logger;
     private $config;
+    private $wiki;
 
-    public function __construct(LoggerInterface $logger, ConfigEngine $config) {
+    public function __construct(LoggerInterface $logger, ConfigEngine $config, WikidataService $wiki) {
         $this->logger = $logger;
         $this->config = $config;
+        $this->wiki = $wiki;
     }
 
 
@@ -53,7 +55,9 @@ class SearchEngine {
         // Combine results
         $results = $this->groupResults($results);
         $results = $this->combineGroupedResults($results);
-        $this->mergeRelatedEntities($results);
+
+        // Enhance results
+        $this->addMissingEntities($results);
         return $results;
     }
 
@@ -244,6 +248,30 @@ class SearchEngine {
                 }
             }
         }
+    }
+
+
+    /**
+     * Add missing entities
+     * @param AbstractEntity[] $entities Array of entities
+     */
+    private function addMissingEntities(array $entities) {
+        // Merge duplicate entities before enhancing data
+        $this->mergeRelatedEntities($entities);
+
+        // Fill additional properties of related entities
+        $related = [];
+        foreach ($entities as $entity) {
+            foreach ($entity->getRelations() as $relation) {
+                $other = $relation->getOther($entity);
+                $hash = spl_object_hash($other);
+                if (!isset($related[$hash])) $related[$hash] = $other;
+            }
+        }
+        $this->wiki->fillEntities($related);
+
+        // Now that we have more data, merge one more time
+        $this->mergeRelatedEntities($entities);
     }
 
 }
