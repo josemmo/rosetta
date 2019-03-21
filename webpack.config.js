@@ -33,5 +33,6 @@ Encore
     .enableVersioning(Encore.isProduction())
     .disableSingleRuntimeChunk()
     .enableSassLoader()
+    .enablePostCssLoader()
 
 module.exports = Encore.getWebpackConfig()

@@ -19,7 +19,7 @@
 
 // Load dependencies
 import '../scss/app.scss'
-import 'bootstrap/js/src/collapse'
+import 'bootstrap/js/dist/collapse'
 
 // Require custom assets
 require.context('../custom', true, /\.(jpe?g|png|svg|gif|bmp)$/i)

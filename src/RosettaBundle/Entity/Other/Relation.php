@@ -84,4 +84,21 @@ class Relation {
         return ($subject === $this->getTo()) ? $this->getFrom() : $this->getTo();
     }
 
+
+    /**
+     * Overwrite other than subject
+     * Same as `getOther`, but instead of a getter is a setter method.
+     * @param  $subject  AbstractEntity Subject to exclude
+     * @param  $newValue AbstractEntity New value for the entity
+     * @return           static         This instance
+     */
+    public function overwriteOther($subject, $newValue) {
+        if ($subject === $this->getTo()) {
+            $this->from = $newValue;
+        } else {
+            $this->to = $newValue;
+        }
+        return $this;
+    }
+
 }

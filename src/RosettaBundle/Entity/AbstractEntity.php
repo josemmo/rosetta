@@ -73,6 +73,18 @@ abstract class AbstractEntity {
 
 
     /**
+     * Add internal ID
+     * @param  string $databaseId Database ID
+     * @param  string $internalId Internal ID
+     * @return static             This instance
+     */
+    public function addInternalId(string $databaseId, string $internalId): self {
+        $this->addIdentifier(new Identifier(Identifier::INTERNAL, "$databaseId:$internalId"));
+        return $this;
+    }
+
+
+    /**
      * Get entity IDs of given type
      * @param  int      $type Identifier type
      * @return string[]       Entity IDs
@@ -130,6 +142,42 @@ abstract class AbstractEntity {
             if ($relation->getType() == $type) return $relation->getOther($this);
         }
         return null;
+    }
+
+
+    /**
+     * Get entity type
+     * @return string Entity type
+     */
+    public function getEntityType(): string {
+        $type = explode('\\', static::class);
+        $type = str_replace('Abstract', '', end($type));
+        return strtolower($type);
+    }
+
+
+    /**
+     * Get a summary string that identifies the entity's content
+     * @return string|null Summary tag
+     */
+    public function getSummaryTag(): ?string {
+        return null;
+    }
+
+
+    /**
+     * Merge this entity with another one
+     * @param  static $other Entity to merge with
+     * @return static        This instance
+     */
+    public function merge($other) {
+        // Image URL
+        if (!is_null($other->getImageUrl())) $this->setImageUrl($other->getImageUrl());
+
+        // Identifiers
+        foreach ($other->getIdentifiers() as $identifier) $this->addIdentifier($identifier);
+
+        return $this;
     }
 
 }

@@ -1,4 +1,4 @@
-/*!
+/*
  * Rosetta - A free (libre) Integrated Library System for the 21st century.
  * Copyright (C) 2019 José M. Moreno <josemmo@pm.me>
  *
@@ -16,17 +16,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-// Override custom variables
-$theme-colors: (primary: $accent-color);
-$input-btn-focus-color: transparent;
-$btn-focus-width: 1px;
-
-// Import Bootstrap
-@import "~bootstrap/scss/bootstrap";
-
-// Custom select fix
-.input-group-append .custom-select {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+module.exports = {
+    plugins: {
+        autoprefixer: {}
+    }
 }

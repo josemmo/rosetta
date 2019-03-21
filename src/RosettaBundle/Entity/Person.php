@@ -20,6 +20,8 @@
 
 namespace App\RosettaBundle\Entity;
 
+use App\RosettaBundle\Utils\Normalizer;
+
 class Person extends AbstractEntity {
     private $name = null;
     private $firstname = null;
@@ -144,6 +146,14 @@ class Person extends AbstractEntity {
     public function setDeathDate(?\DateTime $deathDate): self {
         $this->deathDate = $deathDate;
         return $this;
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function getSummaryTag(): ?string {
+        return Normalizer::normalizeTag($this->getName());
     }
 
 }

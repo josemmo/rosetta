@@ -28,6 +28,7 @@ class ConfigEngine {
     private $request;
     private $version;
     private $opac;
+    private $wikidata;
     private $databases = [];
     private $externalProviders = [];
 
@@ -48,8 +49,9 @@ class ConfigEngine {
      * @param array $config Configuration properties
      */
     public function setConfig($config) {
-        // Save OPAC settings
+        // Save main settings
         $this->opac = $config['opac'];
+        $this->wikidata = $config['wikidata'];
 
         // Create database instances
         foreach ($config['databases'] as $source) {
@@ -76,6 +78,15 @@ class ConfigEngine {
      */
     public function getOpacSettings() {
         return $this->opac;
+    }
+
+
+    /**
+     * Get Wikidata settings
+     * @return array Wikidata settings
+     */
+    public function getWikidataSettings() {
+        return $this->wikidata;
     }
 
 

@@ -29,10 +29,12 @@ use Psr\Log\LoggerInterface;
 class SearchEngine {
     private $logger;
     private $config;
+    private $wiki;
 
-    public function __construct(LoggerInterface $logger, ConfigEngine $config) {
+    public function __construct(LoggerInterface $logger, ConfigEngine $config, WikidataService $wiki) {
         $this->logger = $logger;
         $this->config = $config;
+        $this->wiki = $wiki;
     }
 
 
@@ -53,6 +55,9 @@ class SearchEngine {
         // Combine results
         $results = $this->groupResults($results);
         $results = $this->combineGroupedResults($results);
+
+        // Enhance results
+        $this->addMissingEntities($results);
         return $results;
     }
 
@@ -100,7 +105,9 @@ class SearchEngine {
         $providersConfig = [];
         foreach ($this->config->getDatabases() as $db) {
             if (empty($databases) || in_array($db->getId(), $databases)) {
-                $providersConfig[] = $db->getProvider();
+                $config = $db->getProvider();
+                $config['id'] = $db->getId();
+                $providersConfig[] = $config;
             }
         }
 
@@ -121,9 +128,16 @@ class SearchEngine {
         $identifiers = [];
         foreach ($entities as $entity) {
             foreach ($entity->getIdentifiers() as $identifier) {
+                // Use ISBN-10 instead of both
                 if ($identifier->getType() == Identifier::ISBN_13) continue;
+
+                // Prevent duplicates
                 $tag = (string) $identifier;
-                if (!isset($identifiers[$tag])) $identifiers[$tag] = $identifier->toSearchQuery();
+                if (isset($identifiers[$tag])) continue;
+
+                // Check this identifier is searchable
+                $identifierQuery = $identifier->toSearchQuery();
+                if (!is_null($identifierQuery)) $identifiers[$tag] = $identifierQuery;
             }
         }
         if (empty($identifiers)) return [];
@@ -201,8 +215,63 @@ class SearchEngine {
      * @return AbstractEntity[]                    Array of entities
      */
     private function combineGroupedResults(array $groupedEntities): array {
-        // TODO: combine entities properties
-        return array_map(function ($group) { return $group[0]; }, $groupedEntities);
+        $res = [];
+
+        foreach ($groupedEntities as $group) {
+            $entity = $group[0];
+            for ($i=1; $i<count($group); $i++) $entity->merge($group[$i]);
+            $res[] = $entity;
+        }
+
+        return $res;
+    }
+
+
+    /**
+     * Merge related entities
+     * @param AbstractEntity[] $entities Array of entities
+     */
+    private function mergeRelatedEntities(array $entities) {
+        $related = [];
+        foreach ($entities as $entity) {
+            foreach ($entity->getRelations() as $relation) {
+                $other = $relation->getOther($entity);
+                $otherTag = $other->getSummaryTag();
+                if (empty($otherTag)) continue;
+
+                if (isset($related[$otherTag])) {
+                    $related[$otherTag]->merge($other);
+                    $relation->overwriteOther($entity, $related[$otherTag]);
+                    unset($other);
+                } else {
+                    $related[$otherTag] = $other;
+                }
+            }
+        }
+    }
+
+
+    /**
+     * Add missing entities
+     * @param AbstractEntity[] $entities Array of entities
+     */
+    private function addMissingEntities(array $entities) {
+        // Merge duplicate entities before enhancing data
+        $this->mergeRelatedEntities($entities);
+
+        // Fill additional properties of related entities
+        $related = [];
+        foreach ($entities as $entity) {
+            foreach ($entity->getRelations() as $relation) {
+                $other = $relation->getOther($entity);
+                $hash = spl_object_hash($other);
+                if (!isset($related[$hash])) $related[$hash] = $other;
+            }
+        }
+        $this->wiki->fillEntities($related);
+
+        // Now that we have more data, merge one more time
+        $this->mergeRelatedEntities($entities);
     }
 
 }
