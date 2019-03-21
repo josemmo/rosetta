@@ -26,6 +26,7 @@ class Identifier {
     const ISBN_13 = 3;
     const OCLC = 4;
     const GBOOKS = 5;
+    const WIKIDATA = 6;
 
     private static $searchQueryFields = [
         self::ISBN_10 => "isbn",

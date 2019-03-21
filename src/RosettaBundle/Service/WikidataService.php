@@ -21,6 +21,7 @@
 namespace App\RosettaBundle\Service;
 
 use App\RosettaBundle\Entity\AbstractEntity;
+use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Entity\Person;
 use App\RosettaBundle\Utils\HttpClient;
 
@@ -54,16 +55,6 @@ class WikidataService {
             $entity = $entities[$indexes[$index]];
             $this->fillEntity($entity, $result);
         }
-    }
-
-
-    /**
-     * Fill entity
-     * @param AbstractEntity $entity Entity to fill
-     * @param array          $data   Additional data from Wikidata
-     */
-    private function fillEntity($entity, $data) {
-        // TODO: not implemented
     }
 
 
@@ -110,6 +101,55 @@ class WikidataService {
         }
 
         return $results;
+    }
+
+
+    /**
+     * Fill entity
+     * @param AbstractEntity $entity Entity to fill
+     * @param array          $data   Additional data from Wikidata
+     */
+    private function fillEntity($entity, $data) {
+        // Add Wikidata ID
+        $entity->addIdentifier(new Identifier(Identifier::WIKIDATA, $data['id']));
+
+        // Add image URL
+        $imageFile = $this->parseProperty($data['claims'], 'P18');
+        if (!is_null($imageFile)) {
+            $imageFile = str_replace(' ', '_', $imageFile);
+            $entity->setImageUrl("https://commons.wikimedia.org/w/thumb.php?width=300&f=$imageFile");
+        }
+
+        // Add Person properties
+        if ($entity instanceof Person) {
+            $birthDate = $this->parseProperty($data['claims'], 'P569');
+            if (!is_null($birthDate)) $entity->setBirthDate($birthDate);
+            $deathDate = $this->parseProperty($data['claims'], 'P570');
+            if (!is_null($deathDate)) $entity->setDeathDate($deathDate);
+        }
+    }
+
+
+    /**
+     * Parse Wikidata property
+     * @param  array      $claims Wikidata entity claims array
+     * @param  string     $propId Wikidata property ID
+     * @return mixed|null         Parsed property or null if failed to parse
+     */
+    private function parseProperty($claims, $propId) {
+        if (empty($claims[$propId])) return null;
+        $property = $claims[$propId];
+
+        try {
+            $type = $property[0]['mainsnak']['datatype'];
+            $value = $property[0]['mainsnak']['datavalue']['value'];
+            if ($type == "string") return $value;
+            if ($type == "time") return new \DateTime($value['time']);
+        } catch (\Exception $e) {
+            // Could not parse property, aborting
+        }
+
+        return null;
     }
 
 }
