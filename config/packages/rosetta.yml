@@ -4,6 +4,10 @@ rosetta:
     opac:
         app_name: 'Rosetta Demo'
 
+    # Wikidata configuration values.
+    wikidata:
+        language: 'es'
+
     # Primary search sources to be used to get available materials from a given library.
     # Multiple sources are allowed.
     databases:
