@@ -22,14 +22,60 @@ namespace App\RosettaBundle\Entity;
 
 use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Entity\Other\Relation;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * An AbstractEntity is anything that can be found using the Search Engine.
+ * @ORM\Entity
+ * @ORM\Table(name="entity")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="entity_type", type="string", length=4)
+ * @ORM\DiscriminatorMap({
+ *     "work": "App\RosettaBundle\Entity\Work\AbstractWork",
+ *     "book": "App\RosettaBundle\Entity\Work\Book",
+ *     "org": "App\RosettaBundle\Entity\Organization",
+ *     "pers": "App\RosettaBundle\Entity\Person"
+ * })
  */
 abstract class AbstractEntity {
-    private $imageUrl = null;
-    private $identifiers = [];
-    private $relations = [];
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer", options={"unsigned":true})
+     * @ORM\GeneratedValue
+     */
+    protected $id;
+
+    /** @ORM\Column(length=150, unique=true, options={"collation":"ascii_general_ci"}) */
+    protected $slug = null;
+
+    /** @ORM\Column(length=2083, nullable=true) */
+    protected $imageUrl = null;
+
+    /** @ORM\OneToMany(targetEntity="App\RosettaBundle\Entity\Other\Identifier", mappedBy="entity", cascade={"persist", "remove"}) */
+    protected $identifiers = [];
+
+    /** @ORM\OneToMany(targetEntity="App\RosettaBundle\Entity\Other\Relation", mappedBy="to", cascade={"persist", "remove"}) */
+    protected $relations = [];
+
+    /**
+     * Get slug
+     * @return string|null Slug
+     */
+    public function getSlug(): ?string {
+        return $this->slug;
+    }
+
+
+    /**
+     * Set slug
+     * @param  string $slug Slug
+     * @return static       This instance
+     */
+    public function setSlug(string $slug): self {
+        $this->slug = $slug;
+        return $this;
+    }
+
 
     /**
      * Get image URL

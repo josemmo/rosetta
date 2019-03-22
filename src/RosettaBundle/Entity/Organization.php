@@ -21,10 +21,20 @@
 namespace App\RosettaBundle\Entity;
 
 use App\RosettaBundle\Entity\Other\Relation;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * An organization is a company or group of people.
+ * @ORM\Entity
+ */
 class Organization extends AbstractEntity {
+    /** @ORM\Column(length=255) */
     private $name;
+
+    /** @ORM\Column(type="date", nullable=true) */
     private $foundationDate = null;
+
+    /** @ORM\Column(length=300, nullable=true) */
     private $website = null;
 
     /**

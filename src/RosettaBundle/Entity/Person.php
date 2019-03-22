@@ -21,14 +21,30 @@
 namespace App\RosettaBundle\Entity;
 
 use App\RosettaBundle\Utils\Normalizer;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * A person is an individual with a name.
+ * @ORM\Entity
+ */
 class Person extends AbstractEntity {
-    private $name = null;
-    private $firstname = null;
-    private $lastname = null;
-    private $description = null;
-    private $birthDate = null;
-    private $deathDate = null;
+    /** @ORM\Column(length=255, nullable=true) */
+    protected $name = null;
+
+    /** @ORM\Column(length=255, nullable=true) */
+    protected $firstname = null;
+
+    /** @ORM\Column(length=255, nullable=true) */
+    protected $lastname = null;
+
+    /** @ORM\Column(type="text", nullable=true) */
+    protected $description = null;
+
+    /** @ORM\Column(type="date", nullable=true) */
+    protected $birthDate = null;
+
+    /** @ORM\Column(type="date", nullable=true) */
+    protected $deathDate = null;
 
     /**
      * Get full name

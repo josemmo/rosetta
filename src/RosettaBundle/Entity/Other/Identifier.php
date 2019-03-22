@@ -20,6 +20,13 @@
 
 namespace App\RosettaBundle\Entity\Other;
 
+use App\RosettaBundle\Entity\AbstractEntity;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * An Identifier is any alphanumeric sequence that identifies an entity in a particular database or service.
+ * @ORM\Entity
+ */
 class Identifier {
     const INTERNAL = 1;
     const ISBN_10 = 2;
@@ -34,7 +41,21 @@ class Identifier {
         self::OCLC => "oclc"
     ];
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\RosettaBundle\Entity\AbstractEntity", inversedBy="identifiers")
+     */
+    private $entity;
+
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="smallint", options={"unsigned":true})
+     */
     private $type;
+
+    /**
+     * @ORM\Id
+     * @ORM\Column(length=50)
+     */
     private $value;
 
     /**
@@ -55,6 +76,26 @@ class Identifier {
     public function __construct(int $type, string $value) {
         $this->type = $type;
         $this->value = $value;
+    }
+
+
+    /**
+     * Get entity
+     * @return AbstractEntity Entity
+     */
+    public function getEntity() {
+        return $this->entity;
+    }
+
+
+    /**
+     * Get entity
+     * @param  AbstractEntity $entity Entity
+     * @return static                 This instance
+     */
+    public function setEntity($entity) {
+        $this->entity = $entity;
+        return $this;
     }
 
 

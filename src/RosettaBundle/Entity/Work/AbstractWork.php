@@ -24,18 +24,33 @@ use App\RosettaBundle\Entity\AbstractEntity;
 use App\RosettaBundle\Entity\Other\Holding;
 use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * An AbstractWork is a type of AbstractEntity that can be consulted or borrowed.
+ * @ORM\Entity
  */
 abstract class AbstractWork extends AbstractEntity {
-    private $title = null;
-    private $legalDeposits = [];
-    private $pubYear = null;
-    private $pubMonth = null;
-    private $pubDay = null;
-    private $languages = [];
-    private $holdings = [];
+    /** @ORM\Column(length=3072, nullable=true) */
+    protected $title = null;
+
+    /** @ORM\Column(type="simple_array") */
+    protected $legalDeposits = [];
+
+    /** @ORM\Column(type="smallint", nullable=true, options={"unsigned":true}) */
+    protected $pubYear = null;
+
+    /** @ORM\Column(type="smallint", nullable=true, options={"unsigned":true}) */
+    protected $pubMonth = null;
+
+    /** @ORM\Column(type="smallint", nullable=true, options={"unsigned":true}) */
+    protected $pubDay = null;
+
+    /** @ORM\Column(type="simple_array", options={"collation":"ascii_general_ci"}) */
+    protected $languages = [];
+
+    // TODO: add ORM mapping
+    protected $holdings = [];
 
     /**
      * Set title
@@ -73,6 +88,7 @@ abstract class AbstractWork extends AbstractEntity {
      */
     public function addLegalDeposit(string $legalDeposit): self {
         $legalDeposit = trim($legalDeposit);
+        $legalDeposit = str_replace(',', '', $legalDeposit);
         if (!in_array($legalDeposit, $this->legalDeposits)) {
             $this->legalDeposits[] = $legalDeposit;
         }
