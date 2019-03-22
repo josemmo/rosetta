@@ -49,11 +49,13 @@ class WikidataService {
         }
 
         // Get data from Wikidata and fill entities
-        $results = $this->search($queries);
-        foreach ($results as $query=>$result) {
-            $index = array_search($query, $queries);
-            $entity = $entities[$indexes[$index]];
-            $this->fillEntity($entity, $result);
+        if (!empty($queries)) {
+            $results = $this->search($queries);
+            foreach ($results as $query => $result) {
+                $index = array_search($query, $queries);
+                $entity = $entities[$indexes[$index]];
+                $this->fillEntity($entity, $result);
+            }
         }
     }
 
@@ -95,9 +97,11 @@ class WikidataService {
 
         // Parse results
         $results = [];
-        foreach ($dataRes['entities'] as $id=>&$entity) {
-            $query = array_search($id, $wikidataIds);
-            $results[$query] = $entity;
+        if (!empty($dataRes['entities'])) {
+            foreach ($dataRes['entities'] as $id => &$entity) {
+                $query = array_search($id, $wikidataIds);
+                $results[$query] = $entity;
+            }
         }
 
         return $results;
