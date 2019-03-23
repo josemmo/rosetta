@@ -24,6 +24,7 @@ use App\RosettaBundle\Entity\AbstractEntity;
 use App\RosettaBundle\Entity\Other\Holding;
 use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
+use App\RosettaBundle\Utils\Normalizer;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -175,6 +176,15 @@ abstract class AbstractWork extends AbstractEntity {
      */
     public function getCreator() {
         return $this->getFirstRelatedOfType(Relation::IS_AUTHOR_OF);
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function updateSlug(): self {
+        $this->slug = Normalizer::normalizeSlug($this->title);
+        return $this;
     }
 
 

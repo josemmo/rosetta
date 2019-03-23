@@ -115,4 +115,13 @@ class Organization extends AbstractEntity {
         return $this;
     }
 
+
+    /**
+     * @inheritdoc
+     */
+    public function updateSlug(): self {
+        $this->slug = "organization-slug"; // TODO: not implemented
+        return $this;
+    }
+
 }

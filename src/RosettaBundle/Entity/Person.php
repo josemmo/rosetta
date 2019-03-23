@@ -169,7 +169,16 @@ class Person extends AbstractEntity {
      * @inheritdoc
      */
     public function getSummaryTag(): ?string {
-        return Normalizer::normalizeTag($this->getName());
+        return Normalizer::normalizeSlug($this->getName());
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function updateSlug(): self {
+        $this->slug = $this->getSummaryTag();
+        return $this;
     }
 
 }

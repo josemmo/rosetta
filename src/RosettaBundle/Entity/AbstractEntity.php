@@ -52,7 +52,7 @@ abstract class AbstractEntity {
     /** @ORM\Column(type="datetime") */
     protected $modificationDate = null;
 
-    /** @ORM\Column(length=150, unique=true, options={"collation":"ascii_general_ci"}) */
+    /** @ORM\Column(length=300, options={"collation":"ascii_general_ci"}) */
     protected $slug = null;
 
     /** @ORM\Column(length=2083, nullable=true) */
@@ -74,14 +74,11 @@ abstract class AbstractEntity {
 
 
     /**
-     * Set slug
-     * @param  string $slug Slug
-     * @return static       This instance
+     * Update slug
+     * @ORM\PrePersist
+     * @return static This instance
      */
-    public function setSlug(string $slug): self {
-        $this->slug = $slug;
-        return $this;
-    }
+    public abstract function updateSlug();
 
 
     /**
