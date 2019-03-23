@@ -76,6 +76,7 @@ abstract class AbstractEntity {
     /**
      * Update slug
      * @ORM\PrePersist
+     * @ORM\PreUpdate
      * @return static This instance
      */
     public abstract function updateSlug();
@@ -120,6 +121,18 @@ abstract class AbstractEntity {
      */
     public function updateModificationDate(): self {
         $this->modificationDate = new \DateTime();
+        return $this;
+    }
+
+
+    /**
+     * Link identifiers to this entity
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * @return static This instance
+     */
+    public function linkIdentifiers(): self {
+        foreach ($this->identifiers as $identifier) $identifier->setEntity($this);
         return $this;
     }
 
