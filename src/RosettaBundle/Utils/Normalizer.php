@@ -23,6 +23,17 @@ namespace App\RosettaBundle\Utils;
 class Normalizer {
 
     /**
+     * Normalize any string
+     * @param  string $text Input text
+     * @return string       Normalized text
+     */
+    public static function normalizeDefault(string $text) {
+        $text = trim($text, ' .,/');
+        return $text;
+    }
+
+
+    /**
      * Normalize title
      * @param  string $title Title
      * @return string        Normalized title
@@ -42,7 +53,7 @@ class Normalizer {
         $title = str_replace(' : ', ': ', $title);
         $title = str_replace(' ; ', ': ', $title);
 
-        $title = trim($title, ' .,/');
+        $title = self::normalizeDefault($title);
         return $title;
     }
 

@@ -22,7 +22,6 @@ namespace App\RosettaBundle\Provider;
 
 use App\RosettaBundle\Entity\Organization;
 use App\RosettaBundle\Entity\Other\Holding;
-use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
 use App\RosettaBundle\Entity\Work\AbstractWork;
@@ -162,7 +161,7 @@ class Z3950 extends AbstractProvider {
         $publisher = $record->xpath('datafield[@tag="260"]/subfield[@code="b"]');
         if (!empty($publisher)) {
             $organization = new Organization();
-            $organization->setName($publisher[0]);
+            $organization->setName(Normalizer::normalizeDefault($publisher[0]));
             $res->addPublisher($organization);
         }
 

@@ -120,6 +120,20 @@ class Organization extends AbstractEntity {
     /**
      * @inheritdoc
      */
+    public function getSummaryTag(): ?string {
+        $tag = explode(' ', $this->name);
+        $tag = array_filter($tag, function($word) {
+            return (strlen($word) > 3);
+        });
+        $tag = implode(' ', $tag);
+
+        return empty($tag) ? null : Normalizer::normalizeSlug($tag);
+    }
+
+
+    /**
+     * @inheritdoc
+     */
     public function updateSlug(): self {
         $this->slug = Normalizer::normalizeSlug($this->name);
         return $this;
