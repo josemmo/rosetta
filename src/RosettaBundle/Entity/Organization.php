@@ -21,6 +21,7 @@
 namespace App\RosettaBundle\Entity;
 
 use App\RosettaBundle\Entity\Other\Relation;
+use App\RosettaBundle\Utils\Normalizer;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -120,7 +121,7 @@ class Organization extends AbstractEntity {
      * @inheritdoc
      */
     public function updateSlug(): self {
-        $this->slug = "organization-slug"; // TODO: not implemented
+        $this->slug = Normalizer::normalizeSlug($this->name);
         return $this;
     }
 
