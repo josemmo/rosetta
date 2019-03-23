@@ -27,6 +27,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * An AbstractEntity is anything that can be found using the Search Engine.
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  * @ORM\Table(name="entity")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="entity_type", type="string", length=4)
@@ -44,6 +45,12 @@ abstract class AbstractEntity {
      * @ORM\GeneratedValue
      */
     protected $id;
+
+    /** @ORM\Column(type="datetime") */
+    protected $creationDate = null;
+
+    /** @ORM\Column(type="datetime") */
+    protected $modificationDate = null;
 
     /** @ORM\Column(length=150, unique=true, options={"collation":"ascii_general_ci"}) */
     protected $slug = null;
@@ -73,6 +80,49 @@ abstract class AbstractEntity {
      */
     public function setSlug(string $slug): self {
         $this->slug = $slug;
+        return $this;
+    }
+
+
+    /**
+     * Get creation date
+     * @return \DateTime|null Creation date
+     */
+    public function getCreationDate(): ?\DateTime {
+        return $this->creationDate;
+    }
+
+
+    /**
+     * Update creation date
+     * @ORM\PrePersist
+     * @return static This instance
+     * @throws \Exception
+     */
+    public function updateCreationDate(): self {
+        $this->creationDate = new \DateTime();
+        return $this;
+    }
+
+
+    /**
+     * Get modification date
+     * @return \DateTime|null Modification date
+     */
+    public function getModificationDate(): ?\DateTime {
+        return $this->modificationDate;
+    }
+
+
+    /**
+     * Update modification date
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * @return static This instance
+     * @throws \Exception
+     */
+    public function updateModificationDate(): self {
+        $this->modificationDate = new \DateTime();
         return $this;
     }
 
