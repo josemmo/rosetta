@@ -22,6 +22,8 @@ namespace App\RosettaBundle\Entity;
 
 use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Entity\Other\Relation;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -58,11 +60,32 @@ abstract class AbstractEntity {
     /** @ORM\Column(length=2083, nullable=true) */
     protected $imageUrl = null;
 
-    /** @ORM\OneToMany(targetEntity="App\RosettaBundle\Entity\Other\Identifier", mappedBy="entity", cascade={"persist", "remove"}) */
-    protected $identifiers = [];
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity="App\RosettaBundle\Entity\Other\Identifier",
+     *     indexBy="id",
+     *     mappedBy="entity", cascade={"persist", "remove"}
+     * )
+     */
+    protected $identifiers;
 
-    /** @ORM\OneToMany(targetEntity="App\RosettaBundle\Entity\Other\Relation", mappedBy="to", cascade={"persist", "remove"}) */
-    protected $relations = [];
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity="App\RosettaBundle\Entity\Other\Relation",
+     *     mappedBy="to",
+     *     cascade={"persist", "remove"}
+     * )
+     */
+    protected $relations;
+
+    /**
+     * AbstractEntity constructor
+     */
+    public function __construct() {
+        $this->identifiers = new ArrayCollection();
+        $this->relations = new ArrayCollection();
+    }
+
 
     /**
      * Get slug
@@ -159,10 +182,10 @@ abstract class AbstractEntity {
 
     /**
      * Get identifiers
-     * @return Identifier[] Entity identifiers
+     * @return Collection<Identifier> Entity identifiers
      */
-    public function getIdentifiers(): array {
-        return array_values($this->identifiers);
+    public function getIdentifiers() {
+        return $this->identifiers;
     }
 
 
@@ -172,8 +195,8 @@ abstract class AbstractEntity {
      * @return static                 This instance
      */
     public function addIdentifier(Identifier $identifier): self {
-        $tag = (string) $identifier;
-        if (!isset($this->identifiers[$tag])) $this->identifiers[$tag] = $identifier;
+        $key = (string) $identifier;
+        $this->identifiers->set($key, $identifier);
         return $this;
     }
 
@@ -206,9 +229,9 @@ abstract class AbstractEntity {
 
     /**
      * Get entity relations
-     * @return Relation[] Entity relations
+     * @return Collection<Relation> Entity relations
      */
-    public function getRelations(): array {
+    public function getRelations() {
         return $this->relations;
     }
 
@@ -219,7 +242,7 @@ abstract class AbstractEntity {
      * @return static             This instance
      */
     public function addRelation(Relation $relation): self {
-        $this->relations[] = $relation;
+        $this->relations->add($relation);
         return $this;
     }
 

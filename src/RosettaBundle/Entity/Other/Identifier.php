@@ -26,6 +26,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * An Identifier is any alphanumeric sequence that identifies an entity in a particular database or service.
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class Identifier {
     const INTERNAL = 1;
@@ -42,21 +43,31 @@ class Identifier {
     ];
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\RosettaBundle\Entity\AbstractEntity", inversedBy="identifiers")
+     * @ORM\Id
+     * @ORM\Column(length=54)
      */
+    private $id;
+
+    /** @ORM\ManyToOne(targetEntity="App\RosettaBundle\Entity\AbstractEntity", inversedBy="identifiers") */
     private $entity;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="smallint", options={"unsigned":true})
-     */
+    /** @ORM\Column(type="smallint", options={"unsigned":true}) */
     private $type;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(length=50)
-     */
+    /** @ORM\Column(length=50) */
     private $value;
+
+    /**
+     * Update identifier ID
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * @return static This instance
+     */
+    public function updateId(): self {
+        $this->id = $this->__toString();
+        return $this;
+    }
+
 
     /**
      * Identifier type to SearchQuery field
