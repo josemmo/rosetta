@@ -88,6 +88,26 @@ abstract class AbstractEntity {
 
 
     /**
+     * Get entity ID
+     * @return int|null Entity ID
+     */
+    public function getId(): ?int {
+        return $this->id;
+    }
+
+
+    /**
+     * Set entity ID
+     * @param  int    $id Entity ID
+     * @return static     This instance
+     */
+    public function setId(int $id): self {
+        $this->id = $id;
+        return $this;
+    }
+
+
+    /**
      * Get slug
      * @return string|null Slug
      */
@@ -98,8 +118,6 @@ abstract class AbstractEntity {
 
     /**
      * Update slug
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
      * @return static This instance
      */
     public abstract function updateSlug();
@@ -111,6 +129,17 @@ abstract class AbstractEntity {
      */
     public function getCreationDate(): ?\DateTime {
         return $this->creationDate;
+    }
+
+
+    /**
+     * Set creation date
+     * @param  \DateTime $date Creation date
+     * @return static          This instance
+     */
+    public function setCreationDate(\DateTime $date): self {
+        $this->creationDate = $date;
+        return $this;
     }
 
 
