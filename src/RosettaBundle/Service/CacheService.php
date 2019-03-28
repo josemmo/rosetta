@@ -37,7 +37,9 @@ class CacheService {
      * @param AbstractEntity[] $entities Array of entities
      */
     public function persistEntities($entities) {
-        // Create queue of all entities
+        $toPersist = [];
+
+        // Create queue of all entities to analyze
         $queue = []; /** @var AbstractEntity[] $queue */
         foreach ($entities as $entity) {
             $queue[spl_object_hash($entity)] = $entity;
@@ -48,7 +50,7 @@ class CacheService {
         }
         $queue = array_values($queue);
 
-        // Prepare changes to commit
+        // Analyze items in queue for changes
         foreach ($queue as $i=>$entity) {
             $entity->updateSlug();
 
@@ -59,7 +61,7 @@ class CacheService {
                 $query->setParameter('slug', $entity->getSlug());
             } else {
                 $ids = [];
-                foreach ($entity->getIdentifiers() as $identifier) $ids[] = (string)$identifier;
+                foreach ($entity->getIdentifiers() as $identifier) $ids[] = (string) $identifier;
                 $query = $this->em->createQuery("SELECT e FROM " . Identifier::class . " i
                                                       JOIN " . AbstractEntity::class . " e WITH i.entity=e
                                                       WHERE i.id IN (:ids)");
@@ -67,24 +69,43 @@ class CacheService {
             }
 
             // Get entity from cache
-            $cachedEntity = $query->getResult(); /** @var AbstractEntity $cachedEntity */
-            $cachedEntity = empty($cachedEntity) ? null : $cachedEntity[0];
+            $cachedEntity = null; /** @var AbstractEntity|null $cachedEntity */
+            try {
+                $cachedEntity = $query->getOneOrNullResult();
+            } catch (\Exception $e) {
+                // Not a unique result, this should never happen
+            }
 
-            // Persist entity
+            // Register changes
             if (is_null($cachedEntity)) {
-                $this->em->persist($entity);
+                $toPersist[] = $entity;
             } else {
+                // Copy old data from cached entity
                 $entity->setId($cachedEntity->getId());
                 $entity->setCreationDate($cachedEntity->getCreationDate());
-                $entity->updateSlug();
                 foreach ($cachedEntity->getIdentifiers() as $identifier) {
                     $entity->addIdentifier($identifier);
                 }
-                $entities[$i] = $this->em->merge($entity);
+
+                // Merge detached object
+                $newEntity = $this->em->merge($entity);
+
+                // Update references to old entity in other entities
+                foreach ($entities as $target) {
+                    if ($target === $entity) continue;
+                    foreach ($target->getRelations() as $relation) {
+                        if ($relation->getOther($target) === $entity) {
+                            $relation->overwriteOther($target, $newEntity);
+                        }
+                    }
+                }
+
+                $entities[$i] = $entity;
             }
         }
 
         // Commit changes to database
+        foreach ($toPersist as $entity) $this->em->persist($entity);
         $this->em->flush();
     }
 

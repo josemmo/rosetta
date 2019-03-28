@@ -64,7 +64,9 @@ abstract class AbstractEntity {
      * @ORM\OneToMany(
      *     targetEntity="App\RosettaBundle\Entity\Other\Identifier",
      *     indexBy="id",
-     *     mappedBy="entity", cascade={"persist", "remove"}
+     *     mappedBy="entity",
+     *     fetch="EAGER",
+     *     cascade={"persist", "remove"}
      * )
      */
     protected $identifiers;
@@ -73,6 +75,7 @@ abstract class AbstractEntity {
      * @ORM\OneToMany(
      *     targetEntity="App\RosettaBundle\Entity\Other\Relation",
      *     mappedBy="to",
+     *     fetch="EXTRA_LAZY",
      *     cascade={"persist", "remove"}
      * )
      */
