@@ -42,13 +42,20 @@ class Relation {
 
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="App\RosettaBundle\Entity\AbstractEntity", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(
+     *     targetEntity="App\RosettaBundle\Entity\AbstractEntity",
+     *     cascade={"persist", "remove"}
+     * )
      */
     private $from;
 
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="App\RosettaBundle\Entity\AbstractEntity", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(
+     *     targetEntity="App\RosettaBundle\Entity\AbstractEntity",
+     *     inversedBy="relations",
+     *     cascade={"persist", "remove"}
+     * )
      */
     private $to;
 
