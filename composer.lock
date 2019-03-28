@@ -1472,16 +1472,16 @@
         },
         {
             "name": "nicebooks/isbn",
-            "version": "0.2.19",
+            "version": "0.2.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nicebooks-com/isbn.git",
-                "reference": "53d0094e37ac411bd9580482a6d2bbaf4ec5ae27"
+                "reference": "ba700a428666a4e831c1db04e67eb7397602f4fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nicebooks-com/isbn/zipball/53d0094e37ac411bd9580482a6d2bbaf4ec5ae27",
-                "reference": "53d0094e37ac411bd9580482a6d2bbaf4ec5ae27",
+                "url": "https://api.github.com/repos/nicebooks-com/isbn/zipball/ba700a428666a4e831c1db04e67eb7397602f4fe",
+                "reference": "ba700a428666a4e831c1db04e67eb7397602f4fe",
                 "shasum": ""
             },
             "require": {
@@ -1511,7 +1511,7 @@
                 "book",
                 "books"
             ],
-            "time": "2019-03-05T13:51:01+00:00"
+            "time": "2019-03-26T13:29:29+00:00"
         },
         {
             "name": "nikolaposa/version",
@@ -3967,16 +3967,16 @@
         },
         {
             "name": "symfony/webpack-encore-bundle",
-            "version": "v1.2.2",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/webpack-encore-bundle.git",
-                "reference": "e23e9d32abd7fb62b84ad0ff62b235b517c61bc4"
+                "reference": "cabb53f92162ca383c6ad78b89605ea021645039"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/webpack-encore-bundle/zipball/e23e9d32abd7fb62b84ad0ff62b235b517c61bc4",
-                "reference": "e23e9d32abd7fb62b84ad0ff62b235b517c61bc4",
+                "url": "https://api.github.com/repos/symfony/webpack-encore-bundle/zipball/cabb53f92162ca383c6ad78b89605ea021645039",
+                "reference": "cabb53f92162ca383c6ad78b89605ea021645039",
                 "shasum": ""
             },
             "require": {
@@ -4017,7 +4017,7 @@
                 }
             ],
             "description": "Integration with your Symfony app & Webpack Encore!",
-            "time": "2019-03-04T15:09:28+00:00"
+            "time": "2019-03-26T00:35:40+00:00"
         },
         {
             "name": "symfony/yaml",
