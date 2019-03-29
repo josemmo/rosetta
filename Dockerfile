@@ -1,8 +1,10 @@
 FROM php:7.3-fpm-stretch
+ARG app_env=prod
+ARG db_url
 
 # Install dependencies
 RUN apt update -y && apt upgrade -yqq
-RUN apt install -y curl gnupg
+RUN apt install -y curl gnupg netcat
 
 # Install NodeJS
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
@@ -27,9 +29,16 @@ RUN apt install -y yaz libyaz-dev
 RUN pecl install yaz
 RUN docker-php-ext-enable yaz
 
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_mysql
+
 # Build app
 WORKDIR /rosetta
 COPY . .
-ENV APP_ENV=prod
+ENV APP_ENV=$app_env
+ENV DATABASE_URL=$db_url
 RUN yarn install && yarn build
 RUN composer install --no-dev --optimize-autoloader
+
+# Initialize app
+CMD ["./.docker/start.sh"]
