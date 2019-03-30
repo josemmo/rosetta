@@ -15,10 +15,12 @@
  # You should have received a copy of the GNU General Public License
  # along with this program. If not, see <https://www.gnu.org/licenses/>.
  #}
-<div class="search-result {{ entity.entityType }}">
-    <div class="cover-wrapper">
-        <a href="{{ path('details', {id: entity.id, slug: entity.slug}) }}" class="cover" style="background-image:url('{{ entity.imageUrl }}')"></a>
-    </div>
-    <a href="{{ path('details', {id: entity.id, slug: entity.slug}) }}" class="title">{{ entity.title }}</a>
-    {% if entity.creator %}<span class="subtitle">{{ entity.creator.name }}</span>{% endif %}
-</div>
+
+
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    {% include 'components/toplinks.html.twig' %}
+
+    {# TODO #}
+{% endblock %}
