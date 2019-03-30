@@ -127,4 +127,12 @@ class Relation {
         return $this;
     }
 
+
+    /**
+     * @inheritdoc
+     */
+    public function __toString() {
+        return "{" . $this->type . "}" . spl_object_hash($this->from) . "->" . spl_object_hash($this->to);
+    }
+
 }

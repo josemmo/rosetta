@@ -24,6 +24,7 @@ use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Entity\Other\Relation;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -276,6 +277,27 @@ abstract class AbstractEntity {
     public function addRelation(Relation $relation): self {
         $this->relations->add($relation);
         return $this;
+    }
+
+
+    /**
+     * Remove duplicated relations
+     * @ORM\PreFlush
+     * @param PreFlushEventArgs $args Doctrine arguments
+     */
+    public function removeDuplicatedRelations(PreFlushEventArgs $args) {
+        $unitOfWork = $args->getEntityManager()->getUnitOfWork();
+
+        $cache = [];
+        foreach ($this->relations as $i=>$relation) {
+            $tag = (string) $relation;
+            if (isset($cache[$tag])) {
+                $this->relations->remove($i);
+                $unitOfWork->detach($relation);
+            } else {
+                $cache[$tag] = 1;
+            }
+        }
     }
 
 
