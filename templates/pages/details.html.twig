@@ -22,5 +22,36 @@
 {% block content %}
     {% include 'components/toplinks.html.twig' %}
 
-    {# TODO #}
+    <main role="main" class="container wide">
+        <div class="row no-gutters">
+            <div class="col-md-auto">
+                <aside class="details-column col-left">
+                    {# Entity cover #}
+                    <div class="cover-wrapper {{ entity.entityType }}">
+                        <img class="cover" src="{{ entity.imageUrl }}" alt="">
+                    </div>
+
+                    {# Entity attributes #}
+                    {% include 'entities/' ~ entity.entityType ~ '-attributes.html.twig' with {'entity': entity} only %}
+                </aside>
+            </div>
+            <div class="col-md">
+                <section class="details-column col-middle">
+                    {# Entity heading #}
+                    {% include 'entities/' ~ entity.entityType ~ '-heading.html.twig' with {'entity': entity} only %}
+
+                    {# Related items #}
+                    {# TODO #}
+
+                    {# Holdings #}
+                    {# TODO #}
+                </section>
+            </div>
+            <div class="col-md-auto">
+                <section class="details-column col-right">
+                    {# TODO #}
+                </section>
+            </div>
+        </div>
+    </main>
 {% endblock %}

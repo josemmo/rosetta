@@ -16,19 +16,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+.details-column {
+    margin: 1rem 0.5rem;
+    background: lighten($background-color, 10%);
+    box-shadow: rgba($foreground-color, 0.2) 2px 2px 8px;
 
-// Dependencies
-@import "./_theme";
-@import "./bootstrap";
-@import "./base";
+    &.col-left {
+        width: 200px;
 
-// App components
-@import "components/toplinks";
-@import "components/leading";
-@import "components/spinner";
-@import "components/cover";
-@import "components/search-result";
+        .cover-wrapper {
+            min-height: 200px;
+        }
+    }
 
-// App pages
-@import "pages/homepage";
-@import "pages/details";
+    &.col-right {
+        width: 340px;
+    }
+}

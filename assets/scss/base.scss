@@ -27,6 +27,11 @@ body {
     background-color: $background-color;
 }
 
+.wide.container {
+    max-width: 1250px;
+    width: 100%;
+}
+
 ::selection {
     background-color: rgba($accent-color, 0.2);
 }
