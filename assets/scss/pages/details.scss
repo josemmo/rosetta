@@ -17,12 +17,16 @@
  */
 
 .details-column {
-    margin: 1rem 0.5rem;
+    margin-bottom: 1rem;
     background: lighten($background-color, 10%);
     box-shadow: rgba($foreground-color, 0.2) 2px 2px 8px;
 
     &.col-left {
-        width: 200px;
+        width: 100%;
+
+        @include media-breakpoint-up(md) {
+            width: 200px;
+        }
 
         .cover-wrapper {
             min-height: 200px;
