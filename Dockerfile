@@ -42,4 +42,3 @@ RUN composer install --no-dev --optimize-autoloader
 
 # Initialize app
 CMD ["./.docker/start.sh"]
-CMD ["php-fpm"]
