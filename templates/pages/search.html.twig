@@ -19,6 +19,8 @@
 
 {% extends 'base.html.twig' %}
 
+{% set page_title = 'Results for "' ~ app.request.get('q') ~ '"' %}
+
 {% block content %}
     {# Header #}
     {% include 'components/toplinks.html.twig' %}

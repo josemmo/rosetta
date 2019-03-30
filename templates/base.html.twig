@@ -20,7 +20,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
-        <title>{{ rosetta.opac.app_name }}</title>
+        <title>{% if page_title is defined %}{{ page_title }} | {% endif %}{{ rosetta.opac.app_name }}</title>
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
