@@ -17,8 +17,7 @@
  */
 
 
-/* TOP LINKS */
-header .top-links {
+nav.top-links {
     color: rgba($background-color, 0.8);
     background-color: $foreground-color;
     font-size: 0.8em;
@@ -45,25 +44,7 @@ header .top-links {
 }
 
 @include media-breakpoint-up(md) {
-    header .top-links {
+    nav.top-links {
         padding: 0;
-    }
-}
-
-
-/* LEADING */
-header .leading {
-    padding: 9rem 0 0;
-    background: lighten($accent-color, 40%) no-repeat center;
-    background-size: cover;
-
-    .logo {
-        max-height: 80px;
-    }
-
-    .bottom-bar {
-        margin-top: 2rem;
-        padding: 0.8rem 0;
-        background: rgba(0,0,0,0.6);
     }
 }

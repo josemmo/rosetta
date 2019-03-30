@@ -15,17 +15,21 @@
  # You should have received a copy of the GNU General Public License
  # along with this program. If not, see <https://www.gnu.org/licenses/>.
  #}
-
-
-{% extends 'base.html.twig' %}
-
-{% block content %}
-    {# Header #}
-    {% include 'components/toplinks.html.twig' %}
-    {% include 'components/leading.html.twig' %}
-
-    {# Search results #}
-    <main role="main" class="container py-3" data-awaiting-search>
-        <div class="spinner mt-5"></div>
-    </main>
-{% endblock %}
+{% set leading = '' %}
+{% if rosetta.context.leading is not empty %}
+    {% set leading = ' style="background-image:url(' ~ rosetta.context.leading ~ ')"' %}
+{% endif %}
+<section class="leading"{{ leading|raw }}>
+    <div class="container">
+        {% include 'components/logo.html.twig' %}
+    </div>
+    <div class="bottom-bar">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-7 col">
+                    {% include 'components/search-bar.html.twig' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
