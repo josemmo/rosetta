@@ -36,7 +36,7 @@
     {# Language #}
     {% if entity.languages is not empty %}
         <div class="attribute">
-            <h4>Languages</h4>
+            <h4>{% if entity.languages|length > 1 %}Languages{% else %}Language{% endif %}</h4>
             {% for lang in entity.languages %}
                 <p>{{ lang }}</p>
             {% endfor %}
