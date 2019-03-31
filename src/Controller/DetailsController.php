@@ -82,7 +82,8 @@ class DetailsController extends AbstractController {
         }
 
         // Render page
-        return $this->render("pages/details.html.twig", [
+        $type = $entity->getEntityType();
+        return $this->render("pages/details/$type.html.twig", [
             "entity" => $entity
         ]);
     }

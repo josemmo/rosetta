@@ -32,13 +32,13 @@
                     </div>
 
                     {# Entity attributes #}
-                    {% include 'entities/' ~ entity.entityType ~ '-attributes.html.twig' with {'entity': entity} only %}
+                    {% block entity_attributes %}{% endblock %}
                 </aside>
             </div>
             <div class="col-md mx-md-3">
                 <section class="details-column col-middle">
                     {# Entity heading #}
-                    {% include 'entities/' ~ entity.entityType ~ '-heading.html.twig' with {'entity': entity} only %}
+                    {% block entity_heading %}{% endblock %}
 
                     {# Related items #}
                     {# TODO #}
