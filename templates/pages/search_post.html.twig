@@ -17,11 +17,9 @@
  #}
 
 {% if results %}
-    <div class="row no-gutters">
+    <div class="search-results">
         {% for entity in results %}
-            <div class="col-6 col-md-2">
-                {% include 'components/search-result.html.twig' with {'entity': entity, 'loop': loop} only %}
-            </div>
+            {% include 'components/search-result.html.twig' with {'entity': entity} only %}
         {% endfor %}
     </div>
 {% else %}
