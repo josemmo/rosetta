@@ -52,7 +52,7 @@
 
 
 /* DEFAULT BACKGROUNDS */
-$types: entity book;
+$types: entity person book;
 @each $type in $types {
     .search-result.#{$type} .cover-wrapper::before,
     .details-column .cover-wrapper.#{$type}::before {
