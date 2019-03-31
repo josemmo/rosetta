@@ -196,7 +196,7 @@ abstract class AbstractWork extends AbstractEntity {
         if (!empty($other->getTitle())) $this->setTitle($other->getTitle());
 
         // Legal Deposits
-        foreach ($other->getLegalDeposit() as $ld) $this->addLegalDeposit($ld);
+        foreach ($other->getLegalDeposits() as $ld) $this->addLegalDeposit($ld);
 
         // Publication date
         $pubDate = $this->getPubDate();

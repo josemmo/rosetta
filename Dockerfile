@@ -41,4 +41,5 @@ RUN yarn install && yarn build
 RUN composer install --no-dev --optimize-autoloader
 
 # Initialize app
-CMD ["./.docker/start.sh"]
+RUN chmod +x .docker/start.sh
+ENTRYPOINT .docker/start.sh

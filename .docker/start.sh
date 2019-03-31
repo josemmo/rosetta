@@ -7,4 +7,4 @@ php bin/console doctrine:database:create --if-not-exists
 php bin/console doctrine:schema:update --force
 
 # Start FPM socket
-php-fpm
+docker-php-entrypoint php-fpm
