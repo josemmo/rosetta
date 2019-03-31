@@ -23,13 +23,32 @@
 
     &.col-left {
         width: 100%;
-
-        @include media-breakpoint-up(md) {
-            width: 200px;
-        }
+        @include media-breakpoint-up(md) { width: 200px }
 
         .cover-wrapper {
             min-height: 200px;
+        }
+
+        .attributes {
+            padding: 0.8rem;
+
+            .attribute {
+                margin: 0.8rem 0;
+
+                &:first-child { margin-top: 0 }
+                &:last-child { margin-bottom: 0 }
+
+                h4 {
+                    margin: 0 0 0.1rem;
+                    font-size: 1rem;
+                    font-weight: bolder;
+                }
+
+                p {
+                    margin: 0;
+                    font-size: 0.8rem;
+                }
+            }
         }
     }
 

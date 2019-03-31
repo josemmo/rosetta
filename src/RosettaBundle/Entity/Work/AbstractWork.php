@@ -77,7 +77,7 @@ abstract class AbstractWork extends AbstractEntity {
      * Get legal deposits
      * @return string[] Legal deposits
      */
-    public function getLegalDeposit(): array {
+    public function getLegalDeposits(): array {
         return $this->legalDeposits;
     }
 

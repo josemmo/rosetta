@@ -116,6 +116,15 @@ class Book extends AbstractWork {
 
 
     /**
+     * Get associated ISBN codes
+     * @return string[] ISBN-10 and ISBN-13 codes
+     */
+    public function getIsbns(): array {
+        return array_merge($this->getIsbn10s(), $this->getIsbn13s());
+    }
+
+
+    /**
      * Add ISBN
      * NOTE: in case of invalid input no identifier will be assigned to the instance.
      * @param  string $isbn ISBN-10 or ISBN-13

@@ -19,10 +19,46 @@
 
 {% extends 'pages/details/abstract-work.html.twig' %}
 
+
 {% block entity_attributes %}
-    <p>Book attributes</p>
+    {# Publisher #}
+    {% if entity.publisher is not empty %}
+        <div class="attribute">
+            <h4>Publisher</h4>
+            <p><a href="{{ path('details', {id: entity.publisher.id, slug: entity.publisher.slug}) }}">{{ entity.publisher.name }}</a></p>
+        </div>
+    {% endif %}
+
+    {# Number of pages #}
+    {% if entity.numOfPages is not empty %}
+        <div class="attribute">
+            <h4>Pages</h4>
+            <p>{{ entity.numOfPages }}</p>
+        </div>
+    {% endif %}
+
+    {# Number of volumes #}
+    {% if entity.numOfVolumes is not empty %}
+        <div class="attribute">
+            <h4>Volumes</h4>
+            <p>{{ entity.numOfVolumes }}</p>
+        </div>
+    {% endif %}
+
+    {# ISBNs #}
+    {% if entity.isbns is not empty %}
+        <div class="attribute">
+            <h4>IBSN</h4>
+            {% for isbn in entity.isbns %}
+                <p>{{ isbn }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {# Abstract Work attributes #}
     {{ parent() }}
 {% endblock %}
+
 
 {% block entity_heading %}
     <p>Book heading</p>

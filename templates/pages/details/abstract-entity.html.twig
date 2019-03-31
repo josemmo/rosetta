@@ -19,9 +19,15 @@
 
 {% extends 'pages/details/base.html.twig' %}
 
+
 {% block entity_attributes %}
-    <p>AbstractEntity attributes</p>
+    {# Modification date #}
+    <div class="attribute">
+        <h4>Last update</h4>
+        <p>{{ entity.modificationDate|date }}</p>
+    </div>
 {% endblock %}
+
 
 {% block entity_heading %}
     <p>AbstractEntity heading</p>
