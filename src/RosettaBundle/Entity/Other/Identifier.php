@@ -20,6 +20,14 @@
 
 namespace App\RosettaBundle\Entity\Other;
 
+use App\RosettaBundle\Entity\AbstractEntity;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * An Identifier is any alphanumeric sequence that identifies an entity in a particular database or service.
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
+ */
 class Identifier {
     const INTERNAL = 1;
     const ISBN_10 = 2;
@@ -34,8 +42,32 @@ class Identifier {
         self::OCLC => "oclc"
     ];
 
-    private $type;
+    /**
+     * @ORM\Id
+     * @ORM\Column(length=54)
+     */
     private $id;
+
+    /** @ORM\ManyToOne(targetEntity="App\RosettaBundle\Entity\AbstractEntity", inversedBy="identifiers") */
+    private $entity;
+
+    /** @ORM\Column(type="smallint", options={"unsigned":true}) */
+    private $type;
+
+    /** @ORM\Column(length=50) */
+    private $value;
+
+    /**
+     * Update identifier ID
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * @return static This instance
+     */
+    public function updateId(): self {
+        $this->id = $this->__toString();
+        return $this;
+    }
+
 
     /**
      * Identifier type to SearchQuery field
@@ -49,12 +81,32 @@ class Identifier {
 
     /**
      * Identifier constructor
-     * @param int    $type Type
-     * @param string $id   ID
+     * @param int    $type  Type
+     * @param string $value Value
      */
-    public function __construct(int $type, string $id) {
+    public function __construct(int $type, string $value) {
         $this->type = $type;
-        $this->id = $id;
+        $this->value = $value;
+    }
+
+
+    /**
+     * Get entity
+     * @return AbstractEntity Entity
+     */
+    public function getEntity() {
+        return $this->entity;
+    }
+
+
+    /**
+     * Get entity
+     * @param  AbstractEntity $entity Entity
+     * @return static                 This instance
+     */
+    public function setEntity($entity) {
+        $this->entity = $entity;
+        return $this;
     }
 
 
@@ -68,11 +120,11 @@ class Identifier {
 
 
     /**
-     * Get ID
-     * @return string ID
+     * Get value
+     * @return string Value
      */
-    public function getId(): string {
-        return $this->id;
+    public function getValue(): string {
+        return $this->value;
     }
 
 
@@ -81,7 +133,7 @@ class Identifier {
      * @return string Identifier representation as text
      */
     public function __toString() {
-        return "{" . $this->type . "}" . $this->id;
+        return "{" . $this->type . "}" . $this->value;
     }
 
 
@@ -91,7 +143,7 @@ class Identifier {
      */
     public function toSearchQuery(): ?string {
         $field = self::toSearchQueryField($this->type);
-        return is_null($field) ? null : "$field:{$this->id}";
+        return is_null($field) ? null : "$field:{$this->value}";
     }
 
 }

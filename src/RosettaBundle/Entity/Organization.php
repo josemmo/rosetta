@@ -21,10 +21,21 @@
 namespace App\RosettaBundle\Entity;
 
 use App\RosettaBundle\Entity\Other\Relation;
+use App\RosettaBundle\Utils\Normalizer;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * An organization is a company or group of people.
+ * @ORM\Entity
+ */
 class Organization extends AbstractEntity {
+    /** @ORM\Column(length=255) */
     private $name;
+
+    /** @ORM\Column(type="date", nullable=true) */
     private $foundationDate = null;
+
+    /** @ORM\Column(length=300, nullable=true) */
     private $website = null;
 
     /**
@@ -102,6 +113,29 @@ class Organization extends AbstractEntity {
      */
     public function addFounder(Person $founder): self {
         $this->addRelation(new Relation($founder, Relation::IS_FOUNDER_OF, $this));
+        return $this;
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function getSummaryTag(): ?string {
+        $tag = explode(' ', $this->name);
+        $tag = array_filter($tag, function($word) {
+            return (strlen($word) > 3);
+        });
+        $tag = implode(' ', $tag);
+
+        return empty($tag) ? null : Normalizer::normalizeSlug($tag);
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function updateSlug(): self {
+        $this->slug = Normalizer::normalizeSlug($this->name);
         return $this;
     }
 

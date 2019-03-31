@@ -22,14 +22,176 @@ namespace App\RosettaBundle\Entity;
 
 use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Entity\Other\Relation;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Event\PreFlushEventArgs;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * An AbstractEntity is anything that can be found using the Search Engine.
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="entity")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="entity_type", type="string", length=4)
+ * @ORM\DiscriminatorMap({
+ *     "work": "App\RosettaBundle\Entity\Work\AbstractWork",
+ *     "book": "App\RosettaBundle\Entity\Work\Book",
+ *     "org": "App\RosettaBundle\Entity\Organization",
+ *     "pers": "App\RosettaBundle\Entity\Person"
+ * })
  */
 abstract class AbstractEntity {
-    private $imageUrl = null;
-    private $identifiers = [];
-    private $relations = [];
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer", options={"unsigned":true})
+     * @ORM\GeneratedValue
+     */
+    protected $id;
+
+    /** @ORM\Column(type="datetime") */
+    protected $creationDate = null;
+
+    /** @ORM\Column(type="datetime") */
+    protected $modificationDate = null;
+
+    /** @ORM\Column(length=300, options={"collation":"ascii_general_ci"}) */
+    protected $slug = null;
+
+    /** @ORM\Column(length=2083, nullable=true) */
+    protected $imageUrl = null;
+
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity="App\RosettaBundle\Entity\Other\Identifier",
+     *     indexBy="id",
+     *     mappedBy="entity",
+     *     fetch="EAGER",
+     *     cascade={"persist", "remove"}
+     * )
+     */
+    protected $identifiers;
+
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity="App\RosettaBundle\Entity\Other\Relation",
+     *     mappedBy="to",
+     *     fetch="EXTRA_LAZY",
+     *     cascade={"persist", "remove"}
+     * )
+     */
+    protected $relations;
+
+    /**
+     * AbstractEntity constructor
+     */
+    public function __construct() {
+        $this->identifiers = new ArrayCollection();
+        $this->relations = new ArrayCollection();
+    }
+
+
+    /**
+     * Get entity ID
+     * @return int|null Entity ID
+     */
+    public function getId(): ?int {
+        return $this->id;
+    }
+
+
+    /**
+     * Set entity ID
+     * @param  int    $id Entity ID
+     * @return static     This instance
+     */
+    public function setId(int $id): self {
+        $this->id = $id;
+        return $this;
+    }
+
+
+    /**
+     * Get slug
+     * @return string|null Slug
+     */
+    public function getSlug(): ?string {
+        return $this->slug;
+    }
+
+
+    /**
+     * Update slug
+     * @return static This instance
+     */
+    public abstract function updateSlug();
+
+
+    /**
+     * Get creation date
+     * @return \DateTime|null Creation date
+     */
+    public function getCreationDate(): ?\DateTime {
+        return $this->creationDate;
+    }
+
+
+    /**
+     * Set creation date
+     * @param  \DateTime $date Creation date
+     * @return static          This instance
+     */
+    public function setCreationDate(\DateTime $date): self {
+        $this->creationDate = $date;
+        return $this;
+    }
+
+
+    /**
+     * Update creation date
+     * @ORM\PrePersist
+     * @return static This instance
+     * @throws \Exception
+     */
+    public function updateCreationDate(): self {
+        $this->creationDate = new \DateTime();
+        return $this;
+    }
+
+
+    /**
+     * Get modification date
+     * @return \DateTime|null Modification date
+     */
+    public function getModificationDate(): ?\DateTime {
+        return $this->modificationDate;
+    }
+
+
+    /**
+     * Update modification date
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * @return static This instance
+     * @throws \Exception
+     */
+    public function updateModificationDate(): self {
+        $this->modificationDate = new \DateTime();
+        return $this;
+    }
+
+
+    /**
+     * Link identifiers to this entity
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * @return static This instance
+     */
+    public function linkIdentifiers(): self {
+        foreach ($this->identifiers as $identifier) $identifier->setEntity($this);
+        return $this;
+    }
+
 
     /**
      * Get image URL
@@ -53,10 +215,10 @@ abstract class AbstractEntity {
 
     /**
      * Get identifiers
-     * @return Identifier[] Entity identifiers
+     * @return Collection<Identifier> Entity identifiers
      */
-    public function getIdentifiers(): array {
-        return array_values($this->identifiers);
+    public function getIdentifiers() {
+        return $this->identifiers;
     }
 
 
@@ -66,8 +228,8 @@ abstract class AbstractEntity {
      * @return static                 This instance
      */
     public function addIdentifier(Identifier $identifier): self {
-        $tag = (string) $identifier;
-        if (!isset($this->identifiers[$tag])) $this->identifiers[$tag] = $identifier;
+        $key = (string) $identifier;
+        $this->identifiers->set($key, $identifier);
         return $this;
     }
 
@@ -92,7 +254,7 @@ abstract class AbstractEntity {
     public function getIdsOfType(int $type): array {
         $res = [];
         foreach ($this->identifiers as $identifier) {
-            if ($identifier->getType() == $type) $res[] = $identifier->getId();
+            if ($identifier->getType() == $type) $res[] = $identifier->getValue();
         }
         return $res;
     }
@@ -100,9 +262,9 @@ abstract class AbstractEntity {
 
     /**
      * Get entity relations
-     * @return Relation[] Entity relations
+     * @return Collection<Relation> Entity relations
      */
-    public function getRelations(): array {
+    public function getRelations() {
         return $this->relations;
     }
 
@@ -113,8 +275,29 @@ abstract class AbstractEntity {
      * @return static             This instance
      */
     public function addRelation(Relation $relation): self {
-        $this->relations[] = $relation;
+        $this->relations->add($relation);
         return $this;
+    }
+
+
+    /**
+     * Remove duplicated relations
+     * @ORM\PreFlush
+     * @param PreFlushEventArgs $args Doctrine arguments
+     */
+    public function removeDuplicatedRelations(PreFlushEventArgs $args) {
+        $unitOfWork = $args->getEntityManager()->getUnitOfWork();
+
+        $cache = [];
+        foreach ($this->relations as $i=>$relation) {
+            $tag = (string) $relation;
+            if (isset($cache[$tag])) {
+                $this->relations->remove($i);
+                $unitOfWork->detach($relation);
+            } else {
+                $cache[$tag] = 1;
+            }
+        }
     }
 
 

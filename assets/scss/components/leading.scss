@@ -17,18 +17,18 @@
  */
 
 
-// Dependencies
-@import "./_theme";
-@import "./bootstrap";
-@import "./base";
+section.leading {
+    padding: 9rem 0 0;
+    background: lighten($accent-color, 40%) no-repeat center;
+    background-size: cover;
 
-// App components
-@import "components/toplinks";
-@import "components/leading";
-@import "components/spinner";
-@import "components/cover";
-@import "components/search-result";
+    .logo {
+        max-height: 80px;
+    }
 
-// App pages
-@import "pages/homepage";
-@import "pages/details";
+    .bottom-bar {
+        margin-top: 2rem;
+        padding: 0.8rem 0;
+        background: rgba(0,0,0,0.6);
+    }
+}

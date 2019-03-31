@@ -23,6 +23,17 @@ namespace App\RosettaBundle\Utils;
 class Normalizer {
 
     /**
+     * Normalize any string
+     * @param  string $text Input text
+     * @return string       Normalized text
+     */
+    public static function normalizeDefault(string $text) {
+        $text = trim($text, ' .,/');
+        return $text;
+    }
+
+
+    /**
      * Normalize title
      * @param  string $title Title
      * @return string        Normalized title
@@ -42,7 +53,7 @@ class Normalizer {
         $title = str_replace(' : ', ': ', $title);
         $title = str_replace(' ; ', ': ', $title);
 
-        $title = trim($title, ' .,/');
+        $title = self::normalizeDefault($title);
         return $title;
     }
 
@@ -68,16 +79,16 @@ class Normalizer {
 
 
     /**
-     * Normalize entity tag
-     * @param  string $tag Tag
-     * @return string      Normalized tag
+     * Normalize slug
+     * @param  string $slug Slug
+     * @return string       Normalized slug
      */
-    public static function normalizeTag(string $tag) {
-        $tag = mb_strtolower($tag);
-        $tag = iconv('UTF-8', 'ASCII//TRANSLIT', $tag);
-        $tag = str_replace(' ', '-', $tag);
-        $tag = preg_replace('/[^a-z0-9-]/', '', $tag);
-        return $tag;
+    public static function normalizeSlug(string $slug) {
+        $slug = mb_strtolower($slug);
+        $slug = iconv('UTF-8', 'ASCII//TRANSLIT', $slug);
+        $slug = str_replace(' ', '-', $slug);
+        $slug = preg_replace('/[^a-z0-9-]/', '', $slug);
+        return $slug;
     }
 
 }

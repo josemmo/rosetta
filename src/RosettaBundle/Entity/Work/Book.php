@@ -23,10 +23,18 @@ namespace App\RosettaBundle\Entity\Work;
 use App\RosettaBundle\Entity\Organization;
 use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Entity\Other\Relation;
+use Doctrine\ORM\Mapping as ORM;
 use Nicebooks\Isbn\Isbn;
 
+/**
+ * A book is a written work composed of pages which can be divided across multiple volumes.
+ * @ORM\Entity
+ */
 class Book extends AbstractWork {
+    /** @ORM\Column(type="smallint", nullable=true, options={"unsigned":true}) */
     private $numOfPages = null;
+
+    /** @ORM\Column(type="smallint", nullable=true, options={"unsigned":true}) */
     private $numOfVolumes = null;
 
     /**
@@ -104,6 +112,15 @@ class Book extends AbstractWork {
      */
     public function getIsbn13s(): array {
         return $this->getIdsOfType(Identifier::ISBN_13);
+    }
+
+
+    /**
+     * Get associated ISBN codes
+     * @return string[] ISBN-10 and ISBN-13 codes
+     */
+    public function getIsbns(): array {
+        return array_merge($this->getIsbn10s(), $this->getIsbn13s());
     }
 
 

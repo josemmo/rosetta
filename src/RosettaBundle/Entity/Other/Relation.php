@@ -21,7 +21,12 @@
 namespace App\RosettaBundle\Entity\Other;
 
 use App\RosettaBundle\Entity\AbstractEntity;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * A relation of a given type (reason) between two entities.
+ * @ORM\Entity
+ */
 class Relation {
     const IS_AUTHOR_OF = 1;
     const IS_EDITOR_OF = 2;
@@ -29,8 +34,29 @@ class Relation {
     const IS_PUBLISHER_OF = 10;
     const IS_FOUNDER_OF = 11;
 
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="smallint", options={"unsigned":true})
+     */
     private $type;
+
+    /**
+     * @ORM\Id
+     * @ORM\ManyToOne(
+     *     targetEntity="App\RosettaBundle\Entity\AbstractEntity",
+     *     cascade={"persist", "remove"}
+     * )
+     */
     private $from;
+
+    /**
+     * @ORM\Id
+     * @ORM\ManyToOne(
+     *     targetEntity="App\RosettaBundle\Entity\AbstractEntity",
+     *     inversedBy="relations",
+     *     cascade={"persist", "remove"}
+     * )
+     */
     private $to;
 
     /**
@@ -99,6 +125,14 @@ class Relation {
             $this->to = $newValue;
         }
         return $this;
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    public function __toString() {
+        return "{" . $this->type . "}" . spl_object_hash($this->from) . "->" . spl_object_hash($this->to);
     }
 
 }

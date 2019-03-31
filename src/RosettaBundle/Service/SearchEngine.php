@@ -30,11 +30,14 @@ class SearchEngine {
     private $logger;
     private $config;
     private $wiki;
+    private $cache;
 
-    public function __construct(LoggerInterface $logger, ConfigEngine $config, WikidataService $wiki) {
+    public function __construct(LoggerInterface $logger, ConfigEngine $config, WikidataService $wiki,
+                                CacheService $cache) {
         $this->logger = $logger;
         $this->config = $config;
         $this->wiki = $wiki;
+        $this->cache = $cache;
     }
 
 
@@ -58,6 +61,9 @@ class SearchEngine {
 
         // Enhance results
         $this->addMissingEntities($results);
+
+        // Cache and return
+        $this->cache->persistEntities($results);
         return $results;
     }
 

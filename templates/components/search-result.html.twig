@@ -16,9 +16,15 @@
  # along with this program. If not, see <https://www.gnu.org/licenses/>.
  #}
 <div class="search-result {{ entity.entityType }}">
-    <div class="cover-wrapper">
-        <a href="#" class="cover" style="background-image:url('{{ entity.imageUrl }}')"></a>
-    </div>
-    <a href="#" class="title">{{ entity.title }}</a>
-    {% if entity.creator %}<span class="subtitle">{{ entity.creator.name }}</span>{% endif %}
+    <a href="{{ path('details', {id: entity.id, slug: entity.slug}) }}">
+        <span class="cover-wrapper">
+            <span class="cover"{% if entity.imageUrl is not empty %} style="background-image:url('{{ entity.imageUrl }}')"{% endif %}></span>
+        </span>
+        <span class="title">{{ entity.title }}</span>
+    </a>
+    {% if entity.creator %}
+        <a href="{{ path('details', {id: entity.creator.id, slug: entity.creator.slug}) }}" class="subtitle">
+            {{ entity.creator.name }}
+        </a>
+    {% endif %}
 </div>

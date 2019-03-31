@@ -17,17 +17,11 @@
  #}
 
 
-{% extends 'base.html.twig' %}
+{% extends 'pages/details/abstract-entity.html.twig' %}
 
-{% set page_title = 'Results for "' ~ app.request.get('q') ~ '"' %}
+{% set entity_title = entity.name %}
 
-{% block content %}
-    {# Header #}
-    {% include 'components/toplinks.html.twig' %}
-    {% include 'components/leading.html.twig' %}
-
-    {# Search results #}
-    <main role="main" class="container py-3" data-awaiting-search>
-        <div class="spinner mt-5"></div>
-    </main>
+{% block entity_attributes %}
+    <p>Person attributes</p>
+    {{ parent() }}
 {% endblock %}

@@ -1,0 +1,68 @@
+{#
+ # Rosetta - A free (libre) Integrated Library System for the 21st century.
+ # Copyright (C) 2019 José M. Moreno <josemmo@pm.me>
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # This program is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program. If not, see <https://www.gnu.org/licenses/>.
+ #}
+
+
+{% extends 'base.html.twig' %}
+
+{% set page_title = entity_title %}
+
+{% block content %}
+    {% include 'components/toplinks.html.twig' %}
+
+    <main role="main" class="container my-3">
+        <div class="row no-gutters">
+            <div class="col-md-auto">
+                <aside class="details-column col-left">
+                    {# Entity cover #}
+                    <div class="cover-wrapper {{ entity.entityType }}">
+                        <img class="cover" src="{{ entity.imageUrl }}" alt="">
+                    </div>
+
+                    {# Entity attributes #}
+                    <div class="attributes">
+                        {% block entity_attributes %}{% endblock %}
+                    </div>
+                </aside>
+            </div>
+            <div class="col-md mx-md-3">
+                <section class="details-column col-middle">
+                    {# Entity heading #}
+                    <div class="heading">
+                        <h1>
+                            {{ entity_title }}
+                            {% if entity_subtitle is defined %}
+                                <span class="subtitle">{{ entity_subtitle }}</span>
+                            {% endif %}
+                        </h1>
+                    </div>
+
+                    {# Related items #}
+                    {# TODO #}
+
+                    {# Holdings #}
+                    {# TODO #}
+                </section>
+            </div>
+            <div class="col-md-auto">
+                <section class="details-column col-right">
+                    {# TODO #}
+                </section>
+            </div>
+        </div>
+    </main>
+{% endblock %}

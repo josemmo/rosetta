@@ -1,0 +1,60 @@
+{#
+ # Rosetta - A free (libre) Integrated Library System for the 21st century.
+ # Copyright (C) 2019 José M. Moreno <josemmo@pm.me>
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # This program is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program. If not, see <https://www.gnu.org/licenses/>.
+ #}
+
+
+{% extends 'pages/details/abstract-work.html.twig' %}
+
+
+{% block entity_attributes %}
+    {# Publisher #}
+    {% if entity.publisher is not empty %}
+        <div class="attribute">
+            <h4>Publisher</h4>
+            <p><a href="{{ path('details', {id: entity.publisher.id, slug: entity.publisher.slug}) }}">{{ entity.publisher.name }}</a></p>
+        </div>
+    {% endif %}
+
+    {# Number of pages #}
+    {% if entity.numOfPages is not empty %}
+        <div class="attribute">
+            <h4>Pages</h4>
+            <p>{{ entity.numOfPages }}</p>
+        </div>
+    {% endif %}
+
+    {# Number of volumes #}
+    {% if entity.numOfVolumes is not empty %}
+        <div class="attribute">
+            <h4>Volumes</h4>
+            <p>{{ entity.numOfVolumes }}</p>
+        </div>
+    {% endif %}
+
+    {# ISBNs #}
+    {% if entity.isbns is not empty %}
+        <div class="attribute">
+            <h4>IBSN</h4>
+            {% for isbn in entity.isbns %}
+                <p>{{ isbn }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {# Abstract Work attributes #}
+    {{ parent() }}
+{% endblock %}

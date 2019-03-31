@@ -89,7 +89,7 @@ class GoogleBooks extends AbstractHttpProvider {
             $publisher = $data['volumeInfo']['publisher'] ?? null;
             if (!empty($publisher)) {
                 $organization = new Organization();
-                $organization->setName($publisher);
+                $organization->setName(Normalizer::normalizeDefault($publisher));
                 $item->addPublisher($organization);
             }
 

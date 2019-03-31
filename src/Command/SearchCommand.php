@@ -57,6 +57,8 @@ class SearchCommand extends Command {
         $res = $this->engine->search(SearchQuery::of($query), $databases);
 
         $output->writeln("Found " . count($res) . " results:");
-        $output->write(print_r($res, true));
+        foreach ($res as $entity) {
+            $output->writeln("- " . $entity->getSlug());
+        }
     }
 }
