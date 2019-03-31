@@ -19,6 +19,8 @@
 
 {% extends 'pages/details/abstract-entity.html.twig' %}
 
+{% set entity_title = entity.title %}
+
 
 {% block entity_attributes %}
     {# Authors #}
@@ -53,9 +55,4 @@
 
     {# Abstract Entity attributes #}
     {{ parent() }}
-{% endblock %}
-
-
-{% block entity_heading %}
-    <p>AbstractWork heading</p>
 {% endblock %}

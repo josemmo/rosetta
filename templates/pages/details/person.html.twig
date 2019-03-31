@@ -19,11 +19,9 @@
 
 {% extends 'pages/details/abstract-entity.html.twig' %}
 
+{% set entity_title = entity.name %}
+
 {% block entity_attributes %}
     <p>Person attributes</p>
     {{ parent() }}
-{% endblock %}
-
-{% block entity_heading %}
-    <p>Person heading</p>
 {% endblock %}

@@ -19,6 +19,8 @@
 
 {% extends 'base.html.twig' %}
 
+{% set page_title = entity_title %}
+
 {% block content %}
     {% include 'components/toplinks.html.twig' %}
 
@@ -40,7 +42,14 @@
             <div class="col-md mx-md-3">
                 <section class="details-column col-middle">
                     {# Entity heading #}
-                    {% block entity_heading %}{% endblock %}
+                    <div class="heading">
+                        <h1>
+                            {{ entity_title }}
+                            {% if entity_subtitle is defined %}
+                                <span class="subtitle">{{ entity_subtitle }}</span>
+                            {% endif %}
+                        </h1>
+                    </div>
 
                     {# Related items #}
                     {# TODO #}

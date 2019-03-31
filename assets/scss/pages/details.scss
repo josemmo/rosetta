@@ -29,6 +29,7 @@
             min-height: 200px;
         }
 
+        /* ATTRIBUTES */
         .attributes {
             padding: 0.8rem;
 
@@ -47,6 +48,28 @@
                 p {
                     margin: 0;
                     font-size: 0.8rem;
+                }
+            }
+        }
+    }
+
+    &.col-middle {
+        /* HEADING */
+        .heading {
+            padding: 4rem 1.2rem 1.2rem;
+            background: $foreground-color;
+            color: $background-color;
+
+            h1 {
+                margin: 0;
+                font-size: 2rem;
+                line-height: 1em;
+
+                .subtitle {
+                    display: block;
+                    margin-top: 0.2rem;
+                    font-size: 1.2rem;
+                    font-weight: normal;
                 }
             }
         }
