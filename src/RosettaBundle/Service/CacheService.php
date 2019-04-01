@@ -22,6 +22,7 @@ namespace App\RosettaBundle\Service;
 
 use App\RosettaBundle\Entity\AbstractEntity;
 use App\RosettaBundle\Entity\Other\Identifier;
+use App\RosettaBundle\Entity\Other\Relation;
 use Doctrine\ORM\EntityManagerInterface;
 
 class CacheService {
@@ -54,7 +55,7 @@ class CacheService {
         foreach ($queue as $i=>$entity) {
             $entity->updateSlug();
 
-            // Prepare query
+            // Get existing entities from cache
             if ($entity->getIdentifiers()->isEmpty()) {
                 $query = $this->em->createQuery("SELECT e FROM " . get_class($entity) . " e
                                                       WHERE e.slug=:slug");
@@ -67,25 +68,25 @@ class CacheService {
                                                       WHERE i.id IN (:ids)");
                 $query->setParameter('ids', $ids);
             }
-
-            // Get entity from cache
-            $cachedEntity = null; /** @var AbstractEntity|null $cachedEntity */
-            try {
-                $cachedEntity = $query->getOneOrNullResult();
-            } catch (\Exception $e) {
-                // Not a unique result, this should never happen
-            }
+            $results = $query->getResult() ?? [];
 
             // Register changes
-            if (is_null($cachedEntity)) {
+            if (empty($results)) {
                 $toPersist[] = $entity;
             } else {
-                // Copy old data from cached entity
-                $entity->setId($cachedEntity->getId());
-                $entity->setCreationDate($cachedEntity->getCreationDate());
-                foreach ($cachedEntity->getIdentifiers() as $identifier) {
-                    $entity->addIdentifier($identifier);
+                $mainCachedEntity = $results[0]; /** @var AbstractEntity|null $cachedEntity */
+
+                // Copy old data from cached entity(ies)
+                $entity->setId($mainCachedEntity->getId());
+                $entity->setCreationDate($mainCachedEntity->getCreationDate());
+                foreach ($results as $result) {
+                    foreach ($result->getIdentifiers() as $identifier) {
+                        $entity->addIdentifier($identifier);
+                    }
                 }
+
+                // Delete duplicated cached entities
+                // TODO: depends on making Relation entity cacheable
 
                 // Merge detached object
                 $newEntity = $this->em->merge($entity);
