@@ -24,6 +24,6 @@
     {# Modification date #}
     <div class="attribute">
         <h4>{% trans %}Last update{% endtrans %}</h4>
-        <p>{{ entity.modificationDate|date }}</p>
+        <p>{{ rosetta_date(entity.modificationDate) }}</p>
     </div>
 {% endblock %}

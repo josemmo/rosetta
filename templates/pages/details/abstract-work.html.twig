@@ -35,8 +35,16 @@
                 {% endif %}
             </h4>
             {% for author in entity.authors %}
-                <p><a href="{{ path('details', {id: author.id, slug: author.slug}) }}">{{ author.name }}</a></p>
+                <p><a href="{{ rosetta_entity_path(author) }}">{{ author.name }}</a></p>
             {% endfor %}
+        </div>
+    {% endif %}
+
+    {# Publication date #}
+    {% if entity.pubDate is not empty %}
+        <div class="attribute">
+            <h4>{% trans %}Publication date{% endtrans %}</h4>
+            <p>{{ rosetta_date(entity.pubDate) }}</p>
         </div>
     {% endif %}
 

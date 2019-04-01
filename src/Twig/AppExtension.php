@@ -111,6 +111,7 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
     public function getFunctions() {
         return [
             new TwigFunction('rosetta_asset', [$this, 'getRosettaAsset']),
+            new TwigFunction('rosetta_entity_path', [$this, 'getEntityPath']),
             new TwigFunction('rosetta_external_links', [$this, 'getExternalLinks']),
             new TwigFunction('rosetta_date', [$this, 'getFormattedDate'])
         ];
@@ -128,6 +129,19 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
             return is_null($fallback) ? null : $this->getRosettaAsset($fallback);
         }
         return $this->packages->getUrl($this->assetsCache[$tag]);
+    }
+
+
+    /**
+     * Get path to entity
+     * @param  AbstractEntity $entity Entity
+     * @return string                 Entity path
+     */
+    public function getEntityPath($entity) {
+        return $this->router->generate('details', [
+            "id" => $entity->getId(),
+            "slug" => $entity->getSlug()
+        ]);
     }
 
 

@@ -16,14 +16,14 @@
  # along with this program. If not, see <https://www.gnu.org/licenses/>.
  #}
 <div class="search-result {{ entity.entityType }}">
-    <a href="{{ path('details', {id: entity.id, slug: entity.slug}) }}">
+    <a href="{{ rosetta_entity_path(entity) }}">
         <span class="cover-wrapper">
             <span class="cover"{% if entity.imageUrl is not empty %} style="background-image:url('{{ path('entity_cover', {id: entity.id}) }}')"{% endif %}></span>
         </span>
         <span class="title">{{ entity.title }}</span>
     </a>
     {% if entity.creator %}
-        <a href="{{ path('details', {id: entity.creator.id, slug: entity.creator.slug}) }}" class="subtitle">
+        <a href="{{ rosetta_entity_path(entity.creator) }}" class="subtitle">
             {{ entity.creator.name }}
         </a>
     {% endif %}

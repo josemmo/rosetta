@@ -22,6 +22,22 @@
 {% set entity_title = entity.name %}
 
 {% block entity_attributes %}
-    <p>Person attributes</p> {# TODO: not implemented #}
+    {# Date of birth #}
+    {% if entity.birthDate is not empty %}
+        <div class="attribute">
+            <h4>{% trans %}Date of birth{% endtrans %}</h4>
+            <p>{{ rosetta_date(entity.birthDate) }}</p>
+        </div>
+    {% endif %}
+
+    {# Date of death #}
+    {% if entity.deathDate is not empty %}
+        <div class="attribute">
+            <h4>{% trans %}Date of death{% endtrans %}</h4>
+            <p>{{ rosetta_date(entity.deathDate) }}</p>
+        </div>
+    {% endif %}
+
+    {# Abstract Entity attributes #}
     {{ parent() }}
 {% endblock %}
