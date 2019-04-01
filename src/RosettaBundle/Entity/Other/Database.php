@@ -27,6 +27,7 @@ class Database {
     private $id;
     private $name;
     private $shortName;
+    private $externalLink;
     private $provider;
 
     /**
@@ -37,6 +38,7 @@ class Database {
         $this->id = $props['id'];
         $this->name = $props['name'];
         $this->shortName = $props['short_name'];
+        $this->externalLink = $props['external_link'];
         $this->provider = $props['provider'];
     }
 
@@ -64,6 +66,15 @@ class Database {
      */
     public function getShortName(): string {
         return $this->shortName;
+    }
+
+
+    /**
+     * Get external link
+     * @return string|null External link
+     */
+    public function getExternalLink(): ?string {
+        return $this->externalLink;
     }
 
 

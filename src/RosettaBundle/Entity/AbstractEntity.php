@@ -261,6 +261,19 @@ abstract class AbstractEntity {
 
 
     /**
+     * Get first entity ID of given type
+     * @param  int         $type Identifier type
+     * @return string|null       Entity ID or null if not found
+     */
+    public function getFirstIdOfType(int $type): ?string {
+        foreach ($this->identifiers as $identifier) {
+            if ($identifier->getType() == $type) return $identifier->getValue();
+        }
+        return null;
+    }
+
+
+    /**
      * Get entity relations
      * @return Collection<Relation> Entity relations
      */
@@ -336,6 +349,28 @@ abstract class AbstractEntity {
         $type = explode('\\', static::class);
         $type = str_replace('Abstract', '', end($type));
         return strtolower($type);
+    }
+
+
+    /**
+     * To filled template string
+     * @param  string $template Template
+     * @return string           Template filled with values from entity
+     */
+    public function toFilledTemplateString(string $template) {
+        // ISBN 10
+        if (strpos($template, '{{isbn10}}') !== false) {
+            $value = $this->getFirstIdOfType(Identifier::ISBN_10);
+            if (!is_null($value)) $template = str_replace('{{isbn10}}', $value, $template);
+        }
+
+        // ISBN 13
+        if (strpos($template, '{{isbn13}}') !== false) {
+            $value = $this->getFirstIdOfType(Identifier::ISBN_13);
+            if (!is_null($value)) $template = str_replace('{{isbn13}}', $value, $template);
+        }
+
+        return $template;
     }
 
 

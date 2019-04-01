@@ -20,6 +20,8 @@
 
 namespace App\Twig;
 
+use App\RosettaBundle\Entity\AbstractEntity;
+use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Service\ConfigEngine;
 use Symfony\Component\Asset\Packages;
 use Twig\Extension\AbstractExtension;
@@ -101,7 +103,8 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
      */
     public function getFunctions() {
         return [
-            new TwigFunction('rosetta_asset', [$this, 'getRosettaAsset'])
+            new TwigFunction('rosetta_asset', [$this, 'getRosettaAsset']),
+            new TwigFunction('rosetta_external_links', [$this, 'getExternalLinks'])
         ];
     }
 
@@ -117,6 +120,40 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
             return is_null($fallback) ? null : $this->getRosettaAsset($fallback);
         }
         return $this->packages->getUrl($this->assetsCache[$tag]);
+    }
+
+
+    /**
+     * Get external links from entity
+     * @param  AbstractEntity $entity Entity
+     * @return array                  External links
+     */
+    public function getExternalLinks($entity) {
+        $res = [];
+        foreach ($entity->getIdentifiers() as $identifier) {
+            $value = $identifier->getValue();
+            switch ($identifier->getType()) {
+                case Identifier::GBOOKS:
+                    $res[] = ['name' => 'Google Books', 'url' => "https://books.google.es/books?id=$value"];
+                    break;
+                case Identifier::OCLC:
+                    $res[] = ['name' => 'WorldCat', 'url' => "https://www.worldcat.org/oclc/$value"];
+                    break;
+                case Identifier::WIKIDATA:
+                    $res[] = ['name' => 'Wikidata', 'url' => "https://www.wikidata.org/entity/$value"];
+                    break;
+                case Identifier::INTERNAL:
+                    $databaseId = explode(':', $value)[0];
+                    $db = $this->config->getDatabases()[$databaseId];
+                    $url = $db->getExternalLink();
+                    if (!empty($url)) {
+                        $url = $entity->toFilledTemplateString($url);
+                        $res[] = ['name' => $db->getName(), 'url' => $url];
+                    }
+                    break;
+            }
+        }
+        return $res;
     }
 
 }

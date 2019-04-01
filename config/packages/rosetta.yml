@@ -15,6 +15,7 @@ rosetta:
         - id: 'uva'
           name: 'Universidad de Valladolid'
           short_name: 'UVa'
+          external_link: 'https://almena.uva.es/search/i?search={{isbn13}}'
           provider:
               type: App\RosettaBundle\Provider\Z3950
               preset: 'millenium'
@@ -24,6 +25,7 @@ rosetta:
         - id: 'ur'
           name: 'Universidad de La Rioja'
           short_name: 'UR'
+          external_link: 'http://catalogo.rebiun.org/rebiun/doc?q={{isbn10}}'
           provider:
               type: App\RosettaBundle\Provider\Z3950
               url: 'merly.unirioja.es:9000/ABSYSE'
@@ -32,6 +34,7 @@ rosetta:
         - id: 'ub'
           name: 'Universitat de Barcelona'
           short_name: 'UB'
+          external_link: 'https://cataleg.ub.edu/search*spi/?searchtype=i&searcharg={{isbn13}}'
           provider:
               type: App\RosettaBundle\Provider\Z3950
               preset: 'millenium'

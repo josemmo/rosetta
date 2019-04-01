@@ -56,6 +56,19 @@
 
                         {# Holdings #}
                         {# TODO #}
+
+                        {# External links #}
+                        {% set external_links = rosetta_external_links(entity) %}
+                        {% if external_links is not empty %}
+                            <div class="subsection">
+                                <h3>External links</h3>
+                                <p class="m-n1">
+                                    {% for link in external_links %}
+                                        <a href="{{ link.url }}" target="_blank" class="btn btn-sm btn-outline-primary m-1">{{ link.name }}</a>
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        {% endif %}
                     </section>
                 </div>
                 <div class="col-md-auto">

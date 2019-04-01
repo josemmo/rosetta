@@ -48,6 +48,7 @@ class Configuration implements ConfigurationInterface {
                             ->scalarNode('id')->end()
                             ->scalarNode('name')->end()
                             ->scalarNode('short_name')->end()
+                            ->scalarNode('external_link')->defaultNull()->end()
                             ->arrayNode('provider');
         $node =                 $this->attachProviderNode($node)
                             ->end()
