@@ -20,6 +20,7 @@
 {% extends 'pages/details/abstract-entity.html.twig' %}
 
 {% set entity_title = entity.title %}
+{% if entity.subtitle is not empty %}{% set entity_subtitle = entity.subtitle %}{% endif %}
 
 
 {% block entity_attributes %}

@@ -44,8 +44,7 @@
                     {# Entity heading #}
                     <div class="heading" data-color-target>
                         <h1>
-                            {{ entity_title }}
-                            {% if entity_subtitle is defined %}
+                            {{ entity_title }}{% if entity_subtitle is defined %}:
                                 <span class="subtitle">{{ entity_subtitle }}</span>
                             {% endif %}
                         </h1>

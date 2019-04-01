@@ -145,12 +145,19 @@ class Z3950 extends AbstractProvider {
             $res->addInternalId($this->config['id'], $cNumber);
         }
 
-        // Add title
+        // Parse title
         $title = $record->xpath('datafield[@tag="245"]/subfield[@code="a"]')[0];
         $subtitle = $record->xpath('datafield[@tag="245"]/subfield[@code="b"]');
         if (!empty($subtitle)) $title .= " " . $subtitle[0];
         $title = Normalizer::normalizeTitle($title);
-        $res->setTitle($title);
+        $title = explode(':', $title, 2);
+
+        // Add title
+        $res->setTitle(trim($title[0]));
+        if (isset($title[1])) {
+            $subtitle = trim($title[1]);
+            if (!empty($subtitle)) $res->setSubtitle($subtitle);
+        }
 
         // Add legal attributes
         foreach ($record->xpath('datafield[@tag="017"]') as $elem) {
