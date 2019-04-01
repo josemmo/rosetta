@@ -16,8 +16,10 @@ rosetta:
           name: 'Universidad de Valladolid'
           short_name: 'UVa'
           provider:
-              type: App\RosettaBundle\Provider\Innopac
-              url: 'http://almena.uva.es/search*S1/{{args}}'
+              type: App\RosettaBundle\Provider\Z3950
+              preset: 'millenium'
+              url: 'almena.uva.es:210/INNOPAC'
+              covers_url: 'https://www.syndetics.com/index.php?isbn={{isbn13}}/LC.GIF&client=uvalla'
 
         - id: 'ur'
           name: 'Universidad de La Rioja'
