@@ -30,7 +30,7 @@
                 <aside class="details-column col-left">
                     {# Entity cover #}
                     <div class="cover-wrapper {{ entity.entityType }}">
-                        <img class="cover" src="{{ entity.imageUrl }}" alt="">
+                        <img class="cover" src="{{ path('entity_cover', {id: entity.id}) }}" alt="">
                     </div>
 
                     {# Entity attributes #}

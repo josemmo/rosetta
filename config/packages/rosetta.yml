@@ -3,6 +3,7 @@ rosetta:
     # This section is used to customize the appearance of the Web UI.
     opac:
         app_name: 'Rosetta Demo'
+        covers_expiration: '+90 days'
 
     # Wikidata configuration values.
     wikidata:
