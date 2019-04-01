@@ -2,7 +2,7 @@
     "devDependencies": {
         "@babel/polyfill": "^7.4.0",
         "@babel/preset-env": "^7.4.2",
-        "@symfony/webpack-encore": "^0.24.0",
+        "@symfony/webpack-encore": "^0.26.0",
         "autoprefixer": "^9.5.0",
         "bootstrap": "^4.3.1",
         "jquery": "^3.3.1",
