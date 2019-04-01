@@ -30,7 +30,7 @@
                 <aside class="details-column col-left">
                     {# Entity cover #}
                     <div class="cover-wrapper {{ entity.entityType }}">
-                        <img class="cover" src="{{ path('entity_cover', {id: entity.id}) }}" alt="">
+                        <img class="cover" src="{{ path('entity_cover', {id: entity.id}) }}" alt="" data-color-source>
                     </div>
 
                     {# Entity attributes #}
@@ -42,7 +42,7 @@
             <div class="col-md mx-md-3">
                 <section class="details-column col-middle">
                     {# Entity heading #}
-                    <div class="heading">
+                    <div class="heading" data-color-target>
                         <h1>
                             {{ entity_title }}
                             {% if entity_subtitle is defined %}
