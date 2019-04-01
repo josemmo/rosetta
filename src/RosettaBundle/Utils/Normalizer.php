@@ -28,7 +28,7 @@ class Normalizer {
      * @return string       Normalized text
      */
     public static function normalizeDefault(string $text) {
-        $text = trim($text, ' .,/');
+        $text = trim($text, ' .,:/');
         return $text;
     }
 
