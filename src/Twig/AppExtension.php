@@ -113,7 +113,8 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
             new TwigFunction('rosetta_asset', [$this, 'getRosettaAsset']),
             new TwigFunction('rosetta_entity_path', [$this, 'getEntityPath']),
             new TwigFunction('rosetta_external_links', [$this, 'getExternalLinks']),
-            new TwigFunction('rosetta_date', [$this, 'getFormattedDate'])
+            new TwigFunction('rosetta_date', [$this, 'getFormattedDate']),
+            new TwigFunction('rosetta_language', [$this, 'getLanguageName'])
         ];
     }
 
@@ -240,6 +241,16 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
         $locale = $locale = $this->translator->getLocale();
         $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::LONG, $timeFormat);
         return $formatter->format($date);
+    }
+
+
+    /**
+     * Get language name
+     * @param  string $code Two-letter language code according to ISO 639-1
+     * @return string       Localized language name
+     */
+    public function getLanguageName(string $code) {
+        return \Locale::getDisplayLanguage($code, $this->translator->getLocale());
     }
 
 }

@@ -44,7 +44,7 @@
     {% if entity.pubDate is not empty %}
         <div class="attribute">
             <h4>{% trans %}Publication date{% endtrans %}</h4>
-            <p>{{ rosetta_date(entity.pubDate) }}</p>
+            <p class="text-capitalize">{{ rosetta_date(entity.pubDate) }}</p>
         </div>
     {% endif %}
 
@@ -59,7 +59,7 @@
                 {% endif %}
             </h4>
             {% for lang in entity.languages %}
-                <p>{{ lang }}</p>
+                <p class="text-capitalize">{{ rosetta_language(lang) }}</p>
             {% endfor %}
         </div>
     {% endif %}
