@@ -29,3 +29,7 @@ services:
             $translator: '@translator'
         tags:
             - { name: kernel.event_listener, event: kernel.request }
+
+    App\Twig\AppExtension:
+        arguments:
+            $translator: '@translator'
