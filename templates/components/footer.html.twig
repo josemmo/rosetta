@@ -18,6 +18,6 @@
 <footer>
     <div class="container">
         <p class="mb-0">{{ rosetta.opac.app_name }}</p>
-        <small>Powered by rosetta v{{ rosetta.version }}</small>
+        <small>{% trans with {'%version%': rosetta.version} %}Powered by rosetta v%version%{% endtrans %}</small>
     </div>
 </footer>

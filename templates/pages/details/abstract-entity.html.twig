@@ -23,7 +23,7 @@
 {% block entity_attributes %}
     {# Modification date #}
     <div class="attribute">
-        <h4>Last update</h4>
+        <h4>{% trans %}Last update{% endtrans %}</h4>
         <p>{{ entity.modificationDate|date }}</p>
     </div>
 {% endblock %}
