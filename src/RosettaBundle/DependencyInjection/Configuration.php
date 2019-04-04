@@ -86,6 +86,7 @@ class Configuration implements ConfigurationInterface {
                 ->scalarNode('user')->defaultNull()->end()
                 ->scalarNode('group')->defaultNull()->end()
                 ->scalarNode('password')->defaultNull()->end()
+                ->scalarNode('charset')->defaultNull()->end()
                 ->scalarNode('key')->defaultNull()->end()
                 ->scalarNode('country')->defaultNull()->end()
                 ->scalarNode('syntax')->defaultNull()->end()

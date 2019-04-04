@@ -46,6 +46,7 @@ class Z3950 extends AbstractProvider {
         if (!is_null($this->config['user'])) $yazConfig['user'] = $this->config['user'];
         if (!is_null($this->config['group'])) $yazConfig['group'] = $this->config['group'];
         if (!is_null($this->config['password'])) $yazConfig['password'] = $this->config['password'];
+        if (!is_null($this->config['charset'])) $yazConfig['charset'] = $this->config['charset'];
 
         // Create YAZ instance
         $conn = yaz_connect($this->config['url'], $yazConfig);
@@ -111,7 +112,7 @@ class Z3950 extends AbstractProvider {
      */
     protected function getPresets(): array {
         return [
-            "millenium" => ["syntax" => "opac"]
+            "millennium" => ["syntax" => "opac"]
         ];
     }
 

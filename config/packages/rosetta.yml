@@ -18,7 +18,7 @@ rosetta:
           external_link: 'https://almena.uva.es/search/i?search={{isbn13}}'
           provider:
               type: App\RosettaBundle\Provider\Z3950
-              preset: 'millenium'
+              preset: 'millennium'
               url: 'almena.uva.es:210/INNOPAC'
               covers_url: 'https://www.syndetics.com/index.php?isbn={{isbn13}}/LC.GIF&client=uvalla'
 
@@ -37,7 +37,7 @@ rosetta:
           external_link: 'https://cataleg.ub.edu/search*spi/?searchtype=i&searcharg={{isbn13}}'
           provider:
               type: App\RosettaBundle\Provider\Z3950
-              preset: 'millenium'
+              preset: 'millennium'
               url: 'ub.cbuc.cat:210/INNOPAC'
               covers_url: 'https://cobertes.csuc.cat/cobertes.php?isbn={{isbn13}}&institucio=UB'
 
