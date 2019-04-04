@@ -28,7 +28,7 @@
             {% endif %}
         </span>
     </a>
-    {% if entity.creator is defined %}
+    {% if entity.creator is defined and entity.creator is not empty %}
         <a href="{{ rosetta_entity_path(entity.creator) }}" class="subtitle">
             {{ entity.creator.name }}
         </a>
