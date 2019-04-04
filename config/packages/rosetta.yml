@@ -3,6 +3,7 @@ rosetta:
     # This section is used to customize the appearance of the Web UI.
     opac:
         app_name: 'Rosetta Demo'
+        admin_email: 'contacto@bibliozambrano.com'
         covers_expiration: '+90 days'
 
     # Wikidata configuration values.

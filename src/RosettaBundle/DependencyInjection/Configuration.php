@@ -34,6 +34,7 @@ class Configuration implements ConfigurationInterface {
                 ->arrayNode('opac')
                     ->children()
                         ->scalarNode('app_name')->end()
+                        ->scalarNode('admin_email')->end()
                         ->scalarNode('covers_expiration')->end()
                     ->end()
                 ->end()
