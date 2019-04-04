@@ -170,8 +170,8 @@ class SearchEngine {
     private function groupResults(array $entities): array {
         // Create table of identifiers
         $ids = [];
-        foreach ($entities as $i=>$item) {
-            foreach ($item->getIdentifiers() as $identifier) {
+        foreach ($entities as $i=>$entity) {
+            foreach ($entity->getIdentifiers() as $identifier) {
                 if ($identifier->getType() == Identifier::ISBN_13) continue;
                 $id = (string) $identifier;
                 if (!isset($ids[$id])) $ids[$id] = [];
@@ -179,36 +179,41 @@ class SearchEngine {
             }
         }
 
-        // Sort IDs array by length (required for proper grouping)
-        $ids = array_values($ids);
-        usort($ids, function($a, $b) {
-            return count($b) <=> count($a);
+        // Group duplicated entities by repeated identifiers
+        $ids = array_filter($ids, function($elem) {
+            return count($elem) > 1;
         });
+        $ids = array_values($ids);
 
-        // Create groups
-        $groups = [];
-        $itemGroupPair = [];
-        foreach ($ids as &$items) {
-            // Find group ID
-            $groupId = count($groups);
-            foreach ($items as &$itemId) {
-                if (isset($itemGroupPair[$itemId])) {
-                    $groupId = $itemGroupPair[$itemId];
-                    break;
+        $parsedIds = [];
+        while (!empty($ids)) {
+            $indexes = array_shift($ids);
+            $mustInsert = true;
+            foreach ($ids as &$otherIndexes) {
+                $areTheSameEntity = !empty(array_intersect($indexes, $otherIndexes));
+                if ($areTheSameEntity) {
+                    $mustInsert = false;
+                    $otherIndexes = array_unique(array_merge($indexes, $otherIndexes));
+                    sort($otherIndexes);
                 }
             }
-
-            // Add items to group
-            if (!isset($groups[$groupId])) $groups[$groupId] = [];
-            foreach ($items as &$itemId) {
-                if (!in_array($itemId, $groups[$groupId])) $groups[$groupId][] = $itemId;
-                $itemGroupPair[$itemId] = $groupId;
-            }
+            if ($mustInsert) $parsedIds[] = $indexes;
         }
 
-        // Replace IDs with entities
-        foreach ($groups as &$group) {
-            foreach ($group as &$id) $id = $entities[$id];
+        // Populate groups array
+        $groups = [];
+        $alreadyInserted = [];
+        foreach ($parsedIds as $indexes) {
+            $group = [];
+            foreach ($indexes as $index) {
+                $group[] = $entities[$index];
+                $alreadyInserted[$index] = 1;
+            }
+            $groups[] = $group;
+        }
+        foreach ($entities as $i=>$entity) {
+            if (isset($alreadyInserted[$i])) continue;
+            $groups[] = [$entity];
         }
 
         return $groups;
