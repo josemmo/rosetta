@@ -157,13 +157,13 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
             $value = $identifier->getValue();
             switch ($identifier->getType()) {
                 case Identifier::GBOOKS:
-                    $res[] = ['name' => 'Google Books', 'url' => "https://books.google.es/books?id=$value"];
+                    $res['gbooks'] = ['name' => 'Google Books', 'url' => "https://books.google.es/books?id=$value"];
                     break;
                 case Identifier::OCLC:
-                    $res[] = ['name' => 'WorldCat', 'url' => "https://www.worldcat.org/oclc/$value"];
+                    $res['oclc'] = ['name' => 'WorldCat', 'url' => "https://www.worldcat.org/oclc/$value"];
                     break;
                 case Identifier::WIKIDATA:
-                    $res[] = ['name' => 'Wikidata', 'url' => "https://www.wikidata.org/entity/$value"];
+                    $res['wikidata'] = ['name' => 'Wikidata', 'url' => "https://www.wikidata.org/entity/$value"];
                     break;
                 case Identifier::INTERNAL:
                     $databaseId = explode(':', $value)[0];
@@ -171,12 +171,12 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
                     $url = $db->getExternalLink();
                     if (!empty($url)) {
                         $url = $entity->toFilledTemplateString($url);
-                        $res[] = ['name' => $db->getName(), 'url' => $url];
+                        $res["internal-$databaseId"] = ['name' => $db->getName(), 'url' => $url];
                     }
                     break;
             }
         }
-        return $res;
+        return array_values($res);
     }
 
 
