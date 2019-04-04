@@ -52,7 +52,17 @@
                         </div>
 
                         {# Related items #}
-                        {# TODO #}
+                        {% set relations = entity.relations %}
+                        {% if relations is not empty %}
+                            <div class="subsection">
+                                <h3>{% trans %}Related items{% endtrans %}</h3>
+                                <div class="entity-reel">
+                                    {% for relation in relations %}
+                                        {% include 'components/entity-result.html.twig' with {'entity': relation.getOther(entity)} only %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
 
                         {# Holdings #}
                         {# TODO #}
