@@ -19,7 +19,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% set page_title = 'Results for "' ~ app.request.get('q') ~ '"' %}
+{% set page_title = 'Results for "%query%"'|trans({'%query%': app.request.get('q')}) %}
 
 {% block content %}
     <div class="content">
