@@ -54,7 +54,7 @@
 /* DEFAULT BACKGROUNDS */
 $types: entity person book;
 @each $type in $types {
-    .search-result.#{$type} .cover-wrapper::before,
+    .entity.#{$type} .cover-wrapper::before,
     .details-column .cover-wrapper.#{$type}::before {
         mask-image: url('./../../images/#{$type}.svg');
     }
