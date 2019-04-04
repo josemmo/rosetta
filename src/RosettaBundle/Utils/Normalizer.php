@@ -20,7 +20,29 @@
 
 namespace App\RosettaBundle\Utils;
 
+use ForceUTF8\Encoding;
+
 class Normalizer {
+
+    /**
+     * Fix string encoding
+     * @param  string $text Input text
+     * @return string       Normalized text
+     */
+    public static function fixEncoding(string $text) {
+        // Convert from any encoding to UTF-8
+        $text = Encoding::toUTF8($text);
+        $text = Encoding::fixUTF8($text, Encoding::ICONV_TRANSLIT);
+
+        // Fix Millennium invalid encoding
+        $text = str_replace(
+            ['âa', 'âe', 'âi', 'âo', 'âu', 'än'],
+            [ 'á',  'é',  'í',  'ó',  'ú',  'ñ'],
+            $text
+        );
+        return $text;
+    }
+
 
     /**
      * Normalize any string
