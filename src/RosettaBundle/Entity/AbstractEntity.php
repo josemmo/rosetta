@@ -80,14 +80,25 @@ abstract class AbstractEntity {
      *     cascade={"persist", "remove"}
      * )
      */
-    protected $relations;
+    protected $relationsTo;
+
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity="App\RosettaBundle\Entity\Other\Relation",
+     *     mappedBy="from",
+     *     fetch="EXTRA_LAZY",
+     *     cascade={"persist", "remove"}
+     * )
+     */
+    protected $relationsFrom;
 
     /**
      * AbstractEntity constructor
      */
     public function __construct() {
         $this->identifiers = new ArrayCollection();
-        $this->relations = new ArrayCollection();
+        $this->relationsTo = new ArrayCollection();
+        $this->relationsFrom = new ArrayCollection();
     }
 
 
@@ -278,7 +289,10 @@ abstract class AbstractEntity {
      * @return Collection<Relation> Entity relations
      */
     public function getRelations() {
-        return $this->relations;
+        return new ArrayCollection(array_merge(
+            $this->relationsTo->toArray(),
+            $this->relationsFrom->toArray()
+        ));
     }
 
 
@@ -288,7 +302,11 @@ abstract class AbstractEntity {
      * @return static             This instance
      */
     public function addRelation(Relation $relation): self {
-        $this->relations->add($relation);
+        if ($relation->getFrom() === $this) {
+            $this->relationsFrom->add($relation);
+        } else {
+            $this->relationsTo->add($relation);
+        }
         return $this;
     }
 
@@ -302,13 +320,15 @@ abstract class AbstractEntity {
         $unitOfWork = $args->getEntityManager()->getUnitOfWork();
 
         $cache = [];
-        foreach ($this->relations as $i=>$relation) {
-            $tag = (string) $relation;
-            if (isset($cache[$tag])) {
-                $this->relations->remove($i);
-                $unitOfWork->detach($relation);
-            } else {
-                $cache[$tag] = 1;
+        foreach ([$this->relationsTo, $this->relationsFrom] as $collection) {
+            foreach ($collection as $i=>$relation) {
+                $tag = (string) $relation;
+                if (isset($cache[$tag])) {
+                    $collection->remove($i);
+                    $unitOfWork->detach($relation);
+                } else {
+                    $cache[$tag] = 1;
+                }
             }
         }
     }
@@ -321,7 +341,7 @@ abstract class AbstractEntity {
      */
     public function getRelatedOfType(int $type): array {
         $res = [];
-        foreach ($this->relations as $relation) {
+        foreach ($this->getRelations() as $relation) {
             if ($relation->getType() == $type) $res[] = $relation->getOther($this);
         }
         return $res;
@@ -334,7 +354,7 @@ abstract class AbstractEntity {
      * @return static|null       Abstract Entity
      */
     public function getFirstRelatedOfType(int $type) {
-        foreach ($this->relations as $relation) {
+        foreach ($this->getRelations() as $relation) {
             if ($relation->getType() == $type) return $relation->getOther($this);
         }
         return null;
