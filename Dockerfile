@@ -30,7 +30,7 @@ RUN pecl install yaz
 RUN docker-php-ext-enable yaz
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_mysql
+RUN docker-php-ext-install pdo pdo_mysql intl
 
 # Build app
 WORKDIR /rosetta
