@@ -22,7 +22,6 @@ namespace App\RosettaBundle\Service;
 
 use App\RosettaBundle\Entity\AbstractEntity;
 use App\RosettaBundle\Entity\Other\Identifier;
-use App\RosettaBundle\Entity\Other\Relation;
 use Doctrine\ORM\EntityManagerInterface;
 
 class CacheService {
