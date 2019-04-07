@@ -20,25 +20,46 @@
 {% extends 'pages/details/abstract-entity.html.twig' %}
 
 {% set entity_title = entity.title %}
+{% if entity.subtitle is not empty %}{% set entity_subtitle = entity.subtitle %}{% endif %}
 
 
 {% block entity_attributes %}
     {# Authors #}
     {% if entity.authors is not empty %}
         <div class="attribute">
-            <h4>{% if entity.authors|length > 1 %}Authors{% else %}Author{% endif %}</h4>
+            <h4>
+                {% if entity.authors|length > 1 %}
+                    {% trans %}Authors{% endtrans %}
+                {% else %}
+                    {% trans %}Author{% endtrans %}
+                {% endif %}
+            </h4>
             {% for author in entity.authors %}
-                <p><a href="{{ path('details', {id: author.id, slug: author.slug}) }}">{{ author.name }}</a></p>
+                <p><a href="{{ rosetta_entity_path(author) }}">{{ author.name }}</a></p>
             {% endfor %}
+        </div>
+    {% endif %}
+
+    {# Publication date #}
+    {% if entity.pubDate is not empty %}
+        <div class="attribute">
+            <h4>{% trans %}Publication date{% endtrans %}</h4>
+            <p class="text-capitalize">{{ rosetta_date(entity.pubDate) }}</p>
         </div>
     {% endif %}
 
     {# Language #}
     {% if entity.languages is not empty %}
         <div class="attribute">
-            <h4>Languages</h4>
+            <h4>
+                {% if entity.languages|length > 1 %}
+                    {% trans %}Languages{% endtrans %}
+                {% else %}
+                    {% trans %}Language{% endtrans %}
+                {% endif %}
+            </h4>
             {% for lang in entity.languages %}
-                <p>{{ lang }}</p>
+                <p class="text-capitalize">{{ rosetta_language(lang) }}</p>
             {% endfor %}
         </div>
     {% endif %}
@@ -46,7 +67,13 @@
     {# Legal Deposits #}
     {% if entity.legalDeposits is not empty %}
         <div class="attribute">
-            <h4>Legal Deposits</h4>
+            <h4>
+                {% if entity.legalDeposits|length > 1 %}
+                    {% trans %}Legal Deposits{% endtrans %}
+                {% else %}
+                    {% trans %}Legal Deposit{% endtrans %}
+                {% endif %}
+            </h4>
             {% for ld in entity.legalDeposits %}
                 <p>{{ ld }}</p>
             {% endfor %}

@@ -1,4 +1,4 @@
-/*!
+/*
  * Rosetta - A free (libre) Integrated Library System for the 21st century.
  * Copyright (C) 2019 José M. Moreno <josemmo@pm.me>
  *
@@ -17,20 +17,31 @@
  */
 
 
-// Dependencies
-@import "./_theme";
-@import "./bootstrap";
-@import "./base";
+import $ from 'jquery'
+import Vibrant from 'node-vibrant/dist/vibrant'
 
-// App components
-@import "components/toplinks";
-@import "components/footer";
-@import "components/leading";
-@import "components/spinner";
-@import "components/entity-result";
-@import "components/cover";
 
-// App pages
-@import "pages/homepage";
-@import "pages/search";
-@import "pages/details";
+/**
+ * Get cover color
+ * @param {HTMLImageElement} img Cover image
+ */
+function getCoverColor(img) {
+    Vibrant.from(img).getPalette().then((palette) => {
+        const color = palette.DarkVibrant.hex
+        $('[data-color-target]').css('backgroundColor', color)
+    })
+}
+
+
+/* INITIALIZE */
+$(() => {
+    const $colorSource = $('img[data-color-source]')
+    if ($colorSource.length !== 1) return
+
+    const img = $colorSource[0]
+    if (img.naturalWidth > 0) {
+        getCoverColor(img)
+    } else {
+        img.addEventListener('load', () => getCoverColor(img), false)
+    }
+})

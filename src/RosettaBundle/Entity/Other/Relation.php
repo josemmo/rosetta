@@ -44,6 +44,7 @@ class Relation {
      * @ORM\Id
      * @ORM\ManyToOne(
      *     targetEntity="App\RosettaBundle\Entity\AbstractEntity",
+     *     inversedBy="relationsFrom",
      *     cascade={"persist", "remove"}
      * )
      */
@@ -53,7 +54,7 @@ class Relation {
      * @ORM\Id
      * @ORM\ManyToOne(
      *     targetEntity="App\RosettaBundle\Entity\AbstractEntity",
-     *     inversedBy="relations",
+     *     inversedBy="relationsTo",
      *     cascade={"persist", "remove"}
      * )
      */

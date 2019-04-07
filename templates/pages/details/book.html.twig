@@ -24,15 +24,15 @@
     {# Publisher #}
     {% if entity.publisher is not empty %}
         <div class="attribute">
-            <h4>Publisher</h4>
-            <p><a href="{{ path('details', {id: entity.publisher.id, slug: entity.publisher.slug}) }}">{{ entity.publisher.name }}</a></p>
+            <h4>{% trans %}Publisher{% endtrans %}</h4>
+            <p><a href="{{ rosetta_entity_path(entity.publisher) }}">{{ entity.publisher.name }}</a></p>
         </div>
     {% endif %}
 
     {# Number of pages #}
     {% if entity.numOfPages is not empty %}
         <div class="attribute">
-            <h4>Pages</h4>
+            <h4>{% trans %}Pages{% endtrans %}</h4>
             <p>{{ entity.numOfPages }}</p>
         </div>
     {% endif %}
@@ -40,7 +40,7 @@
     {# Number of volumes #}
     {% if entity.numOfVolumes is not empty %}
         <div class="attribute">
-            <h4>Volumes</h4>
+            <h4>{% trans %}Volumes{% endtrans %}</h4>
             <p>{{ entity.numOfVolumes }}</p>
         </div>
     {% endif %}
@@ -48,7 +48,7 @@
     {# ISBNs #}
     {% if entity.isbns is not empty %}
         <div class="attribute">
-            <h4>IBSN</h4>
+            <h4>{% trans %}ISBN{% endtrans %}</h4>
             {% for isbn in entity.isbns %}
                 <p>{{ isbn }}</p>
             {% endfor %}

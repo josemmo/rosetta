@@ -27,7 +27,6 @@ use App\RosettaBundle\Entity\Person;
 use App\RosettaBundle\Entity\Work\AbstractWork;
 use App\RosettaBundle\Entity\Work\Book;
 use App\RosettaBundle\Utils\Normalizer;
-use ForceUTF8\Encoding;
 
 class Z3950 extends AbstractProvider {
     private static $executed = false;
@@ -46,6 +45,7 @@ class Z3950 extends AbstractProvider {
         if (!is_null($this->config['user'])) $yazConfig['user'] = $this->config['user'];
         if (!is_null($this->config['group'])) $yazConfig['group'] = $this->config['group'];
         if (!is_null($this->config['password'])) $yazConfig['password'] = $this->config['password'];
+        if (!is_null($this->config['charset'])) $yazConfig['charset'] = $this->config['charset'];
 
         // Create YAZ instance
         $conn = yaz_connect($this->config['url'], $yazConfig);
@@ -95,7 +95,7 @@ class Z3950 extends AbstractProvider {
         $hits = yaz_hits($this->conn);
         for ($r=1; $r<=min($this->config['max_results'], $hits); $r++) {
             $result = yaz_record($this->conn, $r, 'xml');
-            $result = Encoding::toUTF8($result);
+            $result = Normalizer::fixEncoding($result);
             $result = preg_replace('/xmlns=".+"/', '', $result);
             $result = new \SimpleXMLElement($result);
             $parsedResult = $this->parseResult($result);
@@ -111,7 +111,7 @@ class Z3950 extends AbstractProvider {
      */
     protected function getPresets(): array {
         return [
-            "millenium" => ["syntax" => "opac"]
+            "millennium" => ["syntax" => "opac"]
         ];
     }
 
@@ -145,12 +145,19 @@ class Z3950 extends AbstractProvider {
             $res->addInternalId($this->config['id'], $cNumber);
         }
 
-        // Add title
+        // Parse title
         $title = $record->xpath('datafield[@tag="245"]/subfield[@code="a"]')[0];
         $subtitle = $record->xpath('datafield[@tag="245"]/subfield[@code="b"]');
         if (!empty($subtitle)) $title .= " " . $subtitle[0];
         $title = Normalizer::normalizeTitle($title);
-        $res->setTitle($title);
+        $title = explode(':', $title, 2);
+
+        // Add title
+        $res->setTitle(trim($title[0]));
+        if (isset($title[1])) {
+            $subtitle = trim($title[1]);
+            if (!empty($subtitle)) $res->setSubtitle($subtitle);
+        }
 
         // Add legal attributes
         foreach ($record->xpath('datafield[@tag="017"]') as $elem) {

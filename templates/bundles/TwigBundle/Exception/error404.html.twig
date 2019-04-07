@@ -17,22 +17,12 @@
  #}
 
 
-{% extends 'base.html.twig' %}
+{% extends 'bundles/TwigBundle/Exception/base.twig' %}
 
-{% set page_title = 'Results for "%query%"'|trans({'%query%': app.request.get('q')}) %}
+{% set page_title = 'Page not found'|trans %}
 
-{% block content %}
-    <div class="content">
-        {# Header #}
-        {% include 'components/toplinks.html.twig' %}
-        {% include 'components/leading.html.twig' %}
-
-        {# Search results #}
-        <main role="main" class="container py-3" data-awaiting-search>
-            <div class="spinner mt-5"></div>
-        </main>
-    </div>
-
-    {# Footer #}
-    {% include 'components/footer.html.twig' %}
+{% block error_content %}
+    <h1 class="mt-md-5 mb-3">{% trans %}Page not found{% endtrans %}</h1>
+    <p class="mb-3 mb-md-5">{% trans %}We couldn't find the page you were looking for. What about using the search bar?{% endtrans %}</p>
+    {% include 'components/search-bar.html.twig' %}
 {% endblock %}

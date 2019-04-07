@@ -17,16 +17,14 @@
  #}
 
 {% if results %}
-    <div class="row no-gutters">
+    <div class="search-results">
         {% for entity in results %}
-            <div class="col-6 col-md-2">
-                {% include 'components/search-result.html.twig' with {'entity': entity, 'loop': loop} only %}
-            </div>
+            {% include 'components/entity-result.html.twig' with {'entity': entity} only %}
         {% endfor %}
     </div>
 {% else %}
     <div class="py-4 text-center">
-        <h2 class="mb-3">No results found</h2>
-        <p>Try to narrow your search by filtering by title, author or database.</p>
+        <h2 class="mb-3">{% trans %}No results found{% endtrans %}</h2>
+        <p>{% trans %}Try to narrow your search by filtering by title, author or database.{% endtrans %}</p>
     </div>
 {% endif %}

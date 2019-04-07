@@ -16,21 +16,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+.entity {
+    .title {
+        display: block;
+        margin: 0.6em 0 0.3em;
+        color: inherit;
+        font-size: 0.8em;
+        font-weight: 600;
+        line-height: 1.1em;
+    }
 
-// Dependencies
-@import "./_theme";
-@import "./bootstrap";
-@import "./base";
+    .subtitle {
+        display: block;
+        font-size: 0.7em;
+        font-weight: 300;
+        line-height: 1.1em;
+    }
 
-// App components
-@import "components/toplinks";
-@import "components/footer";
-@import "components/leading";
-@import "components/spinner";
-@import "components/entity-result";
-@import "components/cover";
-
-// App pages
-@import "pages/homepage";
-@import "pages/search";
-@import "pages/details";
+    a {
+        color: inherit;
+        &:hover { text-decoration: underline }
+    }
+}

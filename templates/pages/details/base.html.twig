@@ -22,47 +22,73 @@
 {% set page_title = entity_title %}
 
 {% block content %}
-    {% include 'components/toplinks.html.twig' %}
+    <div class="content">
+        {% include 'components/toplinks.html.twig' %}
 
-    <main role="main" class="container my-3">
-        <div class="row no-gutters">
-            <div class="col-md-auto">
-                <aside class="details-column col-left">
-                    {# Entity cover #}
-                    <div class="cover-wrapper {{ entity.entityType }}">
-                        <img class="cover" src="{{ entity.imageUrl }}" alt="">
-                    </div>
+        <main role="main" class="container my-3">
+            <div class="row no-gutters">
+                <div class="col-md-auto">
+                    <aside class="details-column col-left">
+                        {# Entity cover #}
+                        <div class="cover-wrapper {{ entity.entityType }}">
+                            <img class="cover" src="{{ path('entity_cover', {id: entity.id}) }}" alt="" data-color-source>
+                        </div>
 
-                    {# Entity attributes #}
-                    <div class="attributes">
-                        {% block entity_attributes %}{% endblock %}
-                    </div>
-                </aside>
+                        {# Entity attributes #}
+                        <div class="attributes">
+                            {% block entity_attributes %}{% endblock %}
+                        </div>
+                    </aside>
+                </div>
+                <div class="col-md mx-md-3">
+                    <section class="details-column col-middle">
+                        {# Entity heading #}
+                        <div class="heading" data-color-target>
+                            <h1>
+                                {{ entity_title }}{% if entity_subtitle is defined %}:
+                                    <span class="subtitle">{{ entity_subtitle }}</span>
+                                {% endif %}
+                            </h1>
+                        </div>
+
+                        {# Related items #}
+                        {% set relations = entity.relations %}
+                        {% if relations is not empty %}
+                            <div class="subsection">
+                                <h3>{% trans %}Related items{% endtrans %}</h3>
+                                <div class="entity-reel">
+                                    {% for relation in relations %}
+                                        {% include 'components/entity-result.html.twig' with {'entity': relation.getOther(entity)} only %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {# Holdings #}
+                        {# TODO #}
+
+                        {# External links #}
+                        {% set external_links = rosetta_external_links(entity) %}
+                        {% if external_links is not empty %}
+                            <div class="subsection">
+                                <h3>{% trans %}External links{% endtrans %}</h3>
+                                <p class="m-n1">
+                                    {% for link in external_links %}
+                                        <a href="{{ link.url }}" target="_blank" class="btn btn-sm btn-outline-primary m-1">{{ link.name }}</a>
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        {% endif %}
+                    </section>
+                </div>
+                <div class="col-md-auto">
+                    <section class="details-column col-right">
+                        {# TODO #}
+                    </section>
+                </div>
             </div>
-            <div class="col-md mx-md-3">
-                <section class="details-column col-middle">
-                    {# Entity heading #}
-                    <div class="heading">
-                        <h1>
-                            {{ entity_title }}
-                            {% if entity_subtitle is defined %}
-                                <span class="subtitle">{{ entity_subtitle }}</span>
-                            {% endif %}
-                        </h1>
-                    </div>
+        </main>
+    </div>
 
-                    {# Related items #}
-                    {# TODO #}
-
-                    {# Holdings #}
-                    {# TODO #}
-                </section>
-            </div>
-            <div class="col-md-auto">
-                <section class="details-column col-right">
-                    {# TODO #}
-                </section>
-            </div>
-        </div>
-    </main>
+    {% include 'components/footer.html.twig' %}
 {% endblock %}

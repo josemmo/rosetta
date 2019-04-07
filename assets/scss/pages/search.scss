@@ -16,38 +16,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+.search-results {
+    display: flex;
+    margin: 0 -0.5rem;
+    flex-wrap: wrap;
 
-/* COMMON SEARCH RESULT */
-.search-result {
-    width: 140px;
-    margin: 1rem auto;
+    /* SEARCH RESULT */
+    .entity {
+        box-sizing: content-box;
+        width: 140px;
+        margin: 1rem auto;
+        padding: 0 0.5rem;
 
-    a {
-        color: inherit;
-
-        &:hover {
-            text-decoration: underline;
-        }
-    }
-
-    .cover-wrapper {
-        height: 190px;
-        border-radius: 3px;
-    }
-
-    .title {
-        display: block;
-        margin: 0.5rem 0 0.2rem;
-        color: inherit;
-        font-size: 0.8em;
-        font-weight: 600;
-        line-height: 1.1em;
-    }
-
-    .subtitle {
-        display: block;
-        font-size: 0.7em;
-        font-weight: 300;
-        line-height: 1.1em;
+        .cover-wrapper { height: 190px }
     }
 }

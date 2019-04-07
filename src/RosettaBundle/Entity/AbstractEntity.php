@@ -80,14 +80,25 @@ abstract class AbstractEntity {
      *     cascade={"persist", "remove"}
      * )
      */
-    protected $relations;
+    protected $relationsTo;
+
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity="App\RosettaBundle\Entity\Other\Relation",
+     *     mappedBy="from",
+     *     fetch="EXTRA_LAZY",
+     *     cascade={"persist", "remove"}
+     * )
+     */
+    protected $relationsFrom;
 
     /**
      * AbstractEntity constructor
      */
     public function __construct() {
         $this->identifiers = new ArrayCollection();
-        $this->relations = new ArrayCollection();
+        $this->relationsTo = new ArrayCollection();
+        $this->relationsFrom = new ArrayCollection();
     }
 
 
@@ -261,11 +272,27 @@ abstract class AbstractEntity {
 
 
     /**
+     * Get first entity ID of given type
+     * @param  int         $type Identifier type
+     * @return string|null       Entity ID or null if not found
+     */
+    public function getFirstIdOfType(int $type): ?string {
+        foreach ($this->identifiers as $identifier) {
+            if ($identifier->getType() == $type) return $identifier->getValue();
+        }
+        return null;
+    }
+
+
+    /**
      * Get entity relations
      * @return Collection<Relation> Entity relations
      */
     public function getRelations() {
-        return $this->relations;
+        return new ArrayCollection(array_merge(
+            $this->relationsTo->toArray(),
+            $this->relationsFrom->toArray()
+        ));
     }
 
 
@@ -275,7 +302,11 @@ abstract class AbstractEntity {
      * @return static             This instance
      */
     public function addRelation(Relation $relation): self {
-        $this->relations->add($relation);
+        if ($relation->getFrom() === $this) {
+            $this->relationsFrom->add($relation);
+        } else {
+            $this->relationsTo->add($relation);
+        }
         return $this;
     }
 
@@ -289,13 +320,15 @@ abstract class AbstractEntity {
         $unitOfWork = $args->getEntityManager()->getUnitOfWork();
 
         $cache = [];
-        foreach ($this->relations as $i=>$relation) {
-            $tag = (string) $relation;
-            if (isset($cache[$tag])) {
-                $this->relations->remove($i);
-                $unitOfWork->detach($relation);
-            } else {
-                $cache[$tag] = 1;
+        foreach ([$this->relationsTo, $this->relationsFrom] as $collection) {
+            foreach ($collection as $i=>$relation) {
+                $tag = (string) $relation;
+                if (isset($cache[$tag])) {
+                    $collection->remove($i);
+                    $unitOfWork->detach($relation);
+                } else {
+                    $cache[$tag] = 1;
+                }
             }
         }
     }
@@ -308,7 +341,7 @@ abstract class AbstractEntity {
      */
     public function getRelatedOfType(int $type): array {
         $res = [];
-        foreach ($this->relations as $relation) {
+        foreach ($this->getRelations() as $relation) {
             if ($relation->getType() == $type) $res[] = $relation->getOther($this);
         }
         return $res;
@@ -321,7 +354,7 @@ abstract class AbstractEntity {
      * @return static|null       Abstract Entity
      */
     public function getFirstRelatedOfType(int $type) {
-        foreach ($this->relations as $relation) {
+        foreach ($this->getRelations() as $relation) {
             if ($relation->getType() == $type) return $relation->getOther($this);
         }
         return null;
@@ -336,6 +369,28 @@ abstract class AbstractEntity {
         $type = explode('\\', static::class);
         $type = str_replace('Abstract', '', end($type));
         return strtolower($type);
+    }
+
+
+    /**
+     * To filled template string
+     * @param  string $template Template
+     * @return string           Template filled with values from entity
+     */
+    public function toFilledTemplateString(string $template) {
+        // ISBN 10
+        if (strpos($template, '{{isbn10}}') !== false) {
+            $value = $this->getFirstIdOfType(Identifier::ISBN_10);
+            if (!is_null($value)) $template = str_replace('{{isbn10}}', $value, $template);
+        }
+
+        // ISBN 13
+        if (strpos($template, '{{isbn13}}') !== false) {
+            $value = $this->getFirstIdOfType(Identifier::ISBN_13);
+            if (!is_null($value)) $template = str_replace('{{isbn13}}', $value, $template);
+        }
+
+        return $template;
     }
 
 

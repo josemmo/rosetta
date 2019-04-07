@@ -72,9 +72,10 @@ class GoogleBooks extends AbstractHttpProvider {
             $item = new Book();
 
             // Set title
-            $title = $data['volumeInfo']['title'];
-            if (isset($data['volumeInfo']['subtitle'])) $title .= ": " . $data['volumeInfo']['subtitle'];
-            $item->setTitle(Normalizer::normalizeTitle($title));
+            $item->setTitle(Normalizer::normalizeTitle($data['volumeInfo']['title']));
+            if (!empty($data['volumeInfo']['subtitle'])) {
+                $item->setSubtitle(Normalizer::normalizeTitle($data['volumeInfo']['subtitle']));
+            }
 
             // Add authors
             if (isset($data['volumeInfo']['authors'])) {

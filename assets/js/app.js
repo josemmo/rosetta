@@ -26,3 +26,4 @@ require.context('../custom', true, /\.(jpe?g|png|svg|gif|bmp)$/i)
 
 // Load app components
 import './search'
+import './details'

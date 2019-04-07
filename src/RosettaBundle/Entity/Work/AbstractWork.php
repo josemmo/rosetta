@@ -32,8 +32,11 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  */
 abstract class AbstractWork extends AbstractEntity {
-    /** @ORM\Column(length=3072, nullable=true) */
+    /** @ORM\Column(length=1024, nullable=true) */
     protected $title = null;
+
+    /** @ORM\Column(length=3072, nullable=true) */
+    protected $subtitle = null;
 
     /** @ORM\Column(type="simple_array") */
     protected $legalDeposits = [];
@@ -69,6 +72,26 @@ abstract class AbstractWork extends AbstractEntity {
      */
     public function setTitle(string $title): self {
         $this->title = $title;
+        return $this;
+    }
+
+
+    /**
+     * Set subtitle
+     * @return string|null Subtitle
+     */
+    public function getSubtitle(): ?string {
+        return $this->subtitle;
+    }
+
+
+    /**
+     * Set subtitle
+     * @param  string $subtitle Subtitle
+     * @return static           This instance
+     */
+    public function setSubtitle(string $subtitle): self {
+        $this->subtitle = $subtitle;
         return $this;
     }
 
@@ -194,6 +217,7 @@ abstract class AbstractWork extends AbstractEntity {
     public function merge($other) {
         // Title
         if (!empty($other->getTitle())) $this->setTitle($other->getTitle());
+        if (!empty($other->getSubtitle())) $this->setSubtitle($other->getSubtitle());
 
         // Legal Deposits
         foreach ($other->getLegalDeposits() as $ld) $this->addLegalDeposit($ld);

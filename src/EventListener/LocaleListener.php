@@ -1,4 +1,5 @@
-/*!
+<?php
+/**
  * Rosetta - A free (libre) Integrated Library System for the 21st century.
  * Copyright (C) 2019 José M. Moreno <josemmo@pm.me>
  *
@@ -17,20 +18,24 @@
  */
 
 
-// Dependencies
-@import "./_theme";
-@import "./bootstrap";
-@import "./base";
+namespace App\EventListener;
 
-// App components
-@import "components/toplinks";
-@import "components/footer";
-@import "components/leading";
-@import "components/spinner";
-@import "components/entity-result";
-@import "components/cover";
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
-// App pages
-@import "pages/homepage";
-@import "pages/search";
-@import "pages/details";
+class LocaleListener {
+    private $translator;
+
+    public function __construct($translator) {
+        $this->translator = $translator;
+    }
+
+    public function onKernelRequest(GetResponseEvent $event) {
+        $request = $event->getRequest();
+
+        $langs = $request->getLanguages();
+        $lang = $langs[0] ?? $request->getDefaultLocale();
+        $request->setLocale($lang);
+        $this->translator->setLocale($lang);
+    }
+
+}

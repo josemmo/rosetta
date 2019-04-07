@@ -20,8 +20,11 @@
 
 namespace App\Twig;
 
+use App\RosettaBundle\Entity\AbstractEntity;
+use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Service\ConfigEngine;
 use Symfony\Component\Asset\Packages;
+use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
 use Twig\TwigFunction;
@@ -32,16 +35,22 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
 
     private $config;
     private $packages;
+    private $router;
+    private $translator;
     private $assetsCache = [];
 
     /**
      * AppExtension constructor
-     * @param ConfigEngine $config   Configuration Engine
-     * @param Packages     $packages Packages Service
+     * @param ConfigEngine    $config     Configuration Engine
+     * @param Packages        $packages   Packages Service
+     * @param RouterInterface $router     Router Service
+     * @param mixed           $translator Translator Service
      */
-    public function __construct(ConfigEngine $config, Packages $packages) {
+    public function __construct(ConfigEngine $config, Packages $packages, RouterInterface $router, $translator) {
         $this->config = $config;
         $this->packages = $packages;
+        $this->router = $router;
+        $this->translator = $translator;
         $this->buildAssetsCache();
     }
 
@@ -101,7 +110,11 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
      */
     public function getFunctions() {
         return [
-            new TwigFunction('rosetta_asset', [$this, 'getRosettaAsset'])
+            new TwigFunction('rosetta_asset', [$this, 'getRosettaAsset']),
+            new TwigFunction('rosetta_entity_path', [$this, 'getEntityPath']),
+            new TwigFunction('rosetta_external_links', [$this, 'getExternalLinks']),
+            new TwigFunction('rosetta_date', [$this, 'getFormattedDate']),
+            new TwigFunction('rosetta_language', [$this, 'getLanguageName'])
         ];
     }
 
@@ -117,6 +130,127 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
             return is_null($fallback) ? null : $this->getRosettaAsset($fallback);
         }
         return $this->packages->getUrl($this->assetsCache[$tag]);
+    }
+
+
+    /**
+     * Get path to entity
+     * @param  AbstractEntity $entity Entity
+     * @return string                 Entity path
+     */
+    public function getEntityPath($entity) {
+        return $this->router->generate('details', [
+            "id" => $entity->getId(),
+            "slug" => $entity->getSlug()
+        ]);
+    }
+
+
+    /**
+     * Get external links from entity
+     * @param  AbstractEntity $entity Entity
+     * @return array                  External links
+     */
+    public function getExternalLinks($entity) {
+        $res = [];
+        foreach ($entity->getIdentifiers() as $identifier) {
+            $value = $identifier->getValue();
+            switch ($identifier->getType()) {
+                case Identifier::GBOOKS:
+                    $res['gbooks'] = ['name' => 'Google Books', 'url' => "https://books.google.es/books?id=$value"];
+                    break;
+                case Identifier::OCLC:
+                    $res['oclc'] = ['name' => 'WorldCat', 'url' => "https://www.worldcat.org/oclc/$value"];
+                    break;
+                case Identifier::WIKIDATA:
+                    $res['wikidata'] = ['name' => 'Wikidata', 'url' => "https://www.wikidata.org/entity/$value"];
+                    break;
+                case Identifier::INTERNAL:
+                    $databaseId = explode(':', $value)[0];
+                    $db = $this->config->getDatabases()[$databaseId];
+                    $url = $db->getExternalLink();
+                    if (!empty($url)) {
+                        $url = $entity->toFilledTemplateString($url);
+                        $res["internal-$databaseId"] = ['name' => $db->getName(), 'url' => $url];
+                    }
+                    break;
+            }
+        }
+        return array_values($res);
+    }
+
+
+    /**
+     * Get month name from number
+     * @param  int    $month Month number
+     * @return string        Localized month name
+     */
+    private function getMonthName($month) {
+        $formatter = new \IntlDateFormatter(
+            $locale = $this->translator->getLocale(),
+            \IntlDateFormatter::NONE,
+            \IntlDateFormatter::NONE,
+            null,
+            null,
+            'MMMM'
+        );
+        return $formatter->format($month);
+    }
+
+
+    /**
+     * Get formatted date
+     * @param  \DateTime|int[] $date DateTime instance or [YYYY, MM, DD] array
+     * @return string                Formatted date
+     * @throws \Exception
+     */
+    public function getFormattedDate($date) {
+        // In case of stepped date
+        if (is_array($date)) {
+            if (empty($date[1])) return strval($date[0]);
+            if (empty($date[2])) {
+                return $this->translator->trans('%month%, %year%', [
+                    "%month%" => $this->getMonthName($date[1]),
+                    "%year%" => $date[0]
+                ]);
+            }
+            $date = new \DateTime(implode('-', $date) . " 00:00:00");
+        }
+
+        // Does this date have time?
+        $hasTime = ($date->format('H:i:s') != "00:00:00");
+
+        // Is a recent date?
+        if ($hasTime) {
+            $diff = abs(time() - $date->getTimestamp());
+            if ($diff < 60) return $this->translator->trans('Just now');
+            if ($diff < 3600) {
+                return $this->translator->trans('%minutes% minutes ago', [
+                    '%minutes%' => floor($diff / 60)
+                ]);
+            }
+            if ($diff < 43200) {
+                return $this->translator->trans('%hours% hours ago', [
+                    '%hours%' => floor($diff / 3600)
+                ]);
+            }
+        }
+
+        // Fallback to default
+        $timeFormat = $hasTime ? \IntlDateFormatter::SHORT : \IntlDateFormatter::NONE;
+        $locale = $locale = $this->translator->getLocale();
+        $formatter = new \IntlDateFormatter($locale, \IntlDateFormatter::LONG, $timeFormat);
+        return $formatter->format($date);
+    }
+
+
+    /**
+     * Get language name
+     * @param  string $code Two-letter language code according to ISO 639-1
+     * @return string       Localized language name
+     */
+    public function getLanguageName(string $code) {
+        return \Locale::getDisplayLanguage($code, $this->translator->getLocale());
     }
 
 }

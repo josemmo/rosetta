@@ -15,24 +15,22 @@
  # You should have received a copy of the GNU General Public License
  # along with this program. If not, see <https://www.gnu.org/licenses/>.
  #}
-
-
-{% extends 'base.html.twig' %}
-
-{% set page_title = 'Results for "%query%"'|trans({'%query%': app.request.get('q')}) %}
-
-{% block content %}
-    <div class="content">
-        {# Header #}
-        {% include 'components/toplinks.html.twig' %}
-        {% include 'components/leading.html.twig' %}
-
-        {# Search results #}
-        <main role="main" class="container py-3" data-awaiting-search>
-            <div class="spinner mt-5"></div>
-        </main>
-    </div>
-
-    {# Footer #}
-    {% include 'components/footer.html.twig' %}
-{% endblock %}
+<div class="entity {{ entity.entityType }}">
+    <a href="{{ rosetta_entity_path(entity) }}">
+        <span class="cover-wrapper">
+            <span class="cover"{% if entity.imageUrl is not empty %} style="background-image:url('{{ path('entity_cover', {id: entity.id}) }}')"{% endif %}></span>
+        </span>
+        <span class="title">
+            {% if entity.title is defined %}
+                {{ entity.title }}
+            {% elseif entity.name is defined %}
+                {{ entity.name }}
+            {% endif %}
+        </span>
+    </a>
+    {% if entity.creator is defined and entity.creator is not empty %}
+        <a href="{{ rosetta_entity_path(entity.creator) }}" class="subtitle">
+            {{ entity.creator.name }}
+        </a>
+    {% endif %}
+</div>

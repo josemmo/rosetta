@@ -19,20 +19,16 @@
 
 {% extends 'base.html.twig' %}
 
-{% set page_title = 'Results for "%query%"'|trans({'%query%': app.request.get('q')}) %}
-
 {% block content %}
     <div class="content">
-        {# Header #}
         {% include 'components/toplinks.html.twig' %}
-        {% include 'components/leading.html.twig' %}
-
-        {# Search results #}
-        <main role="main" class="container py-3" data-awaiting-search>
-            <div class="spinner mt-5"></div>
+        <main role="main" class="container my-5 text-center">
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">{% block error_content %}{% endblock %}</div>
+                <div class="col-md-3"></div>
+            </div>
         </main>
     </div>
-
-    {# Footer #}
     {% include 'components/footer.html.twig' %}
 {% endblock %}
