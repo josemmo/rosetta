@@ -33,8 +33,9 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\HasLifecycleCallbacks
  * @ORM\Table(name="entity")
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="entity_type", type="string", length=4)
+ * @ORM\DiscriminatorColumn(name="entity_type", type="string", length=5)
  * @ORM\DiscriminatorMap({
+ *     "thing": "App\RosettaBundle\Entity\Thing",
  *     "work": "App\RosettaBundle\Entity\Work\AbstractWork",
  *     "book": "App\RosettaBundle\Entity\Work\Book",
  *     "org": "App\RosettaBundle\Entity\Organization",
