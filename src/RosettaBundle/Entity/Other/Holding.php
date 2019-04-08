@@ -20,10 +20,30 @@
 
 namespace App\RosettaBundle\Entity\Other;
 
+use App\RosettaBundle\Entity\AbstractEntity;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ */
 class Holding {
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer", options={"unsigned":true})
+     * @ORM\GeneratedValue
+     */
+    private $id;
+
+    /** @ORM\ManyToOne(targetEntity="App\RosettaBundle\Entity\Work\AbstractWork", inversedBy="holdings") */
+    private $entity;
+
+    /** @ORM\Column(length=64) */
     private $callNumber;
-    private $location;
+
+    /** @ORM\Column(type="boolean") */
     private $loanable = true;
+
+    /** @ORM\Column(type="date", nullable=true) */
     private $lentUntil = null;
 
     /**
@@ -32,7 +52,35 @@ class Holding {
      */
     public function __construct(string $callNumber) {
         $this->setCallNumber($callNumber);
-        //$this->setLocation($location); // TODO: uncomment when location classes are implemented
+    }
+
+
+    /**
+     * Get ID
+     * @return int ID
+     */
+    public function getId(): int {
+        return $this->id;
+    }
+
+
+    /**
+     * Get entity
+     * @return AbstractEntity Entity
+     */
+    public function getEntity() {
+        return $this->entity;
+    }
+
+
+    /**
+     * Get entity
+     * @param  AbstractEntity $entity Entity
+     * @return static                 This instance
+     */
+    public function setEntity($entity) {
+        $this->entity = $entity;
+        return $this;
     }
 
 
@@ -52,26 +100,6 @@ class Holding {
      */
     public function setCallNumber(string $callNumber): self {
         $this->callNumber = $callNumber;
-        return $this;
-    }
-
-
-    /**
-     * Get holding location
-     * @return AbstractLocation Holding location
-     */
-    public function getLocation(): AbstractLocation {
-        return $this->location;
-    }
-
-
-    /**
-     * Set location
-     * @param  AbstractLocation $location Holding location
-     * @return static                     This instance
-     */
-    public function setLocation(AbstractLocation $location): self {
-        $this->location = $location;
         return $this;
     }
 

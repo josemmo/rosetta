@@ -22,7 +22,15 @@ namespace App\RosettaBundle\Entity\Traits;
 use App\RosettaBundle\Entity\Other\Holding;
 
 trait HoldingsTrait {
-    // TODO: add ORM mapping
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity="App\RosettaBundle\Entity\Other\Holding",
+     *     indexBy="id",
+     *     mappedBy="entity",
+     *     fetch="EAGER",
+     *     cascade={"persist", "remove"}
+     * )
+     */
     protected $holdings = [];
 
     /**
@@ -41,6 +49,18 @@ trait HoldingsTrait {
      */
     public function addHolding(Holding $holding): self {
         $this->holdings[] = $holding;
+        return $this;
+    }
+
+
+    /**
+     * Link holdings to this entity
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     * @return static This instance
+     */
+    public function linkHoldings(): self {
+        foreach ($this->holdings as $holding) $holding->setEntity($this);
         return $this;
     }
 
