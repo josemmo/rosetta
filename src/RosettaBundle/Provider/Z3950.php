@@ -94,9 +94,10 @@ class Z3950 extends AbstractProvider {
         // Parse results
         $results = [];
         $hits = yaz_hits($this->conn);
+        $isMillennium = ($this->config['preset'] == "millennium");
         for ($r=1; $r<=min($this->config['max_results'], $hits); $r++) {
             $result = yaz_record($this->conn, $r, 'xml');
-            $result = Normalizer::fixEncoding($result);
+            $result = Normalizer::fixEncoding($result, $isMillennium);
             $result = preg_replace('/xmlns=".+"/', '', $result);
             $result = new \SimpleXMLElement($result);
             $parsedResult = $this->parseResult($result);

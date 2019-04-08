@@ -26,20 +26,23 @@ class Normalizer {
 
     /**
      * Fix string encoding
-     * @param  string $text Input text
-     * @return string       Normalized text
+     * @param  string  $text          Input text
+     * @param  boolean $fixMillennium Fix Millennium encoding errors
+     * @return string                 Normalized text
      */
-    public static function fixEncoding(string $text) {
+    public static function fixEncoding(string $text, bool $fixMillennium=false) {
         // Convert from any encoding to UTF-8
         $text = Encoding::toUTF8($text);
         $text = Encoding::fixUTF8($text, Encoding::ICONV_TRANSLIT);
 
         // Fix Millennium invalid encoding
-        $text = str_replace(
-            ['âa', 'âe', 'âi', 'âo', 'âu', 'än'],
-            [ 'á',  'é',  'í',  'ó',  'ú',  'ñ'],
-            $text
-        );
+        if ($fixMillennium) {
+            $text = str_replace(
+                ['âa', 'âe', 'âi', 'âo', 'âu', 'än', 'âA', 'âE', 'âI', 'âO', 'âU', 'äN', 'Å'],
+                [ 'á',  'é',  'í',  'ó',  'ú',  'ñ',  'Á',  'É',  'Í',  'Ó',  'Ú',  'Ñ', '¿'],
+                $text
+            );
+        }
         return $text;
     }
 
