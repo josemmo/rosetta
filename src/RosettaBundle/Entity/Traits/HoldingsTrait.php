@@ -17,48 +17,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+namespace App\RosettaBundle\Entity\Traits;
 
-namespace App\RosettaBundle\Entity;
+use App\RosettaBundle\Entity\Other\Holding;
 
-use App\RosettaBundle\Entity\Traits\HoldingsTrait;
-use App\RosettaBundle\Utils\Normalizer;
-use Doctrine\ORM\Mapping as ORM;
-
-/**
- * A physical object that can be consulted or borrowed but is not consider a human work.
- * @ORM\Entity
- */
-class Thing extends AbstractEntity {
-    use HoldingsTrait;
-
-    /** @ORM\Column(length=255) */
-    private $name;
+trait HoldingsTrait {
+    // TODO: add ORM mapping
+    protected $holdings = [];
 
     /**
-     * Get name
-     * @return string Name
+     * Get work holdings
+     * @return Holding[] Holdings
      */
-    public function getName(): string {
-        return $this->name;
+    public function getHoldings(): array {
+        return $this->holdings;
     }
 
 
     /**
-     * Set name
-     * @param  string $name Name
-     * @return static       This instance
+     * Add holding
+     * @param  Holding $holding Holding instance
+     * @return static           This instance
      */
-    public function setName(string $name): self {
-        $this->name = $name;
-        return $this;
-    }
-
-
-    /**
-     * @inheritdoc
-     */
-    public function updateSlug(): self {
-        $this->slug = Normalizer::normalizeSlug($this->name);
+    public function addHolding(Holding $holding): self {
+        $this->holdings[] = $holding;
         return $this;
     }
 

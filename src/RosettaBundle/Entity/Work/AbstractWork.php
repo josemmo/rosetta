@@ -21,9 +21,9 @@
 namespace App\RosettaBundle\Entity\Work;
 
 use App\RosettaBundle\Entity\AbstractEntity;
-use App\RosettaBundle\Entity\Other\Holding;
 use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
+use App\RosettaBundle\Entity\Traits\HoldingsTrait;
 use App\RosettaBundle\Utils\Normalizer;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -32,6 +32,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  */
 abstract class AbstractWork extends AbstractEntity {
+    use HoldingsTrait;
+
     /** @ORM\Column(length=1024, nullable=true) */
     protected $title = null;
 
@@ -52,9 +54,6 @@ abstract class AbstractWork extends AbstractEntity {
 
     /** @ORM\Column(type="simple_array", options={"collation":"ascii_general_ci"}) */
     protected $languages = [];
-
-    // TODO: add ORM mapping
-    protected $holdings = [];
 
     /**
      * Set title
@@ -160,26 +159,6 @@ abstract class AbstractWork extends AbstractEntity {
      */
     public function addLanguage(string $language): self {
         if (!in_array($language, $this->languages)) $this->languages[] = $language;
-        return $this;
-    }
-
-
-    /**
-     * Get work holdings
-     * @return Holding[] Holdings
-     */
-    public function getHoldings(): array {
-        return $this->holdings;
-    }
-
-
-    /**
-     * Add holding
-     * @param  Holding $holding Holding instance
-     * @return static           This instance
-     */
-    public function addHolding(Holding $holding): self {
-        $this->holdings[] = $holding;
         return $this;
     }
 
