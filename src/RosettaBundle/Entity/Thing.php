@@ -27,6 +27,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * A physical object that can be consulted or borrowed but is not consider a human work.
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class Thing extends AbstractEntity {
     use HoldingsTrait;

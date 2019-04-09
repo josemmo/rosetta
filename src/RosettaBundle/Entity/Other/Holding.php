@@ -43,8 +43,14 @@ class Holding {
     /** @ORM\Column(type="boolean") */
     private $loanable = true;
 
-    /** @ORM\Column(type="date", nullable=true) */
-    private $lentUntil = null;
+    /** @ORM\Column(type="boolean") */
+    private $available = true;
+
+    /** @ORM\Column(length=128) */
+    private $locationName = null;
+
+    /** @ORM\Column(length=2083, nullable=true) */
+    private $onlineUrl = null;
 
     /**
      * Holding constructor
@@ -120,26 +126,65 @@ class Holding {
      */
     public function setLoanable(bool $loanable): self {
         $this->loanable = $loanable;
-        if (!$loanable) $this->setLentUntil(null);
     }
 
 
     /**
-     * Get lent until
-     * @return \DateTime|null Lent until date
+     * Is available
+     * @return boolean Is available
      */
-    public function getLentUntil(): ?\DateTime {
-        return $this->lentUntil;
+    public function isAvailable(): bool {
+        return $this->available;
     }
 
 
     /**
-     * Set lent until date
-     * @param \DateTime|null $lentUntil Lent until date (null if available)
-     * @return static                   This instance
+     * Set available flag
+     * @param  boolean $available Is available
+     * @return static             This instance
      */
-    public function setLentUntil(?\DateTime $lentUntil): self {
-        $this->lentUntil = $lentUntil;
+    public function setAvailable(bool $available): self {
+        $this->available = $available;
+    }
+
+
+    /**
+     * Get location name
+     * @return string|null Location name
+     */
+    public function getLocationName(): ?string {
+        return $this->locationName;
+    }
+
+
+    /**
+     * Set location name
+     * @param  string $locationName Location name
+     * @return static               This instance
+     */
+    public function setLocationName(string $locationName): self {
+        $this->locationName = $locationName;
+        return $this;
+    }
+
+
+    /**
+     * Get online URL
+     * @return string|null Online URL
+     */
+    public function getOnlineUrl(): ?string {
+        return $this->onlineUrl;
+    }
+
+
+    /**
+     * Set online URL
+     * @param  string $onlineUrl Online URL
+     * @return static            This instance
+     */
+    public function setOnlineUrl(string $onlineUrl): self {
+        $this->onlineUrl = $onlineUrl;
+        $this->setLoanable(false);
         return $this;
     }
 

@@ -30,6 +30,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * An AbstractWork is a type of AbstractEntity that can be consulted or borrowed.
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 abstract class AbstractWork extends AbstractEntity {
     use HoldingsTrait;

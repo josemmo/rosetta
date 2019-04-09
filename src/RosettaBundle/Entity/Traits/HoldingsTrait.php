@@ -21,6 +21,9 @@ namespace App\RosettaBundle\Entity\Traits;
 
 use App\RosettaBundle\Entity\Other\Holding;
 
+/**
+ * NOTE: for this trait to work, entities using it must have @ORM\HasLifecycleCallbacks.
+ */
 trait HoldingsTrait {
     /**
      * @ORM\OneToMany(
