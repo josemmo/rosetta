@@ -37,8 +37,8 @@ class Holding {
     /** @ORM\ManyToOne(targetEntity="App\RosettaBundle\Entity\Work\AbstractWork", inversedBy="holdings") */
     private $entity;
 
-    /** @ORM\Column(length=64) */
-    private $callNumber;
+    /** @ORM\Column(length=64, nullable=true) */
+    private $callNumber = null;
 
     /** @ORM\Column(type="boolean") */
     private $loanable = true;
@@ -46,23 +46,14 @@ class Holding {
     /** @ORM\Column(type="boolean") */
     private $available = true;
 
-    /** @ORM\Column(length=16) */
-    private $databaseId = null;
+    /** @ORM\Column(length=16, nullable=true) */
+    private $sourceId = null;
 
-    /** @ORM\Column(length=128) */
+    /** @ORM\Column(length=128, nullable=true) */
     private $locationName = null;
 
     /** @ORM\Column(length=2083, nullable=true) */
     private $onlineUrl = null;
-
-    /**
-     * Holding constructor
-     * @param string $callNumber Call number (pressmark)
-     */
-    public function __construct(string $callNumber) {
-        $this->setCallNumber($callNumber);
-    }
-
 
     /**
      * Get ID
@@ -165,21 +156,21 @@ class Holding {
 
 
     /**
-     * Get database ID
-     * @return string|null Database ID
+     * Get source ID
+     * @return int|string|null Source ID
      */
-    public function getDatabaseId(): ?string {
-        return $this->databaseId;
+    public function getSourceId() {
+        return $this->sourceId;
     }
 
 
     /**
-     * Set database ID
-     * @param  string $db Database ID
-     * @return static     This instance
+     * Set source ID
+     * @param  int|string $sourceId Source ID
+     * @return static               This instance
      */
-    public function setDatabaseId(string $db): self {
-        $this->databaseId = $db;
+    public function setSourceId(string $sourceId): self {
+        $this->sourceId = $sourceId;
         return $this;
     }
 

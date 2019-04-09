@@ -21,6 +21,7 @@
 namespace App\RosettaBundle\Provider;
 
 use App\RosettaBundle\Entity\Organization;
+use App\RosettaBundle\Entity\Other\Holding;
 use App\RosettaBundle\Entity\Other\Identifier;
 use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
@@ -123,14 +124,31 @@ class GoogleBooks extends AbstractHttpProvider {
             }
 
             // Add holdings
-            if ($this->config['get_holdings'] && $data['saleInfo']['saleability'] !== "NOT_FOR_SALE") {
-                // TODO: implement holdings location first
+            if ($this->config['get_holdings']) {
+                $holding = $this->getHolding($data['saleInfo']);
+                if (!is_null($holding)) $item->addHolding($holding);
             }
 
             $results[] = $item;
         }
 
         return $results;
+    }
+
+
+    /**
+     * Parse holding
+     * @param  array        $saleInfo Volume sale info
+     * @return Holding|null           Holding
+     */
+    private function getHolding(&$saleInfo) {
+        if (!$saleInfo['isEbook']) return null;
+        if (!in_array($saleInfo['saleability'], ['FOR_SALE', 'FREE'])) return null;
+
+        $holding = new Holding();
+        $holding->setSourceId(Identifier::GBOOKS);
+        $holding->setOnlineUrl($saleInfo['buyLink']);
+        return $holding;
     }
 
 }
