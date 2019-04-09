@@ -46,6 +46,9 @@ class Holding {
     /** @ORM\Column(type="boolean") */
     private $available = true;
 
+    /** @ORM\Column(length=16) */
+    private $databaseId = null;
+
     /** @ORM\Column(length=128) */
     private $locationName = null;
 
@@ -126,6 +129,7 @@ class Holding {
      */
     public function setLoanable(bool $loanable): self {
         $this->loanable = $loanable;
+        return $this;
     }
 
 
@@ -145,6 +149,27 @@ class Holding {
      */
     public function setAvailable(bool $available): self {
         $this->available = $available;
+        return $this;
+    }
+
+
+    /**
+     * Get database ID
+     * @return string|null Database ID
+     */
+    public function getDatabaseId(): ?string {
+        return $this->databaseId;
+    }
+
+
+    /**
+     * Set database ID
+     * @param  string $db Database ID
+     * @return static     This instance
+     */
+    public function setDatabaseId(string $db): self {
+        $this->databaseId = $db;
+        return $this;
     }
 
 

@@ -156,6 +156,7 @@ class Z3950 extends AbstractProvider {
         if ($this->config['get_holdings'] && !empty($rawResult->holdings)) {
             foreach ($rawResult->holdings->holding as $elem) {
                 $holding = new Holding($elem->callNumber);
+                $holding->setDatabaseId($this->config['id']);
                 $holding->setLocationName($elem->localLocation);
                 if ($elem->publicNote == "NOT AVAILABLE") {
                     $holding->setAvailable(false);

@@ -20,6 +20,8 @@
 namespace App\RosettaBundle\Entity\Traits;
 
 use App\RosettaBundle\Entity\Other\Holding;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 /**
  * NOTE: for this trait to work, entities using it must have @ORM\HasLifecycleCallbacks.
@@ -33,14 +35,16 @@ trait HoldingsTrait {
      *     fetch="EAGER",
      *     cascade={"persist", "remove"}
      * )
+     * @var ArrayCollection
      */
-    protected $holdings = [];
+    protected $holdings = null;
 
     /**
      * Get work holdings
-     * @return Holding[] Holdings
+     * @return Collection<Holding> Holdings
      */
-    public function getHoldings(): array {
+    public function getHoldings() {
+        if (is_null($this->holdings)) $this->holdings = new ArrayCollection();
         return $this->holdings;
     }
 
@@ -51,7 +55,8 @@ trait HoldingsTrait {
      * @return static           This instance
      */
     public function addHolding(Holding $holding): self {
-        $this->holdings[] = $holding;
+        if (is_null($this->holdings)) $this->holdings = new ArrayCollection();
+        $this->holdings->add($holding);
         return $this;
     }
 
@@ -63,7 +68,9 @@ trait HoldingsTrait {
      * @return static This instance
      */
     public function linkHoldings(): self {
-        foreach ($this->holdings as $holding) $holding->setEntity($this);
+        if (!empty($this->holdings)) {
+            foreach ($this->holdings as $holding) $holding->setEntity($this);
+        }
         return $this;
     }
 
