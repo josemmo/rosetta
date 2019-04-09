@@ -74,6 +74,17 @@ class Holding {
 
 
     /**
+     * Set ID
+     * @param  int    $id Holding ID
+     * @return static     This instance
+     */
+    public function setId(int $id): self {
+        $this->id = $id;
+        return $this;
+    }
+
+
+    /**
      * Get entity
      * @return AbstractEntity Entity
      */
