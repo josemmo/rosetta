@@ -112,6 +112,7 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
         return [
             new TwigFunction('rosetta_asset', [$this, 'getRosettaAsset']),
             new TwigFunction('rosetta_entity_path', [$this, 'getEntityPath']),
+            new TwigFunction('rosetta_source_name', [$this, 'getSourceName']),
             new TwigFunction('rosetta_external_links', [$this, 'getExternalLinks']),
             new TwigFunction('rosetta_date', [$this, 'getFormattedDate']),
             new TwigFunction('rosetta_language', [$this, 'getLanguageName'])
@@ -147,6 +148,28 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
 
 
     /**
+     * Get source name
+     * @param  int|string  $sourceId  Identifier type ID or database ID
+     * @param  boolean     $shortName Get short name
+     * @return string|null            Source name
+     */
+    public function getSourceName($sourceId, bool $shortName=false) {
+        // Identifier type
+        if (is_int($sourceId)) {
+            if ($sourceId == Identifier::GBOOKS) return "Google Books";
+            if ($sourceId == Identifier::OCLC) return "WorldCat";
+            if ($sourceId == Identifier::WIKIDATA) return "Wikidata";
+            return null;
+        }
+
+        // Database ID
+        $db = $this->config->getDatabases()[$sourceId] ?? null;
+        if (is_null($db)) return null;
+        return $shortName ? $db->getShortName() : $db->getName();
+    }
+
+
+    /**
      * Get external links from entity
      * @param  AbstractEntity $entity Entity
      * @return array                  External links
@@ -155,15 +178,17 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
         $res = [];
         foreach ($entity->getIdentifiers() as $identifier) {
             $value = $identifier->getValue();
-            switch ($identifier->getType()) {
+            $type = $identifier->getType();
+            $sourceName = $this->getSourceName($type);
+            switch ($type) {
                 case Identifier::GBOOKS:
-                    $res['gbooks'] = ['name' => 'Google Books', 'url' => "https://books.google.es/books?id=$value"];
+                    $res['gbooks'] = ['name' => $sourceName, 'url' => "https://books.google.es/books?id=$value"];
                     break;
                 case Identifier::OCLC:
-                    $res['oclc'] = ['name' => 'WorldCat', 'url' => "https://www.worldcat.org/oclc/$value"];
+                    $res['oclc'] = ['name' => $sourceName, 'url' => "https://www.worldcat.org/oclc/$value"];
                     break;
                 case Identifier::WIKIDATA:
-                    $res['wikidata'] = ['name' => 'Wikidata', 'url' => "https://www.wikidata.org/entity/$value"];
+                    $res['wikidata'] = ['name' => $sourceName, 'url' => "https://www.wikidata.org/entity/$value"];
                     break;
                 case Identifier::INTERNAL:
                     $databaseId = explode(':', $value)[0];
