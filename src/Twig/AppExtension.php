@@ -196,7 +196,7 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
                     $url = $db->getExternalLink();
                     if (!empty($url)) {
                         $url = $entity->toFilledTemplateString($url);
-                        $res["internal-$databaseId"] = ['name' => $db->getName(), 'url' => $url];
+                        if (!is_null($url)) $res["internal-$databaseId"] = ['name' => $db->getName(), 'url' => $url];
                     }
                     break;
             }

@@ -375,23 +375,31 @@ abstract class AbstractEntity {
 
     /**
      * To filled template string
-     * @param  string $template Template
-     * @return string           Template filled with values from entity
+     * @param  string      $template Template
+     * @return string|null           Template filled with values from entity
      */
     public function toFilledTemplateString(string $template) {
+        $filled = false;
+
         // ISBN 10
         if (strpos($template, '{{isbn10}}') !== false) {
             $value = $this->getFirstIdOfType(Identifier::ISBN_10);
-            if (!is_null($value)) $template = str_replace('{{isbn10}}', $value, $template);
+            if (!is_null($value)) {
+                $template = str_replace('{{isbn10}}', $value, $template);
+                $filled = true;
+            }
         }
 
         // ISBN 13
         if (strpos($template, '{{isbn13}}') !== false) {
             $value = $this->getFirstIdOfType(Identifier::ISBN_13);
-            if (!is_null($value)) $template = str_replace('{{isbn13}}', $value, $template);
+            if (!is_null($value)) {
+                $template = str_replace('{{isbn13}}', $value, $template);
+                $filled = true;
+            }
         }
 
-        return $template;
+        return $filled ? $template : null;
     }
 
 
