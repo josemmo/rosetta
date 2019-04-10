@@ -65,7 +65,42 @@
                         {% endif %}
 
                         {# Holdings #}
-                        {# TODO #}
+                        {% set holdings = (entity.holdings is defined) ? entity.holdings : []  %}
+                        {% if holdings is not empty %}
+                            <div class="subsection">
+                                <h3>{% trans %}Holdings{% endtrans %}</h3>
+                                <div class="table-responsive">
+                                    <table class="table table-holdings table-sm table-hover table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th>{% trans %}Source{% endtrans %}</th>
+                                                <th>{% trans %}Call Number{% endtrans %}</th>
+                                                <th>{% trans %}Location{% endtrans %}</th>
+                                                <th class="text-center">{% trans %}Loanable{% endtrans %}</th>
+                                                <th class="text-center">{% trans %}Available{% endtrans %}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for holding in holdings %}
+                                                <tr>
+                                                    <td>{{ rosetta_source_name(holding.sourceId, true) }}</td>
+                                                    <td>{{ holding.callNumber|default('N/A') }}</td>
+                                                    <td>
+                                                        {% if holding.onlineUrl is empty %}
+                                                            {{ holding.locationName }}
+                                                        {% else %}
+                                                            <a href="{{ holding.onlineUrl }}" target="_blank">Online</a>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-center">{{ holding.loanable ? '✔️' : '❌' }}</td>
+                                                    <td class="text-center">{{ holding.available ? '✔️' : '❌' }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endif %}
 
                         {# External links #}
                         {% set external_links = rosetta_external_links(entity) %}
