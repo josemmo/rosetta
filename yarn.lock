@@ -885,10 +885,10 @@
   dependencies:
     core-js "^2.5.7"
 
-"@symfony/webpack-encore@^0.26.0":
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/@symfony/webpack-encore/-/webpack-encore-0.26.0.tgz#9ba8feca46a08c76d7b54cc3377d134960d4bb25"
-  integrity sha512-0voE5WvCmcUi/bUHqzMOVR7AdcTTN+m6d8Ty6jnqa0w6/v9RpbrkxiCNfJQ1ulorV/Lp5rOUdiXtr4f3BOwN8A==
+"@symfony/webpack-encore@^0.27.0":
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/@symfony/webpack-encore/-/webpack-encore-0.27.0.tgz#efc960967823b5ff93881222f16496f1fa709f24"
+  integrity sha512-ih+H1SQkjFYe2t0wSnksMzfaiWUjlvimDFyXAgHPmeFxCUiypMgGksAz1OxnF83qjEjC08GDkjJayblQ72qIug==
   dependencies:
     "@babel/core" "^7.4.0"
     "@babel/plugin-syntax-dynamic-import" "^7.0.0"
