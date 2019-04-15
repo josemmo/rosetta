@@ -5,7 +5,7 @@
         "@symfony/webpack-encore": "^0.27.0",
         "autoprefixer": "^9.5.0",
         "bootstrap": "^4.3.1",
-        "jquery": "^3.3.1",
+        "jquery": "^3.4.0",
         "node-sass": "^4.11.0",
         "node-vibrant": "^3.2.0-alpha",
         "postcss-loader": "^3.0.0",
