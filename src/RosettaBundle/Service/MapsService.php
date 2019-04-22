@@ -65,7 +65,7 @@ class MapsService {
     /**
      * Get maps index
      *
-     * The maps index is a file contaning a summary of all data inside the maps directory. It summarizes into a single
+     * The maps index is a file containing a summary of all data inside the maps directory. It summarizes into a single
      * file all location data to improve performance when trying to return map data for a particular holding.
      * This file is generated when new changed are made inside the maps directory.
      */
@@ -89,13 +89,7 @@ class MapsService {
             $resources[] = new FileResource($mapPath);
 
             // Find namespace
-            $ns = null;
-            foreach ($mapData->getNamespaces() as $namespace=>$value) {
-                if ($value === self::MAP_XMLNS) {
-                    $ns = $namespace;
-                    break;
-                }
-            }
+            $ns = $this->getRosettaNamespace($mapData);
             if (is_null($ns)) {
                 throw new Exception("Missing namespace '" . self::MAP_XMLNS . "' from map '$mapName'");
             }
@@ -109,7 +103,14 @@ class MapsService {
             $locationPattern = empty($attributes['locationPattern']) ? null : strval($attributes['locationPattern']);
 
             // Find all UDC codes appearing in this map
-            $codes = $this->getUDCs($mapData, $namespace);
+            $codes = [];
+            foreach ($this->getAllChildren($mapData) as $child) {
+                $udc = $child->attributes($ns, true)->udc;
+                if (!empty($udc)) {
+                    $udc = explode(',', $udc);
+                    foreach ($udc as $code) $codes[] = trim($code);
+                }
+            }
             $codes = array_unique($codes);
 
             // Add map to index
@@ -125,21 +126,28 @@ class MapsService {
 
 
     /**
-     * Get UDC (Universal Decimal Classification) codes
-     * @param  \SimpleXMLElement $xmlElement XML Element
-     * @param  string            $ns         Rosetta namespace
-     * @return string[]                      UDC codes
+     * Get Rosetta namespace from SVG map
+     * @param  \SimpleXMLElement $element XML element
+     * @return string|null                Namespace name
      */
-    private function getUDCs(\SimpleXMLElement $xmlElement, string $ns) {
-        $res = [];
-        foreach ($xmlElement->children() as $child) {
-            foreach ($this->getUDCs($child, $ns) as $code) $res[] = $code;
-            $udc = $child->attributes($ns, true)->udc;
-            if (empty($udc)) continue;
+    private function getRosettaNamespace(\SimpleXMLElement $element) {
+        foreach ($element->getNamespaces() as $namespace=>$value) {
+            if ($value === self::MAP_XMLNS) return $namespace;
+        }
+        return null;
+    }
 
-            // Parse UDC codes
-            $codes = explode(',', $udc);
-            foreach ($codes as $code) $res[] = trim($code);
+
+    /**
+     * Get all children
+     * @param  \SimpleXMLElement   $element XML element
+     * @return \SimpleXMLElement[]          Children
+     */
+    private function getAllChildren(\SimpleXMLElement $element) {
+        $res = [];
+        foreach ($element->children() as $child) {
+            foreach ($this->getAllChildren($child) as $subchild) $res[] = $subchild;
+            $res[] = $child;
         }
         return $res;
     }
