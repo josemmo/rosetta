@@ -106,7 +106,17 @@
     }
 
     &.col-right {
-        width: 340px;
+        width: 100%;
+
+        @include media-breakpoint-up(md) {
+            position: sticky;
+            top: 1rem;
+            width: 340px;
+        }
+        
+        .map {
+            display: none;
+        }
     }
 }
 
@@ -114,6 +124,12 @@
 /* HOLDINGS TABLE */
 .table.table-holdings {
     font-size: 0.9rem;
+
+    td {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        vertical-align: middle;
+    }
 
     i {
         display: inline-block;
@@ -129,5 +145,10 @@
         &.cross {
             background-image: url('./../../images/cross.svg');
         }
+    }
+
+    small {
+        display: block;
+        color: lighten($foreground-color, 20%);
     }
 }

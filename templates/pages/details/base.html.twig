@@ -66,6 +66,7 @@
 
                         {# Holdings #}
                         {% set holdings = (entity.holdings is defined) ? entity.holdings : []  %}
+                        {% set maps = [] %}
                         {% if holdings is not empty %}
                             <div class="subsection">
                                 <h3>{% trans %}Holdings{% endtrans %}</h3>
@@ -82,12 +83,17 @@
                                         </thead>
                                         <tbody>
                                             {% for holding in holdings %}
-                                                <tr>
+                                                {% set map = rosetta_get_map(holding) %}
+                                                {% if map is not empty and map not in maps %}
+                                                    {% set maps = maps|merge([map]) %}
+                                                {% endif %}
+                                                <tr data-map="{{ map.id|default('') }}">
                                                     <td>{{ rosetta_source_name(holding.sourceId, true) }}</td>
                                                     <td>{{ holding.callNumber|default('N/A') }}</td>
                                                     <td>
                                                         {% if holding.onlineUrl is empty %}
                                                             {{ holding.locationName }}
+                                                            {% if map is not empty %}<small>{{ map.room }}</small>{% endif %}
                                                         {% else %}
                                                             <a href="{{ holding.onlineUrl }}" target="_blank">Online</a>
                                                         {% endif %}
@@ -118,7 +124,11 @@
                 </div>
                 <div class="col-md-auto">
                     <section class="details-column col-right">
-                        {# TODO #}
+                        {% for map in maps %}
+                            <div class="map" data-map="{{ map.id }}">
+                                {{ map.data|raw }}
+                            </div>
+                        {% endfor %}
                     </section>
                 </div>
             </div>
