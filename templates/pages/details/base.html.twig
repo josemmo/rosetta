@@ -92,8 +92,8 @@
                                                             <a href="{{ holding.onlineUrl }}" target="_blank">Online</a>
                                                         {% endif %}
                                                     </td>
-                                                    <td class="text-center">{{ holding.loanable ? '✔️' : '❌' }}</td>
-                                                    <td class="text-center">{{ holding.available ? '✔️' : '❌' }}</td>
+                                                    <td class="text-center"><i class="{{ holding.loanable ? 'tick' : 'cross' }}"></i></td>
+                                                    <td class="text-center"><i class="{{ holding.available ? 'tick' : 'cross' }}"></i></td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>

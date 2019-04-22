@@ -114,4 +114,20 @@
 /* HOLDINGS TABLE */
 .table.table-holdings {
     font-size: 0.9rem;
+
+    i {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        background: no-repeat center;
+        background-size: cover;
+
+        &.tick {
+            background-image: url('./../../images/tick.svg');
+        }
+
+        &.cross {
+            background-image: url('./../../images/cross.svg');
+        }
+    }
 }
