@@ -1472,16 +1472,16 @@
         },
         {
             "name": "nicebooks/isbn",
-            "version": "0.2.22",
+            "version": "0.2.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nicebooks-com/isbn.git",
-                "reference": "3f30b09e3b7d42d184032c7b0c1c741015bb3882"
+                "reference": "93f58743d2e10a75c7aa30a87f8a6627e1f38fa4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nicebooks-com/isbn/zipball/3f30b09e3b7d42d184032c7b0c1c741015bb3882",
-                "reference": "3f30b09e3b7d42d184032c7b0c1c741015bb3882",
+                "url": "https://api.github.com/repos/nicebooks-com/isbn/zipball/93f58743d2e10a75c7aa30a87f8a6627e1f38fa4",
+                "reference": "93f58743d2e10a75c7aa30a87f8a6627e1f38fa4",
                 "shasum": ""
             },
             "require": {
@@ -1511,7 +1511,7 @@
                 "book",
                 "books"
             ],
-            "time": "2019-04-10T08:23:08+00:00"
+            "time": "2019-04-16T22:50:13+00:00"
         },
         {
             "name": "nikolaposa/version",
