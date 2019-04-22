@@ -198,13 +198,13 @@ class MapsService {
     /**
      * Returns the name of the map for the given parameters
      * @param  string      $dbId     Database ID
-     * @param  string      $subject  Holding UDC subject code
+     * @param  string|null $subject  Holding UDC subject code
      * @param  string|null $location Holding location
      * @return string|null           Map name or null if not found
      */
-    private function getMapName(string $dbId, string $subject, ?string $location=null) {
+    private function getMapName(string $dbId, ?string $subject, ?string $location=null) {
+        if (empty($subject)) return null;
         $index = $this->getIndex();
-
         if (!isset($index[$dbId])) return null;
 
         // Find location
