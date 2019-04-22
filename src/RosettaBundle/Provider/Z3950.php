@@ -96,12 +96,16 @@ class Z3950 extends AbstractProvider {
         $hits = yaz_hits($this->conn);
         $isMillennium = ($this->config['preset'] == "millennium");
         for ($r=1; $r<=min($this->config['max_results'], $hits); $r++) {
-            $result = yaz_record($this->conn, $r, 'xml');
-            $result = Normalizer::fixEncoding($result, $isMillennium);
-            $result = preg_replace('/xmlns=".+"/', '', $result);
-            $result = new \SimpleXMLElement($result);
-            $parsedResult = $this->parseResult($result);
-            if (!is_null($parsedResult)) $results[] = $parsedResult;
+            try {
+                $result = yaz_record($this->conn, $r, 'xml');
+                $result = Normalizer::fixEncoding($result, $isMillennium);
+                $result = preg_replace('/xmlns=".+"/', '', $result);
+                $result = new \SimpleXMLElement($result);
+                $parsedResult = $this->parseResult($result);
+                if (!is_null($parsedResult)) $results[] = $parsedResult;
+            } catch (\Exception $e) {
+                $this->logger->error('Failed to parse Z39.50 result', ['message' => $e->getMessage()]);
+            }
         }
 
         return $results;
