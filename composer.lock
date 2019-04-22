@@ -3578,16 +3578,16 @@
         },
         {
             "name": "symfony/twig-bridge",
-            "version": "v4.2.5",
+            "version": "v4.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/twig-bridge.git",
-                "reference": "ae8c3faafec299e8f4e500c0b96cb0e52cfcee90"
+                "reference": "db70a233d660b96a883150d68fa0a5a882f2ba89"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/twig-bridge/zipball/ae8c3faafec299e8f4e500c0b96cb0e52cfcee90",
-                "reference": "ae8c3faafec299e8f4e500c0b96cb0e52cfcee90",
+                "url": "https://api.github.com/repos/symfony/twig-bridge/zipball/db70a233d660b96a883150d68fa0a5a882f2ba89",
+                "reference": "db70a233d660b96a883150d68fa0a5a882f2ba89",
                 "shasum": ""
             },
             "require": {
@@ -3666,20 +3666,20 @@
             ],
             "description": "Symfony Twig Bridge",
             "homepage": "https://symfony.com",
-            "time": "2019-04-01T08:18:15+00:00"
+            "time": "2019-04-12T13:50:35+00:00"
         },
         {
             "name": "symfony/twig-bundle",
-            "version": "v4.2.5",
+            "version": "v4.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/twig-bundle.git",
-                "reference": "6c6e3be7020563c36a34139bef94fed0735cdf9e"
+                "reference": "321d5bd0608f3cf34062c47edfe6079556f6d6f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/twig-bundle/zipball/6c6e3be7020563c36a34139bef94fed0735cdf9e",
-                "reference": "6c6e3be7020563c36a34139bef94fed0735cdf9e",
+                "url": "https://api.github.com/repos/symfony/twig-bundle/zipball/321d5bd0608f3cf34062c47edfe6079556f6d6f1",
+                "reference": "321d5bd0608f3cf34062c47edfe6079556f6d6f1",
                 "shasum": ""
             },
             "require": {
@@ -3742,7 +3742,7 @@
             ],
             "description": "Symfony TwigBundle",
             "homepage": "https://symfony.com",
-            "time": "2019-03-04T11:47:55+00:00"
+            "time": "2019-04-11T11:27:41+00:00"
         },
         {
             "name": "symfony/validator",
@@ -4079,16 +4079,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v2.7.4",
+            "version": "v2.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "ed9c49220e09bfaeb1ba4d48077c08a7b09908dd"
+                "reference": "91cc2594d3143761ce0399c1caffd0b500ffe5b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/ed9c49220e09bfaeb1ba4d48077c08a7b09908dd",
-                "reference": "ed9c49220e09bfaeb1ba4d48077c08a7b09908dd",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/91cc2594d3143761ce0399c1caffd0b500ffe5b9",
+                "reference": "91cc2594d3143761ce0399c1caffd0b500ffe5b9",
                 "shasum": ""
             },
             "require": {
@@ -4104,7 +4104,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.7-dev"
+                    "dev-master": "2.8-dev"
                 }
             },
             "autoload": {
@@ -4142,7 +4142,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2019-03-23T14:28:58+00:00"
+            "time": "2019-04-16T17:14:24+00:00"
         },
         {
             "name": "zendframework/zend-code",
