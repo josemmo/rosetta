@@ -87,7 +87,7 @@
                                                 {% if map is not empty and map not in maps %}
                                                     {% set maps = maps|merge([map]) %}
                                                 {% endif %}
-                                                <tr data-map="{{ map.id|default('') }}">
+                                                <tr data-map="{{ map.id|default('') }}" data-subject="{{ holding.subject }}">
                                                     <td>{{ rosetta_source_name(holding.sourceId, true) }}</td>
                                                     <td>{{ holding.callNumber|default('N/A') }}</td>
                                                     <td>

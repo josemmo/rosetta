@@ -113,9 +113,13 @@
             top: 1rem;
             width: 340px;
         }
-        
+
         .map {
             display: none;
+
+            .highlighted {
+                fill: $accent-color;
+            }
         }
     }
 }
@@ -124,6 +128,14 @@
 /* HOLDINGS TABLE */
 .table.table-holdings {
     font-size: 0.9rem;
+
+    tr[data-map]:not([data-map=""]) {
+        cursor: pointer;
+
+        &.selected td {
+            background: lighten($accent-color, 50%);
+        }
+    }
 
     td {
         padding-top: 0.5rem;

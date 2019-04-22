@@ -33,15 +33,77 @@ function getCoverColor(img) {
 }
 
 
+/**
+ * Get maps cache
+ * @return {object} Maps cache
+ */
+function getMapsCache() {
+    const cache = {}
+
+    $('.col-right .map').each(function() {
+        const $map = $(this)
+        const mapId = $map.data('map')
+        cache[mapId] = {}
+        $map.find('[data-subjects]').each(function() {
+            const subjects = $(this).data('subjects').toString().split(',')
+            for (const subject of subjects) {
+                if (typeof cache[mapId][subject] == 'undefined') cache[mapId][subject] = []
+                cache[mapId][subject].push(this)
+            }
+        })
+    })
+
+    return cache
+}
+
+
 /* INITIALIZE */
 $(() => {
     const $colorSource = $('img[data-color-source]')
     if ($colorSource.length !== 1) return
 
+    // Paint heading with vibrant color from cover
     const img = $colorSource[0]
     if (img.naturalWidth > 0) {
         getCoverColor(img)
     } else {
         img.addEventListener('load', () => getCoverColor(img), false)
     }
+
+    // Link holdings to maps
+    const $holdingsTable = $('.table-holdings')
+    const $mapContainer = $('.col-right')
+    const mapsCache = getMapsCache()
+    $holdingsTable.find('tr[data-map]').each(function() {
+        const $this = $(this)
+        const mapId = $this.data('map')
+        if (mapId === '') return
+
+        let subject = $this.data('subject').toString()
+        while (subject.length > 0) {
+            if (typeof mapsCache[mapId][subject] != 'undefined') {
+                $this.data('shelves', mapsCache[mapId][subject])
+                break
+            }
+            subject = subject.substring(0, -1)
+        }
+    }).click(function() {
+        $holdingsTable.find('.selected').removeClass('selected')
+        $(this).addClass('selected')
+
+        // Hide current map
+        $mapContainer.find('.map').hide()
+        $mapContainer.find('.highlighted').removeClass('highlighted')
+
+        // Find shelves
+        const shelves = $(this).data('shelves')
+        if (typeof shelves === 'undefined') return
+        for (const shelf of shelves) $(shelf).addClass('highlighted')
+
+        // Show map containing shelves
+        $(shelves[0]).parents('.map').show()
+    })
+
+    // Select first holding with map data
+    $holdingsTable.find('tr[data-map][data-map!=""]').first().trigger('click')
 })
