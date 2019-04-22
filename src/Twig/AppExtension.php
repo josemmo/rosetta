@@ -21,8 +21,11 @@
 namespace App\Twig;
 
 use App\RosettaBundle\Entity\AbstractEntity;
+use App\RosettaBundle\Entity\Other\Holding;
 use App\RosettaBundle\Entity\Other\Identifier;
+use App\RosettaBundle\Entity\Other\Map;
 use App\RosettaBundle\Service\ConfigEngine;
+use App\RosettaBundle\Service\MapsService;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
@@ -34,6 +37,7 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
     const ASSETS_URL = "build/images/";
 
     private $config;
+    private $maps;
     private $packages;
     private $router;
     private $translator;
@@ -42,12 +46,15 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
     /**
      * AppExtension constructor
      * @param ConfigEngine    $config     Configuration Engine
+     * @param MapsService     $maps       Maps Service
      * @param Packages        $packages   Packages Service
      * @param RouterInterface $router     Router Service
      * @param mixed           $translator Translator Service
      */
-    public function __construct(ConfigEngine $config, Packages $packages, RouterInterface $router, $translator) {
+    public function __construct(ConfigEngine $config, MapsService $maps, Packages $packages,
+                                RouterInterface $router, $translator) {
         $this->config = $config;
+        $this->maps = $maps;
         $this->packages = $packages;
         $this->router = $router;
         $this->translator = $translator;
@@ -115,7 +122,8 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
             new TwigFunction('rosetta_source_name', [$this, 'getSourceName']),
             new TwigFunction('rosetta_external_links', [$this, 'getExternalLinks']),
             new TwigFunction('rosetta_date', [$this, 'getFormattedDate']),
-            new TwigFunction('rosetta_language', [$this, 'getLanguageName'])
+            new TwigFunction('rosetta_language', [$this, 'getLanguageName']),
+            new TwigFunction('rosetta_get_map', [$this, 'getMapFromHolding'])
         ];
     }
 
@@ -276,6 +284,16 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
      */
     public function getLanguageName(string $code) {
         return \Locale::getDisplayLanguage($code, $this->translator->getLocale());
+    }
+
+
+    /**
+     * Get map from holding
+     * @param  Holding  $holding Holding
+     * @return Map|null          Map
+     */
+    public function getMapFromHolding(Holding $holding) {
+        return $this->maps->getMap($holding);
     }
 
 }
