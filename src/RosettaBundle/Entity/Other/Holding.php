@@ -215,4 +215,15 @@ class Holding {
         return $this;
     }
 
+
+    /**
+     * Get UDC subject code
+     * @return string|null Subject
+     */
+    public function getSubject(): ?string {
+        $matches = [];
+        preg_match('/[0-9]{2,3}(\.[0-9]{1,3})?/', $this->callNumber, $matches);
+        return empty($matches) ? null : $matches[0];
+    }
+
 }

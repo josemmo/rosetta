@@ -17,8 +17,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+
 namespace App\RosettaBundle\Service;
 
+use App\RosettaBundle\Entity\Other\Holding;
+use App\RosettaBundle\Entity\Other\Map;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Config\Resource\FileResource;
@@ -30,11 +33,32 @@ class MapsService {
     private $mapsDir;
     private $indexPath;
     private $cache;
+    private $cachedMaps = [];
 
     public function __construct(KernelInterface $kernel) {
         $this->mapsDir = $kernel->getProjectDir() . "/assets/custom/maps";
         $this->indexPath = $kernel->getCacheDir() . "/maps_index.php.cache";
         $this->cache = new ConfigCache($this->indexPath, true);
+    }
+
+
+    /**
+     * Get map instance from holding
+     * @param  Holding  $holding Holding
+     * @return Map|null          Map
+     */
+    public function getMap(Holding $holding) {
+        $mapName = $this->getMapName($holding->getSourceId(), $holding->getSubject(), $holding->getLocationName());
+        if (is_null($mapName)) return null;
+
+        // Get map instance from cache
+        if (isset($this->cachedMaps[$mapName])) return $this->cachedMaps[$mapName];
+
+        // Load map into memory
+        $map = $this->loadMap($mapName);
+        $this->cachedMaps[$mapName] = $map;
+
+        return $map;
     }
 
 
@@ -122,13 +146,28 @@ class MapsService {
 
 
     /**
-     * Returns an SVG map with the location of the given resource, if exists
-     * @param  string      $dbId       Database ID
-     * @param  string      $callNumber Holding call number
-     * @param  string|null $location   Holding location
-     * @return string|null             Map name or null if not found
+     * Load map from disk
+     * @param  string   $mapName Map filename
+     * @return Map|null          Map instance
      */
-    public function getMapName(string $dbId, string $callNumber, ?string $location=null) {
+    private function loadMap(string $mapName) {
+        $mapPath = $this->mapsDir . "/" . $mapName;
+        $data = simplexml_load_file($mapPath);
+        if (empty($data)) return null;
+
+        $mapId = count($this->cachedMaps);
+        return new Map($mapId, $data->asXML(), 'ROOM ' . $mapName);
+    }
+
+
+    /**
+     * Returns the name of the map for the given parameters
+     * @param  string      $dbId     Database ID
+     * @param  string      $subject  Holding UDC subject code
+     * @param  string|null $location Holding location
+     * @return string|null           Map name or null if not found
+     */
+    private function getMapName(string $dbId, string $subject, ?string $location=null) {
         $index = $this->getIndex();
 
         if (!isset($index[$dbId])) return null;
@@ -147,31 +186,18 @@ class MapsService {
         }
         if (is_null($locationData)) return null;
 
-        // Find UDC subject
-        $udc = $this->extractUDC($callNumber);
+        // Find map name from UDC subject
         $mapName = null;
-        while (strlen($udc) > 0) {
-            if (isset($locationData[$udc])) {
-                $mapName = $locationData[$udc];
+        while (strlen($subject) > 0) {
+            if (isset($locationData[$subject])) {
+                $mapName = $locationData[$subject];
                 break;
             }
-            $udc = substr($udc, 0, -1);
+            $subject = substr($subject, 0, -1);
         }
 
-        // Return map
+        // Return map name
         return $mapName;
-    }
-
-
-    /**
-     * Extract UDC from signature
-     * @param  string      $callNumber Holding call number
-     * @return string|null             UDC subject code
-     */
-    private function extractUDC(string $callNumber): ?string {
-        $matches = [];
-        preg_match('/[0-9]{2,3}(\.[0-9]{1,3})?/', $callNumber, $matches);
-        return empty($matches) ? null : $matches[0];
     }
 
 }
