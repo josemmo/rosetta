@@ -65,7 +65,48 @@
                         {% endif %}
 
                         {# Holdings #}
-                        {# TODO #}
+                        {% set holdings = (entity.holdings is defined) ? entity.holdings : []  %}
+                        {% set maps = [] %}
+                        {% if holdings is not empty %}
+                            <div class="subsection">
+                                <h3>{% trans %}Holdings{% endtrans %}</h3>
+                                <div class="table-responsive">
+                                    <table class="table table-holdings table-sm table-hover table-borderless">
+                                        <thead>
+                                            <tr>
+                                                <th>{% trans %}Source{% endtrans %}</th>
+                                                <th>{% trans %}Call Number{% endtrans %}</th>
+                                                <th>{% trans %}Location{% endtrans %}</th>
+                                                <th class="text-center">{% trans %}Loanable{% endtrans %}</th>
+                                                <th class="text-center">{% trans %}Available{% endtrans %}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for holding in holdings %}
+                                                {% set map = rosetta_get_map(holding) %}
+                                                {% if map is not empty and map not in maps %}
+                                                    {% set maps = maps|merge([map]) %}
+                                                {% endif %}
+                                                <tr data-map="{{ map.id|default('') }}" data-subject="{{ holding.subject }}">
+                                                    <td>{{ rosetta_source_name(holding.sourceId, true) }}</td>
+                                                    <td>{{ holding.callNumber|default('N/A') }}</td>
+                                                    <td>
+                                                        {% if holding.onlineUrl is empty %}
+                                                            {{ holding.locationName }}
+                                                            {% if map is not empty %}<small>{{ map.room }}</small>{% endif %}
+                                                        {% else %}
+                                                            <a href="{{ holding.onlineUrl }}" target="_blank">Online</a>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-center"><i class="{{ holding.loanable ? 'tick' : 'cross' }}"></i></td>
+                                                    <td class="text-center"><i class="{{ holding.available ? 'tick' : 'cross' }}"></i></td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endif %}
 
                         {# External links #}
                         {% set external_links = rosetta_external_links(entity) %}
@@ -83,7 +124,11 @@
                 </div>
                 <div class="col-md-auto">
                     <section class="details-column col-right">
-                        {# TODO #}
+                        {% for map in maps %}
+                            <div class="map" data-map="{{ map.id }}">
+                                {{ map.data|raw }}
+                            </div>
+                        {% endfor %}
                     </section>
                 </div>
             </div>

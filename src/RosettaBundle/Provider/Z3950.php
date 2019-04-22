@@ -24,6 +24,7 @@ use App\RosettaBundle\Entity\Organization;
 use App\RosettaBundle\Entity\Other\Holding;
 use App\RosettaBundle\Entity\Other\Relation;
 use App\RosettaBundle\Entity\Person;
+use App\RosettaBundle\Entity\Thing;
 use App\RosettaBundle\Entity\Work\AbstractWork;
 use App\RosettaBundle\Entity\Work\Book;
 use App\RosettaBundle\Utils\Normalizer;
@@ -93,13 +94,18 @@ class Z3950 extends AbstractProvider {
         // Parse results
         $results = [];
         $hits = yaz_hits($this->conn);
+        $isMillennium = ($this->config['preset'] == "millennium");
         for ($r=1; $r<=min($this->config['max_results'], $hits); $r++) {
-            $result = yaz_record($this->conn, $r, 'xml');
-            $result = Normalizer::fixEncoding($result);
-            $result = preg_replace('/xmlns=".+"/', '', $result);
-            $result = new \SimpleXMLElement($result);
-            $parsedResult = $this->parseResult($result);
-            if (!is_null($parsedResult)) $results[] = $parsedResult;
+            try {
+                $result = yaz_record($this->conn, $r, 'xml');
+                $result = Normalizer::fixEncoding($result, $isMillennium);
+                $result = preg_replace('/xmlns=".+"/', '', $result);
+                $result = new \SimpleXMLElement($result);
+                $parsedResult = $this->parseResult($result);
+                if (!is_null($parsedResult)) $results[] = $parsedResult;
+            } catch (\Exception $e) {
+                $this->logger->error('Failed to parse Z39.50 result', ['message' => $e->getMessage()]);
+            }
         }
 
         return $results;
@@ -130,6 +136,8 @@ class Z3950 extends AbstractProvider {
         $type = substr($record->leader, 6, 1);
         if ($type == "a" || $type == "t") {
             $res = $this->parseBook($record);
+        } elseif ($type == "r") {
+            $res = $this->parseThing($record);
         } else {
             $this->logger->warning('Unknown record type', [
                 "leader" => (string) $record->leader,
@@ -145,76 +153,43 @@ class Z3950 extends AbstractProvider {
             $res->addInternalId($this->config['id'], $cNumber);
         }
 
-        // Parse title
-        $title = $record->xpath('datafield[@tag="245"]/subfield[@code="a"]')[0];
-        $subtitle = $record->xpath('datafield[@tag="245"]/subfield[@code="b"]');
-        if (!empty($subtitle)) $title .= " " . $subtitle[0];
-        $title = Normalizer::normalizeTitle($title);
-        $title = explode(':', $title, 2);
-
-        // Add title
-        $res->setTitle(trim($title[0]));
-        if (isset($title[1])) {
-            $subtitle = trim($title[1]);
-            if (!empty($subtitle)) $res->setSubtitle($subtitle);
-        }
-
-        // Add legal attributes
-        foreach ($record->xpath('datafield[@tag="017"]') as $elem) {
-            $res->addLegalDeposit($elem->subfield[0]);
-        }
-
-        // Add publisher
-        $publisher = $record->xpath('datafield[@tag="260"]/subfield[@code="b"]');
-        if (!empty($publisher)) {
-            $organization = new Organization();
-            $organization->setName(Normalizer::normalizeDefault($publisher[0]));
-            $res->addPublisher($organization);
-        }
-
-        // Add published year
-        $pubYear = $record->xpath('datafield[@tag="260"]/subfield[@code="c"]');
-        if (!empty($pubYear)) {
-            preg_match('/[0-9]{4}/', $pubYear[0], $matches);
-            if (!empty($matches)) $res->setPubDate($matches[0]);
-        }
-
-        // Add authors
-        foreach (['100', '600', '700'] as $tag) {
-            foreach ($record->xpath("datafield[@tag='$tag']") as $elem) {
-                $name = (string) $elem->xpath('subfield[@code="a"]')[0];
-                list($lastname, $firstname) = explode(',', "$name,");
-                $name = Normalizer::normalizeName("$firstname $lastname");
-
-                $type = null;
-                $relatorCode = $elem->xpath('subfield[@code="e"]');
-                if (!empty($relatorCode)) {
-                    $type = $this->getRelation($relatorCode[0]);
-                    if (is_null($type)) {
-                        $this->logger->warning('Unknown relator code, assuming author', [
-                            "name" => $name,
-                            "relatorCode" => (string) $relatorCode[0],
-                            "url" => $this->config['url']
-                        ]);
-                    }
-                }
-                if (is_null($type)) $type = Relation::IS_AUTHOR_OF;
-
-                $person = new Person();
-                $person->setName($name);
-                $res->addRelation(new Relation($person, $type, $res));
-            }
-        }
+        // Add work attributes
+        if ($res instanceof AbstractWork) $this->fillInWork($res, $record);
 
         // Add holdings
         if ($this->config['get_holdings'] && !empty($rawResult->holdings)) {
             foreach ($rawResult->holdings->holding as $elem) {
-                $holding = new Holding($elem->callNumber);
+                $holding = new Holding();
+                $holding->setSourceId($this->config['id']);
+                $holding->setCallNumber($elem->callNumber);
+                $holding->setLocationName($elem->localLocation);
+                if ($elem->publicNote == "NOT AVAILABLE") {
+                    $holding->setAvailable(false);
+                } elseif ($elem->publicNote != "AVAILABLE") {
+                    $holding->setLoanable(false);
+                }
                 $res->addHolding($holding);
             }
         }
 
         return $res;
+    }
+
+
+    /**
+     * Parse thing
+     * @param  \SimpleXMLElement $record MARC21 record
+     * @return Thing|null                Thing instance
+     */
+    private function parseThing(\SimpleXMLElement $record) {
+        $thing = new Thing();
+
+        // Name
+        $name = $record->xpath('datafield[@tag="245"]/subfield[@code="a"]')[0];
+        $name = Normalizer::normalizeTitle($name);
+        $thing->setName($name);
+
+        return $thing;
     }
 
 
@@ -249,6 +224,75 @@ class Z3950 extends AbstractProvider {
         }
 
         return $res;
+    }
+
+
+    /**
+     * Fill-in work
+     * @param AbstractWork              AbstractWork instance
+     * @param \SimpleXMLElement $record MARC21 record
+     */
+    private function fillInWork($work, \SimpleXMLElement $record) {
+        // Parse title
+        $title = $record->xpath('datafield[@tag="245"]/subfield[@code="a"]')[0];
+        $subtitle = $record->xpath('datafield[@tag="245"]/subfield[@code="b"]');
+        if (!empty($subtitle)) $title .= " " . $subtitle[0];
+        $title = Normalizer::normalizeTitle($title);
+        $title = explode(':', $title, 2);
+
+        // Add title
+        $work->setTitle(trim($title[0]));
+        if (isset($title[1])) {
+            $subtitle = trim($title[1]);
+            if (!empty($subtitle)) $work->setSubtitle($subtitle);
+        }
+
+        // Add legal attributes
+        foreach ($record->xpath('datafield[@tag="017"]') as $elem) {
+            $work->addLegalDeposit($elem->subfield[0]);
+        }
+
+        // Add publisher
+        $publisher = $record->xpath('datafield[@tag="260"]/subfield[@code="b"]');
+        if (!empty($publisher)) {
+            $organization = new Organization();
+            $organization->setName(Normalizer::normalizeDefault($publisher[0]));
+            $work->addPublisher($organization);
+        }
+
+        // Add published year
+        $pubYear = $record->xpath('datafield[@tag="260"]/subfield[@code="c"]');
+        if (!empty($pubYear)) {
+            preg_match('/[0-9]{4}/', $pubYear[0], $matches);
+            if (!empty($matches)) $work->setPubDate($matches[0]);
+        }
+
+        // Add authors
+        foreach (['100', '600', '700'] as $tag) {
+            foreach ($record->xpath("datafield[@tag='$tag']") as $elem) {
+                $name = (string) $elem->xpath('subfield[@code="a"]')[0];
+                list($lastname, $firstname) = explode(',', "$name,");
+                $name = Normalizer::normalizeName("$firstname $lastname");
+
+                $type = null;
+                $relatorCode = $elem->xpath('subfield[@code="e"]');
+                if (!empty($relatorCode)) {
+                    $type = $this->getRelation($relatorCode[0]);
+                    if (is_null($type)) {
+                        $this->logger->warning('Unknown relator code, assuming author', [
+                            "name" => $name,
+                            "relatorCode" => (string) $relatorCode[0],
+                            "url" => $this->config['url']
+                        ]);
+                    }
+                }
+                if (is_null($type)) $type = Relation::IS_AUTHOR_OF;
+
+                $person = new Person();
+                $person->setName($name);
+                $work->addRelation(new Relation($person, $type, $work));
+            }
+        }
     }
 
 

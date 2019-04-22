@@ -106,6 +106,61 @@
     }
 
     &.col-right {
-        width: 340px;
+        width: 100%;
+
+        @include media-breakpoint-up(md) {
+            position: sticky;
+            top: 1rem;
+            width: 340px;
+        }
+
+        .map {
+            display: none;
+
+            .highlighted {
+                fill: $accent-color;
+            }
+        }
+    }
+}
+
+
+/* HOLDINGS TABLE */
+.table.table-holdings {
+    font-size: 0.9rem;
+
+    tr[data-map]:not([data-map=""]) {
+        cursor: pointer;
+
+        &.selected td {
+            background: lighten($accent-color, 50%);
+        }
+    }
+
+    td {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        vertical-align: middle;
+    }
+
+    i {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        background: no-repeat center;
+        background-size: cover;
+
+        &.tick {
+            background-image: url('./../../images/tick.svg');
+        }
+
+        &.cross {
+            background-image: url('./../../images/cross.svg');
+        }
+    }
+
+    small {
+        display: block;
+        color: lighten($foreground-color, 20%);
     }
 }

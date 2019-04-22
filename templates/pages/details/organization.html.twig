@@ -1,0 +1,59 @@
+{#
+ # Rosetta - A free (libre) Integrated Library System for the 21st century.
+ # Copyright (C) 2019 José M. Moreno <josemmo@pm.me>
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # This program is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program. If not, see <https://www.gnu.org/licenses/>.
+ #}
+
+
+{% extends 'pages/details/abstract-entity.html.twig' %}
+
+{% set entity_title = entity.name %}
+
+{% block entity_attributes %}
+    {# Founders #}
+    {% if entity.founders is not empty %}
+        <div class="attribute">
+            <h4>
+                {% if entity.founders|length > 1 %}
+                    {% trans %}Founders{% endtrans %}
+                {% else %}
+                    {% trans %}Founder{% endtrans %}
+                {% endif %}
+            </h4>
+            {% for founder in entity.founders %}
+                <p><a href="{{ rosetta_entity_path(founder) }}">{{ founder.name }}</a></p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {# Foundation date #}
+    {% if entity.foundationDate is not empty %}
+        <div class="attribute">
+            <h4>{% trans %}Foundation date{% endtrans %}</h4>
+            <p>{{ rosetta_date(entity.foundationDate) }}</p>
+        </div>
+    {% endif %}
+
+    {# Website #}
+    {% if entity.website is not empty %}
+        <div class="attribute">
+            <h4>{% trans %}Website{% endtrans %}</h4>
+            <p>{{ entity.website }}</p>
+        </div>
+    {% endif %}
+
+    {# Abstract Entity attributes #}
+    {{ parent() }}
+{% endblock %}

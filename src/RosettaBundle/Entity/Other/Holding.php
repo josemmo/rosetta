@@ -20,19 +20,78 @@
 
 namespace App\RosettaBundle\Entity\Other;
 
+use App\RosettaBundle\Entity\AbstractEntity;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ */
 class Holding {
-    private $callNumber;
-    private $location;
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer", options={"unsigned":true})
+     * @ORM\GeneratedValue
+     */
+    private $id;
+
+    /** @ORM\ManyToOne(targetEntity="App\RosettaBundle\Entity\Work\AbstractWork", inversedBy="holdings") */
+    private $entity;
+
+    /** @ORM\Column(length=64, nullable=true) */
+    private $callNumber = null;
+
+    /** @ORM\Column(type="boolean") */
     private $loanable = true;
-    private $lentUntil = null;
+
+    /** @ORM\Column(type="boolean") */
+    private $available = true;
+
+    /** @ORM\Column(length=16, nullable=true) */
+    private $sourceId = null;
+
+    /** @ORM\Column(length=128, nullable=true) */
+    private $locationName = null;
+
+    /** @ORM\Column(length=2083, nullable=true) */
+    private $onlineUrl = null;
 
     /**
-     * Holding constructor
-     * @param string $callNumber Call number (pressmark)
+     * Get ID
+     * @return int ID
      */
-    public function __construct(string $callNumber) {
-        $this->setCallNumber($callNumber);
-        //$this->setLocation($location); // TODO: uncomment when location classes are implemented
+    public function getId(): int {
+        return $this->id;
+    }
+
+
+    /**
+     * Set ID
+     * @param  int    $id Holding ID
+     * @return static     This instance
+     */
+    public function setId(int $id): self {
+        $this->id = $id;
+        return $this;
+    }
+
+
+    /**
+     * Get entity
+     * @return AbstractEntity Entity
+     */
+    public function getEntity() {
+        return $this->entity;
+    }
+
+
+    /**
+     * Get entity
+     * @param  AbstractEntity $entity Entity
+     * @return static                 This instance
+     */
+    public function setEntity($entity) {
+        $this->entity = $entity;
+        return $this;
     }
 
 
@@ -57,26 +116,6 @@ class Holding {
 
 
     /**
-     * Get holding location
-     * @return AbstractLocation Holding location
-     */
-    public function getLocation(): AbstractLocation {
-        return $this->location;
-    }
-
-
-    /**
-     * Set location
-     * @param  AbstractLocation $location Holding location
-     * @return static                     This instance
-     */
-    public function setLocation(AbstractLocation $location): self {
-        $this->location = $location;
-        return $this;
-    }
-
-
-    /**
      * Is loanable
      * @return boolean Is loanable
      */
@@ -92,27 +131,99 @@ class Holding {
      */
     public function setLoanable(bool $loanable): self {
         $this->loanable = $loanable;
-        if (!$loanable) $this->setLentUntil(null);
-    }
-
-
-    /**
-     * Get lent until
-     * @return \DateTime|null Lent until date
-     */
-    public function getLentUntil(): ?\DateTime {
-        return $this->lentUntil;
-    }
-
-
-    /**
-     * Set lent until date
-     * @param \DateTime|null $lentUntil Lent until date (null if available)
-     * @return static                   This instance
-     */
-    public function setLentUntil(?\DateTime $lentUntil): self {
-        $this->lentUntil = $lentUntil;
         return $this;
+    }
+
+
+    /**
+     * Is available
+     * @return boolean Is available
+     */
+    public function isAvailable(): bool {
+        return $this->available;
+    }
+
+
+    /**
+     * Set available flag
+     * @param  boolean $available Is available
+     * @return static             This instance
+     */
+    public function setAvailable(bool $available): self {
+        $this->available = $available;
+        return $this;
+    }
+
+
+    /**
+     * Get source ID
+     * @return int|string|null Source ID
+     */
+    public function getSourceId() {
+        return $this->sourceId;
+    }
+
+
+    /**
+     * Set source ID
+     * @param  int|string $sourceId Source ID
+     * @return static               This instance
+     */
+    public function setSourceId(string $sourceId): self {
+        $this->sourceId = $sourceId;
+        return $this;
+    }
+
+
+    /**
+     * Get location name
+     * @return string|null Location name
+     */
+    public function getLocationName(): ?string {
+        return $this->locationName;
+    }
+
+
+    /**
+     * Set location name
+     * @param  string $locationName Location name
+     * @return static               This instance
+     */
+    public function setLocationName(string $locationName): self {
+        $this->locationName = $locationName;
+        return $this;
+    }
+
+
+    /**
+     * Get online URL
+     * @return string|null Online URL
+     */
+    public function getOnlineUrl(): ?string {
+        return $this->onlineUrl;
+    }
+
+
+    /**
+     * Set online URL
+     * @param  string $onlineUrl Online URL
+     * @return static            This instance
+     */
+    public function setOnlineUrl(string $onlineUrl): self {
+        $this->onlineUrl = $onlineUrl;
+        $this->setLoanable(false);
+        return $this;
+    }
+
+
+    /**
+     * Get UDC subject code
+     * @return string|null Subject
+     */
+    public function getSubject(): ?string {
+        $matches = [];
+        preg_match('/[0-9]{2,3}(\.[0-9]{1,3})?/', $this->callNumber, $matches);
+        return empty($matches) ? null : $matches[0];
     }
 
 }

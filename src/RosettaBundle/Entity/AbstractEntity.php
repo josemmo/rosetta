@@ -33,8 +33,9 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\HasLifecycleCallbacks
  * @ORM\Table(name="entity")
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorColumn(name="entity_type", type="string", length=4)
+ * @ORM\DiscriminatorColumn(name="entity_type", type="string", length=5)
  * @ORM\DiscriminatorMap({
+ *     "thing": "App\RosettaBundle\Entity\Thing",
  *     "work": "App\RosettaBundle\Entity\Work\AbstractWork",
  *     "book": "App\RosettaBundle\Entity\Work\Book",
  *     "org": "App\RosettaBundle\Entity\Organization",
@@ -374,23 +375,31 @@ abstract class AbstractEntity {
 
     /**
      * To filled template string
-     * @param  string $template Template
-     * @return string           Template filled with values from entity
+     * @param  string      $template Template
+     * @return string|null           Template filled with values from entity
      */
     public function toFilledTemplateString(string $template) {
+        $filled = false;
+
         // ISBN 10
         if (strpos($template, '{{isbn10}}') !== false) {
             $value = $this->getFirstIdOfType(Identifier::ISBN_10);
-            if (!is_null($value)) $template = str_replace('{{isbn10}}', $value, $template);
+            if (!is_null($value)) {
+                $template = str_replace('{{isbn10}}', $value, $template);
+                $filled = true;
+            }
         }
 
         // ISBN 13
         if (strpos($template, '{{isbn13}}') !== false) {
             $value = $this->getFirstIdOfType(Identifier::ISBN_13);
-            if (!is_null($value)) $template = str_replace('{{isbn13}}', $value, $template);
+            if (!is_null($value)) {
+                $template = str_replace('{{isbn13}}', $value, $template);
+                $filled = true;
+            }
         }
 
-        return $template;
+        return $filled ? $template : null;
     }
 
 

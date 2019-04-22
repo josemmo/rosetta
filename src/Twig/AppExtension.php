@@ -21,8 +21,11 @@
 namespace App\Twig;
 
 use App\RosettaBundle\Entity\AbstractEntity;
+use App\RosettaBundle\Entity\Other\Holding;
 use App\RosettaBundle\Entity\Other\Identifier;
+use App\RosettaBundle\Entity\Other\Map;
 use App\RosettaBundle\Service\ConfigEngine;
+use App\RosettaBundle\Service\MapsService;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
@@ -34,6 +37,7 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
     const ASSETS_URL = "build/images/";
 
     private $config;
+    private $maps;
     private $packages;
     private $router;
     private $translator;
@@ -42,12 +46,15 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
     /**
      * AppExtension constructor
      * @param ConfigEngine    $config     Configuration Engine
+     * @param MapsService     $maps       Maps Service
      * @param Packages        $packages   Packages Service
      * @param RouterInterface $router     Router Service
      * @param mixed           $translator Translator Service
      */
-    public function __construct(ConfigEngine $config, Packages $packages, RouterInterface $router, $translator) {
+    public function __construct(ConfigEngine $config, MapsService $maps, Packages $packages,
+                                RouterInterface $router, $translator) {
         $this->config = $config;
+        $this->maps = $maps;
         $this->packages = $packages;
         $this->router = $router;
         $this->translator = $translator;
@@ -112,9 +119,11 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
         return [
             new TwigFunction('rosetta_asset', [$this, 'getRosettaAsset']),
             new TwigFunction('rosetta_entity_path', [$this, 'getEntityPath']),
+            new TwigFunction('rosetta_source_name', [$this, 'getSourceName']),
             new TwigFunction('rosetta_external_links', [$this, 'getExternalLinks']),
             new TwigFunction('rosetta_date', [$this, 'getFormattedDate']),
-            new TwigFunction('rosetta_language', [$this, 'getLanguageName'])
+            new TwigFunction('rosetta_language', [$this, 'getLanguageName']),
+            new TwigFunction('rosetta_get_map', [$this, 'getMapFromHolding'])
         ];
     }
 
@@ -147,6 +156,28 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
 
 
     /**
+     * Get source name
+     * @param  int|string  $sourceId  Identifier type ID or database ID
+     * @param  boolean     $shortName Get short name
+     * @return string|null            Source name
+     */
+    public function getSourceName($sourceId, bool $shortName=false) {
+        // Identifier type
+        if (is_int($sourceId)) {
+            if ($sourceId == Identifier::GBOOKS) return "Google Books";
+            if ($sourceId == Identifier::OCLC) return "WorldCat";
+            if ($sourceId == Identifier::WIKIDATA) return "Wikidata";
+            return null;
+        }
+
+        // Database ID
+        $db = $this->config->getDatabases()[$sourceId] ?? null;
+        if (is_null($db)) return null;
+        return $shortName ? $db->getShortName() : $db->getName();
+    }
+
+
+    /**
      * Get external links from entity
      * @param  AbstractEntity $entity Entity
      * @return array                  External links
@@ -155,15 +186,17 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
         $res = [];
         foreach ($entity->getIdentifiers() as $identifier) {
             $value = $identifier->getValue();
-            switch ($identifier->getType()) {
+            $type = $identifier->getType();
+            $sourceName = $this->getSourceName($type);
+            switch ($type) {
                 case Identifier::GBOOKS:
-                    $res['gbooks'] = ['name' => 'Google Books', 'url' => "https://books.google.es/books?id=$value"];
+                    $res['gbooks'] = ['name' => $sourceName, 'url' => "https://books.google.es/books?id=$value"];
                     break;
                 case Identifier::OCLC:
-                    $res['oclc'] = ['name' => 'WorldCat', 'url' => "https://www.worldcat.org/oclc/$value"];
+                    $res['oclc'] = ['name' => $sourceName, 'url' => "https://www.worldcat.org/oclc/$value"];
                     break;
                 case Identifier::WIKIDATA:
-                    $res['wikidata'] = ['name' => 'Wikidata', 'url' => "https://www.wikidata.org/entity/$value"];
+                    $res['wikidata'] = ['name' => $sourceName, 'url' => "https://www.wikidata.org/entity/$value"];
                     break;
                 case Identifier::INTERNAL:
                     $databaseId = explode(':', $value)[0];
@@ -171,7 +204,7 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
                     $url = $db->getExternalLink();
                     if (!empty($url)) {
                         $url = $entity->toFilledTemplateString($url);
-                        $res["internal-$databaseId"] = ['name' => $db->getName(), 'url' => $url];
+                        if (!is_null($url)) $res["internal-$databaseId"] = ['name' => $db->getName(), 'url' => $url];
                     }
                     break;
             }
@@ -251,6 +284,16 @@ class AppExtension extends AbstractExtension implements GlobalsInterface {
      */
     public function getLanguageName(string $code) {
         return \Locale::getDisplayLanguage($code, $this->translator->getLocale());
+    }
+
+
+    /**
+     * Get map from holding
+     * @param  Holding  $holding Holding
+     * @return Map|null          Map
+     */
+    public function getMapFromHolding(Holding $holding) {
+        return $this->maps->getMap($holding);
     }
 
 }

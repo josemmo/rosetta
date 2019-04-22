@@ -20,9 +20,41 @@
 
 namespace App\RosettaBundle\Entity\Other;
 
-/**
- * An AbstractLocation represents a placeholder for a location.
- */
-abstract class AbstractLocation {
-    // TODO: not implemented
+class Map {
+    private $id;
+    private $data;
+    private $room;
+
+    public function __construct(int $id, string $data, string $room) {
+        $this->id = $id;
+        $this->data = $data;
+        $this->room = $room;
+    }
+
+
+    /**
+     * Get identifier
+     * @return int ID
+     */
+    public function getId(): int {
+        return $this->id;
+    }
+
+
+    /**
+     * Get map SVG data
+     * @return string Data
+     */
+    public function getData(): string {
+        return $this->data;
+    }
+
+
+    /**
+     * Get room name
+     * @return string Room
+     */
+    public function getRoom(): string {
+        return $this->room;
+    }
 }

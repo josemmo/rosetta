@@ -78,9 +78,11 @@ class CacheService {
                 // Copy old data from cached entity(ies)
                 $entity->setId($mainCachedEntity->getId());
                 $entity->setCreationDate($mainCachedEntity->getCreationDate());
+                $cachedHoldingIds = [];
                 foreach ($results as $result) {
-                    foreach ($result->getIdentifiers() as $identifier) {
-                        $entity->addIdentifier($identifier);
+                    foreach ($result->getIdentifiers() as $identifier) $entity->addIdentifier($identifier);
+                    if (method_exists($result, 'getHoldings')) {
+                        foreach ($result->getHoldings() as $holding) $cachedHoldingIds[] = $holding->getId();
                     }
                 }
 
@@ -89,6 +91,20 @@ class CacheService {
 
                 // Merge detached object
                 $newEntity = $this->em->merge($entity);
+
+                // Overwrite holdings
+                if (method_exists($entity, 'getHoldings')) {
+                    foreach ($entity->getHoldings() as $holding) {
+                        $holdingId = array_shift($cachedHoldingIds);
+                        if (!is_null($holdingId)) {
+                            $holding->setId($holdingId);
+                            $holding = $this->em->merge($holding);
+                        }
+
+                        $holding->setEntity($newEntity);
+                        $newEntity->addHolding($holding);
+                    }
+                }
 
                 // Update references to old entity in other entities
                 foreach ($entities as $target) {

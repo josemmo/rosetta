@@ -91,7 +91,7 @@ class SearchQuery {
      * @return string Operand
      */
     public function getOperand(): string {
-        return $this->operand || Operand::OR;
+        return $this->operand ?? Operand::OR;
     }
 
 
