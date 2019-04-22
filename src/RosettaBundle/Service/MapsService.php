@@ -120,4 +120,58 @@ class MapsService {
         return $res;
     }
 
+
+    /**
+     * Returns an SVG map with the location of the given resource, if exists
+     * @param  string      $dbId       Database ID
+     * @param  string      $callNumber Holding call number
+     * @param  string|null $location   Holding location
+     * @return string|null             Map name or null if not found
+     */
+    public function getMapName(string $dbId, string $callNumber, ?string $location=null) {
+        $index = $this->getIndex();
+
+        if (!isset($index[$dbId])) return null;
+
+        // Find location
+        $locationData = null;
+        if (is_null($location)) {
+            $locationData = $index[$dbId][''] ?? null;
+        } else {
+            foreach ($index[$dbId] as $locationPattern=>&$data) {
+                if (preg_match("/$locationPattern/", $location) === 1) {
+                    $locationData = $data;
+                    break;
+                }
+            }
+        }
+        if (is_null($locationData)) return null;
+
+        // Find UDC subject
+        $udc = $this->extractUDC($callNumber);
+        $mapName = null;
+        while (strlen($udc) > 0) {
+            if (isset($locationData[$udc])) {
+                $mapName = $locationData[$udc];
+                break;
+            }
+            $udc = substr($udc, 0, -1);
+        }
+
+        // Return map
+        return $mapName;
+    }
+
+
+    /**
+     * Extract UDC from signature
+     * @param  string      $callNumber Holding call number
+     * @return string|null             UDC subject code
+     */
+    private function extractUDC(string $callNumber): ?string {
+        $matches = [];
+        preg_match('/[0-9]{2,3}(\.[0-9]{1,3})?/', $callNumber, $matches);
+        return empty($matches) ? null : $matches[0];
+    }
+
 }
