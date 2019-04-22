@@ -163,8 +163,35 @@ class MapsService {
         $data = simplexml_load_file($mapPath);
         if (empty($data)) return null;
 
+        // Extract attributes from map data
+        $ns = $this->getRosettaNamespace($data);
+        $attrs = $data->attributes($ns, true);
+        $room = (string) $attrs->room;
+
+        // Parse map data
+        unset($attrs->database);
+        unset($attrs->locationPattern);
+        unset($attrs->room);
+        foreach ($this->getAllChildren($data) as $child) {
+            $udc = $child->attributes($ns, true)->udc;
+            if (empty($udc)) continue;
+
+            $udc = str_replace(', ', ',', $udc);
+            $child->addAttribute('data-subjects', $udc);
+            unset($child->attributes($ns, true)->udc);
+        }
+
+        // Post XML processing of map data
+        $data = $data->asXML();
+        foreach (["/xmlns:$ns=\"(.+?)\"/", '/<!--(.+?)-->/', '/<\?xml(.+?)\?>/'] as $pattern) {
+            $data = preg_replace($pattern, '', $data);
+        }
+        $data = preg_replace('/\s+/', ' ', $data);
+        $data = str_replace('> <', '><', $data);
+
+        // Create and return map instance
         $mapId = count($this->cachedMaps);
-        return new Map($mapId, $data->asXML(), 'ROOM ' . $mapName);
+        return new Map($mapId, $data, $room);
     }
 
 
