@@ -32,5 +32,11 @@
     "Houston, we have a problem": "Houston, tenemos un problema",
     "Something went wrong when trying to display this page.": "Algo salió mal al intentar mostrar esta página.",
     "Please try again later or <a href=\"mailto:%email%\" target=\"_blank\">send us an email<\/a>.": "Por favor, inténtalo más tarde o <a href=\"mailto:%email%\" target=\"_blank\">mándanos un email<\/a>.",
-    "Results for \"%query%\"": "Resultados para \"%query%\""
+    "Results for \"%query%\"": "Resultados para \"%query%\"",
+    "Holdings": "Ejemplares",
+    "Source": "Fuente",
+    "Call Number": "Signatura",
+    "Location": "Ubicación",
+    "Loanable": "Prestable",
+    "Available": "Disponible"
 }
