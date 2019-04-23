@@ -85,7 +85,7 @@ $(() => {
                 $this.data('shelves', mapsCache[mapId][subject])
                 break
             }
-            subject = subject.substring(0, -1)
+            subject = subject.slice(0, -1)
         }
     }).click(function() {
         $holdingsTable.find('.selected').removeClass('selected')
