@@ -21,8 +21,8 @@
 namespace App\RosettaBundle\Service;
 
 use App\RosettaBundle\Entity\Other\Database;
-use Shivas\VersioningBundle\Service\VersionManager;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 class ConfigEngine {
     private $request;
@@ -34,13 +34,12 @@ class ConfigEngine {
 
     /**
      * ConfigEngine constructor
-     * @param  RequestStack   $requestStack   Request Stack Service
-     * @param  VersionManager $versionManager Version Manager Service
-     * @throws \Psr\Cache\InvalidArgumentException
+     * @param RequestStack    $requestStack Request Stack Service
+     * @param KernelInterface $kernel       Kernel Interface
      */
-    public function __construct(RequestStack $requestStack, VersionManager $versionManager) {
+    public function __construct(RequestStack $requestStack, KernelInterface $kernel) {
         $this->request = $requestStack->getCurrentRequest();
-        $this->version = $versionManager->getVersion();
+        $this->version = trim(file_get_contents($kernel->getProjectDir() . "/VERSION"));
     }
 
 
@@ -68,7 +67,7 @@ class ConfigEngine {
      * @return string App version
      */
     public function getVersion() {
-        return $this->version->getVersionString();
+        return $this->version;
     }
 
 
