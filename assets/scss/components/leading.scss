@@ -18,8 +18,11 @@
 
 
 section.leading {
+    $gradient-color-from: lighten(adjust-hue($accent-color, 12%), 43%);
+    $gradient-color-to: lighten($accent-color, 15%);
+
     padding: 9rem 0 0;
-    background: lighten($accent-color, 40%) no-repeat center;
+    background: linear-gradient(45deg, $gradient-color-from, $gradient-color-to) no-repeat center;
     background-size: cover;
 
     .logo {
