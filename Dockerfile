@@ -39,6 +39,7 @@ ENV APP_ENV=$app_env
 ENV DATABASE_URL=$db_url
 RUN yarn install && yarn build
 RUN composer install --no-dev --optimize-autoloader
+RUN chmod -R 777 var
 
 # Initialize app
 RUN chmod +x .docker/start.sh
