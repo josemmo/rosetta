@@ -118,19 +118,38 @@ class WikidataService {
         $entity->addIdentifier(new Identifier(Identifier::WIKIDATA, $data['id']));
 
         // Add image URL
-        $imageFile = $this->parseProperty($data['claims'], 'P18');
-        if (!is_null($imageFile)) {
-            $imageFile = str_replace(' ', '_', $imageFile);
-            $entity->setImageUrl("https://commons.wikimedia.org/w/thumb.php?width=300&f=$imageFile");
-        }
+        $imageUrl = $this->parseProperty($data['claims'], 'P18');
+        if (!is_null($imageUrl)) $entity->setImageUrl($imageUrl);
+
+        // Get type of Wikidata instance
+        $instanceOf = $this->parseProperty($data['claims'], 'P31');
 
         // Add Person properties
-        if ($entity instanceof Person) {
-            $birthDate = $this->parseProperty($data['claims'], 'P569');
-            if (!is_null($birthDate)) $entity->setBirthDate($birthDate);
-            $deathDate = $this->parseProperty($data['claims'], 'P570');
-            if (!is_null($deathDate)) $entity->setDeathDate($deathDate);
+        if (($instanceOf == "Q5") && ($entity instanceof Person)) $this->fillPerson($entity, $data);
+    }
+
+
+    /**
+     * Fill person
+     * @param Person $entity Person to fill
+     * @param array  $data   Additional data from Wikidata
+     */
+    private function fillPerson($entity, $data) {
+        $description = null;
+        foreach ($data['descriptions'] as $desc) {
+            $description = $desc['value'];
+            break;
         }
+        if (!empty($description)) $entity->setDescription($description);
+
+        $birthDate = $this->parseProperty($data['claims'], 'P569');
+        if (!is_null($birthDate)) $entity->setBirthDate($birthDate);
+
+        $deathDate = $this->parseProperty($data['claims'], 'P570');
+        if (!is_null($deathDate)) $entity->setDeathDate($deathDate);
+
+        $signatureUrl = $this->parseProperty($data['claims'], 'P109');
+        if (!is_null($signatureUrl)) $entity->setSignatureUrl($signatureUrl);
     }
 
 
@@ -149,6 +168,11 @@ class WikidataService {
             $value = $property[0]['mainsnak']['datavalue']['value'];
             if ($type == "string") return $value;
             if ($type == "time") return new \DateTime($value['time']);
+            if ($type == "commonsMedia") {
+                $value = str_replace(' ', '_', $value);
+                return "https://commons.wikimedia.org/w/thumb.php?width=300&f=$value";
+            }
+            if ($type == "wikibase-item") return $value['id'];
         } catch (\Exception $e) {
             // Could not parse property, aborting
         }

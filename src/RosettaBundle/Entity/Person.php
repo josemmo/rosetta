@@ -37,8 +37,11 @@ class Person extends AbstractEntity {
     /** @ORM\Column(length=255, nullable=true) */
     protected $lastname = null;
 
-    /** @ORM\Column(type="text", nullable=true) */
+    /** @ORM\Column(length=256, nullable=true) */
     protected $description = null;
+
+    /** @ORM\Column(length=2083, nullable=true) */
+    protected $signatureUrl = null;
 
     /** @ORM\Column(type="date", nullable=true) */
     protected $birthDate = null;
@@ -121,6 +124,26 @@ class Person extends AbstractEntity {
      */
     public function setDescription(?string $description): self {
         $this->description = $description;
+        return $this;
+    }
+
+
+    /**
+     * Get signature URL
+     * @return string|null Signature image URL
+     */
+    public function getSignatureUrl(): ?string {
+        return $this->signatureUrl;
+    }
+
+
+    /**
+     * Set signature URL
+     * @param  string|null $signatureUrl Signature image URL
+     * @return static                    This instance
+     */
+    public function setSignatureUrl(?string $signatureUrl): self {
+        $this->signatureUrl = $signatureUrl;
         return $this;
     }
 

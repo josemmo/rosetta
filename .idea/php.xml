@@ -80,8 +80,6 @@
       <path value="$PROJECT_DIR$/vendor/sensiolabs/security-checker" />
       <path value="$PROJECT_DIR$/vendor/symfony/webpack-encore-bundle" />
       <path value="$PROJECT_DIR$/vendor/nicebooks/isbn" />
-      <path value="$PROJECT_DIR$/vendor/nikolaposa/version" />
-      <path value="$PROJECT_DIR$/vendor/shivas/versioning-bundle" />
       <path value="$PROJECT_DIR$/vendor/neitanod/forceutf8" />
       <path value="$PROJECT_DIR$/vendor/nikic/php-parser" />
       <path value="$PROJECT_DIR$/vendor/symfony/maker-bundle" />

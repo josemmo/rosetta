@@ -20,6 +20,7 @@
 {% extends 'pages/details/abstract-entity.html.twig' %}
 
 {% set entity_title = entity.name %}
+{% if entity.description is not empty %}{% set entity_subtitle = entity.description %}{% endif %}
 
 {% block entity_attributes %}
     {# Date of birth #}
@@ -35,6 +36,14 @@
         <div class="attribute">
             <h4>{% trans %}Date of death{% endtrans %}</h4>
             <p>{{ rosetta_date(entity.deathDate) }}</p>
+        </div>
+    {% endif %}
+
+    {# Signature #}
+    {% if entity.signatureUrl is not empty %}
+        <div class="attribute">
+            <h4>{% trans %}Signature{% endtrans %}</h4>
+            <img src="{{ entity.signatureUrl }}" class="w-100 my-2" alt="{% trans with {'%person%': entity.name} %}%person%'s signature{% endtrans %}">
         </div>
     {% endif %}
 
