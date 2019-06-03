@@ -28,7 +28,7 @@
         "symfony/validator": "4.2.*",
         "symfony/web-link": "4.2.*",
         "symfony/webpack-encore-bundle": "^1.1",
-        "symfony/yaml": "4.2.*"
+        "symfony/yaml": "4.3.*"
     },
     "require-dev": {
         "php-translation/symfony-bundle": "^0.8.1",
