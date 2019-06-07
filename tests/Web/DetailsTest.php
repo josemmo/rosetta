@@ -22,29 +22,25 @@ namespace App\Tests\Web;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class SearchTest extends WebTestCase {
+class DetailsTest extends WebTestCase {
 
     /**
-     * Test search
+     * Test details page
      */
-    public function testSearch() {
+    public function testDetails() {
         $client = static::createClient();
-        $client->request('GET', '/search', ['q' => 'Kurose']);
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $this->assertSelectorExists('section.leading form.search-form');
-        $this->assertSelectorExists('main .spinner');
-    }
-
-
-    /**
-     * Test search POST
-     */
-    public function testSearchPost() {
-        $client = static::createClient();
+        // Do a regular search and open first result
         $crawler = $client->request('POST', '/search', ['q' => 'Kurose']);
+        $detailsUri = $crawler->filter('.search-results .entity.book')->first()
+            ->filter('a')->first()
+            ->attr('href');
 
-        $this->assertGreaterThan(0, $crawler->filter('.search-results .entity.book')->count());
+        // Load details page
+        $client->request('GET', $detailsUri);
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $this->assertSelectorExists('main aside.details-column.col-left');
+        $this->assertSelectorExists('main section.details-column.col-middle');
     }
 
 }
