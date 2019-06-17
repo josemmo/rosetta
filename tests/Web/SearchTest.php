@@ -20,9 +20,7 @@
 
 namespace App\Tests\Web;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-
-class SearchTest extends WebTestCase {
+class SearchTest extends AbstractCrawlerTest {
 
     /**
      * Test search

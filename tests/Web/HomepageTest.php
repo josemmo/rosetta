@@ -20,9 +20,7 @@
 
 namespace App\Tests\Web;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-
-class HomepageTest extends WebTestCase {
+class HomepageTest extends AbstractCrawlerTest {
 
     /**
      * Test homepage
