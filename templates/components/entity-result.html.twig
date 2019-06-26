@@ -15,8 +15,13 @@
  # You should have received a copy of the GNU General Public License
  # along with this program. If not, see <https://www.gnu.org/licenses/>.
  #}
+{% if target is defined and target == '_blank' %}
+    {% set target = ' target="_blank"' %}
+{% else %}
+    {% set target = '' %}
+{% endif %}
 <div class="entity {{ entity.entityType }}">
-    <a href="{{ rosetta_entity_path(entity) }}">
+    <a href="{{ rosetta_entity_path(entity) }}"{{ target }}>
         <span class="cover-wrapper">
             <span class="cover"{% if entity.imageUrl is not empty %} style="background-image:url('{{ path('entity_cover', {id: entity.id}) }}')"{% endif %}></span>
         </span>
@@ -29,7 +34,7 @@
         </span>
     </a>
     {% if entity.creator is defined and entity.creator is not empty %}
-        <a href="{{ rosetta_entity_path(entity.creator) }}" class="subtitle">
+        <a href="{{ rosetta_entity_path(entity.creator) }}" class="subtitle"{{ target }}>
             {{ entity.creator.name }}
         </a>
     {% endif %}

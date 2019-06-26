@@ -19,6 +19,7 @@ cache:
     directories:
         - vendor
         - node_modules
+        - bin/.phpunit
 
 addons:
     mariadb: '10.3' # Install MariaDB Server

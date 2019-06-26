@@ -19,7 +19,7 @@
 {% if results %}
     <div class="search-results">
         {% for entity in results %}
-            {% include 'components/entity-result.html.twig' with {'entity': entity} only %}
+            {% include 'components/entity-result.html.twig' with {'entity': entity, 'target': '_blank'} only %}
         {% endfor %}
     </div>
 {% else %}

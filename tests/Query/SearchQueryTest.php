@@ -18,7 +18,7 @@
  */
 
 
-namespace App\Tests\Utils;
+namespace App\Tests\Query;
 
 use App\RosettaBundle\Query\SearchQuery;
 use PHPUnit\Framework\TestCase;
