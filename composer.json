@@ -17,7 +17,7 @@
         "nicebooks/isbn": "^0.2.17",
         "sensiolabs/security-checker": "^6.0",
         "symfony/asset": "4.3.*",
-        "symfony/console": "4.3.*",
+        "symfony/console": "4.4.*",
         "symfony/dotenv": "4.3.*",
         "symfony/flex": "^1.1",
         "symfony/framework-bundle": "4.3.*",
