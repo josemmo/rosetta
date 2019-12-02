@@ -4,7 +4,7 @@
         "@babel/preset-env": "^7.7.1",
         "@symfony/webpack-encore": "^0.28.0",
         "autoprefixer": "^9.7.1",
-        "bootstrap": "^4.3.1",
+        "bootstrap": "^4.4.1",
         "jquery": "^3.4.0",
         "node-sass": "^4.13.0",
         "node-vibrant": "^3.2.0-alpha",
