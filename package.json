@@ -6,7 +6,7 @@
         "autoprefixer": "^9.7.1",
         "bootstrap": "^4.3.1",
         "jquery": "^3.4.0",
-        "node-sass": "^4.13.0",
+        "node-sass": "^4.13.1",
         "node-vibrant": "^3.2.0-alpha",
         "postcss-loader": "^3.0.0",
         "sass-loader": "^8.0.0",
